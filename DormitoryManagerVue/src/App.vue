@@ -24,8 +24,8 @@
                         <span>综合服务平台</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="/index" @click="toa">宿舍查寝</el-menu-item>
-                        <el-menu-item index="1-2" @click="to_bxd">设备报修申请</el-menu-item>
+                        <el-menu-item index="/index" @click="toa">学生宿舍查寝</el-menu-item>
+                        <el-menu-item index="1-2" @click="to_bxd">学生宿舍报修申请表</el-menu-item>
                         <el-menu-item index="/index" @click="to_zdb">学生走读表单</el-menu-item>
                         <el-menu-item index="/index" @click="tob">问卷调查</el-menu-item>
                         <el-menu-item index="/index" @click="tob">网络投票</el-menu-item>
@@ -52,7 +52,7 @@
                             </el-badge>
                         </div>
                         <div class="icon">
-                            <el-avatar :src="icon" v-if="icon" @error="errorHandler" :size="60">
+                            <el-avatar :src="icon" v-if="icon" @error="errorHandler" :size="50">
                                 <img src="http://localhost:9142/02.jpg" />
                             </el-avatar>
                             <el-avatar v-else> {{ name }}</el-avatar>
@@ -96,7 +96,7 @@
 </template>
 <script>
 import store from "./store";
-import Message from "./components/Message";
+import Message from "./components/Message"; //消息页面
 import MenuItem from "./components/MenuItems";
 import { logout } from "./api/login";
 import { removeToken } from "./utils/auth";
@@ -135,13 +135,13 @@ export default {
             });
         },
         toa() {
-            window.open("http://47.108.196.182:8080/edit?name=%E5%AE%BF%E8%88%8D%E6%9F%A5%E5%AF%9D.xlsx&userName=admin&userId=1");
+            window.open("http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D%E6%9F%A5%E5%AF%9D%E8%A1%A8.xlsx&userName=admin&userId=1");
         },
         to_zlgl() {
             window.open("http://47.108.196.182:8099/dist/");
         },
         to_bxd() {
-            window.open("http://47.108.196.182:8080/edit?name=%E6%8A%A5%E4%BF%AE%E7%94%B3%E8%AF%B7%E5%8D%95.docx&userName=admin&userId=1");
+            window.open("http://47.108.196.182:8080/edit?name=%E5%AE%BF%E8%88%8D%E6%8A%A5%E4%BF%AE%E7%99%BB%E8%AE%B0(%E7%94%B3%E8%AF%B7)%E8%A1%A8.xlsx&userName=admin&userId=1");
         },
         to_zlgl() {
             window.open("http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E8%B5%B0%E8%AF%BB%E8%A1%A8.xlsx&userName=admin&userId=1");
@@ -302,7 +302,7 @@ body {
     line-height: 75px;
     color: #2399f1;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 13px;
 }
 
 .icon {
