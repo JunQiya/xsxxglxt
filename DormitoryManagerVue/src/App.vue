@@ -28,14 +28,15 @@
                         <span>综合服务平台</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="/index" @click="toa">学生宿舍查寝</el-menu-item>
-                        <el-menu-item index="1-2" @click="to_bxd">学生宿舍报修申请表</el-menu-item>
-                        <el-menu-item index="/index" @click="to_zdb">学生走读申请表</el-menu-item>
-                        <el-menu-item index="/index" @click="tob">问卷调查</el-menu-item>
-                        <el-menu-item index="/index" @click="tob">网络投票</el-menu-item>
-                        <el-menu-item index="/index" @click="tob">勤工助学申请</el-menu-item>
                         <el-menu-item index="/index" @click="tob">后勤管理</el-menu-item>
                         <el-menu-item index="/index" @click="to_zlgl">资料管理</el-menu-item>
+                        <el-menu-item index="/index" @click="tob">问卷调查</el-menu-item>
+                        <el-menu-item index="/index" @click="tob">网络投票</el-menu-item>
+                        <el-menu-item index="/index" @click="toa">学生宿舍查寝</el-menu-item>
+                        <el-menu-item index="/index" @click="to_zdb">学生走读申请表</el-menu-item>
+                        <el-menu-item index="/index" @click="tob">勤工助学申请</el-menu-item>
+                        <el-menu-item index="1-2" @click="to_bxd">学生宿舍报修申请表</el-menu-item>
+
                     </el-menu-item-group>
                 </el-submenu>
             </el-menu>
@@ -151,7 +152,9 @@ export default {
             this.$router.push(url).catch((err) => {
                 err;
             });
+
         },
+
         // 打开新窗口
         toa() {
             window.open("http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D%E6%9F%A5%E5%AF%9D%E8%A1%A8.xlsx&userName=admin&userId=1");

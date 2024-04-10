@@ -84,8 +84,18 @@
                         &nbsp;&nbsp;四、有关要求<br>
                         &nbsp;&nbsp;学部、各学院（中心）要高度重视，对检查情况全面梳理分析，把学生宿舍安全、内务卫生作为学生教育管理的重点工作，教育引导与严格管理相结合，进一步完善各项管理和检查制度，健全安全隐患及内务卫生检查及处理机制。相关部门要对此次检查中出现的问题建立学生宿舍安全隐患台账及责任清单，制定整改措施，明确整改责任人和整改时限，压实管理责任，切实推动平安校园建设。
                         <br><br>
-                        <a href="http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D%E5%AE%89%E5%85%A8%E5%86%85%E5%8A%A1%E6%A3%80%E6%9F%A5%E6%A0%87%E5%87%86.doc&userName=admin&userId=1"
-                            target="_blank">附件：学生宿舍安全内务检查标准</a>
+                        附件：<a style="text-decoration: none; color: DeepSkyBlue;"
+                            href="http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D%E5%AE%89%E5%85%A8%E5%86%85%E5%8A%A1%E6%A3%80%E6%9F%A5%E6%A0%87%E5%87%86.doc&userName=admin&userId=1"
+                            target="_blank">学生宿舍安全内务检查标准
+                        </a><a href="https://wxb.lxxno.cn/office/xueshengsusnwujianch.doc"
+                            style="text-decoration: none; color: DeepSkyBlue;">[下载]</a>
+                        <div style="text-align: right;">
+                            保卫处<br>
+                            学生工作处<br>
+                            后勤保障处<br>
+                            2022年1月6日<br>
+                        </div>
+
                     </div>
                 </el-card>
             </el-col>
