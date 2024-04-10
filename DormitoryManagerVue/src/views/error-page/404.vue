@@ -60,8 +60,8 @@ export default {
   z-index: 10000;
 }
 .box {
-  background: #23508a;
-  background: radial-gradient(ellipse at center, #23508a 0, #1b3b62 50%, #1a365b 100%);
+  background: #23758a;
+  background: radial-gradient(ellipse at center, #2f578d 0, #2c578c 50%, #295083 100%);
 }
 
 .box2 {
