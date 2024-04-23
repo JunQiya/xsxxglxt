@@ -39,17 +39,14 @@
                         <span>综合服务平台</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="/index" @click="tob">
-                            <i>
-
-                            </i> 后勤管理</el-menu-item>
-                        <el-menu-item index="/index" @click="to_zlgl">资料管理</el-menu-item>
-                        <el-menu-item index="/index" @click="tob">问卷调查</el-menu-item>
-                        <el-menu-item index="/index" @click="tob">网络投票</el-menu-item>
-                        <el-menu-item index="/index" @click="toa">学生宿舍查寝</el-menu-item>
-                        <el-menu-item index="/index" @click="to_zdb">学生走读申请表</el-menu-item>
-                        <el-menu-item index="/index" @click="tob">勤工助学申请</el-menu-item>
-                        <el-menu-item index="1-2" @click="to_bxd">学生宿舍报修申请表</el-menu-item>
+                        <!-- <el-menu-item index="" @click="tob"><i></i> 后勤管理</el-menu-item> -->
+                        <el-menu-item index="" @click="tob_wj">问卷调查</el-menu-item>
+                        <el-menu-item index="" @click="tob_tp">网络投票</el-menu-item>
+                        <el-menu-item index="" @click="toa">学生宿舍查寝</el-menu-item>
+                        <el-menu-item index="" @click="to_zdb">学生走读申请表</el-menu-item>
+                        <el-menu-item index="" @click="tob">勤工助学申请</el-menu-item>
+                        <el-menu-item index="1-7" @click="to_bxd">学生宿舍报修申请表</el-menu-item>
+                        <el-menu-item index="1-8" @click="to_zlgl">个人网盘</el-menu-item>
 
                     </el-menu-item-group>
                 </el-submenu>
@@ -172,6 +169,14 @@ export default {
         // 打开新窗口
         toa() {
             window.open("http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D%E6%9F%A5%E5%AF%9D%E8%A1%A8.xlsx&userName=admin&userId=1");
+        },
+        // 投票
+        tob_tp() {
+            window.open("http://124.221.100.59:8077");
+        },
+        // 问卷调查
+        tob_wj() {
+            window.open("http://wj.oyih.cn/index.html");
         },
         // 跳转资料管理页面
         to_zlgl() {
