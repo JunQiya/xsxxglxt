@@ -7,7 +7,7 @@
                     <div class="avatar">
                         <!-- el-avatar组件 -->
                         <el-avatar :size="100" shape="square" :src="icon" v-if="icon !== undefined">
-                            <img src="http://localhost:9142/02.jpg" />
+                            <img src="http://123.60.165.61:9142/02.jpg" />
                         </el-avatar>
                         <el-avatar :size="70" v-else @error="errorHandler">{{ name }}</el-avatar>
                     </div>
@@ -87,8 +87,7 @@
                         附件：<a class="ssxz"
                             href="http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D%E5%AE%89%E5%85%A8%E5%86%85%E5%8A%A1%E6%A3%80%E6%9F%A5%E6%A0%87%E5%87%86.doc&userName=admin&userId=1"
                             target="_blank">学生宿舍安全内务检查标准
-                        </a><a href="https://wxb.lxxno.cn/office/xueshengsusnwujianch.doc"
-                            class="ssxz">[下载]</a>
+                        </a><a href="https://wxb.lxxno.cn/office/xueshengsusnwujianch.doc" class="ssxz">[下载]</a>
                         <div style="text-align: right;">
                             保卫处<br>
                             学生工作处<br>

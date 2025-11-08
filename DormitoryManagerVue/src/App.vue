@@ -74,7 +74,7 @@
                         </div>
                         <div class="icon">
                             <el-avatar :src="icon" v-if="icon" @error="errorHandler" :size="50">
-                                <img src="http://localhost:9142/02.jpg" />
+                                <img src="http://123.60.165.61:9142/02.jpg" />
                             </el-avatar>
                             <el-avatar v-else> {{ name }}</el-avatar>
                         </div>
@@ -145,7 +145,7 @@ export default {
     methods: {
         // 错误处理函数
         errorHandler() {
-            this.icon = "http://localhost:9142/02.jpg";
+            this.icon = "http://123.60.165.61:9142/02.jpg";
             console.log(111);
         },
         // 显示邮件对话框
@@ -172,7 +172,7 @@ export default {
         },
         // 投票
         tob_tp() {
-            window.open("http://124.221.100.59:8077");
+            window.open("http://123.60.165.619:8077");
         },
         // 问卷调查
         tob_wj() {

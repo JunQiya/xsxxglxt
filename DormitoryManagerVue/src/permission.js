@@ -1,9 +1,9 @@
 import router from "./router";
 import store from "./store";
-import {resolveRouter} from './ComponentsMap'
-import {getToken, setToken} from "./utils/auth";
-import {countUnread, getInfo} from "./api/login";
-import {Notification} from 'element-ui';
+import { resolveRouter } from './ComponentsMap'
+import { getToken, setToken } from "./utils/auth";
+import { countUnread, getInfo } from "./api/login";
+import { Notification } from 'element-ui';
 
 router.beforeEach(async (to, from, next) => {
     if (to.meta.title) {
@@ -18,7 +18,7 @@ router.beforeEach(async (to, from, next) => {
             }
         } else {
             store.commit('SET_HAS_ROLE', true)
-            const {data} = await getInfo()
+            const { data } = await getInfo()
             if (data) {
                 const count = await countUnread()
                 if (count) {
@@ -40,7 +40,7 @@ router.beforeEach(async (to, from, next) => {
                     }
                     if (data.type === 1) {
                         let message = ""
-                        if(data.messageBody.length < 15) {
+                        if (data.messageBody.length < 15) {
                             message = data.from + ":" + data.messageBody
                         } else {
                             message = data.from + ":" + data.messageBody.substr(0, 15) + "..."
@@ -50,7 +50,7 @@ router.beforeEach(async (to, from, next) => {
                             message: message,
                             offset: 50
                         });
-                    } else if (data.type === 2){
+                    } else if (data.type === 2) {
                         Notification({
                             title: data.title,
                             message: "退宿理由：" + data.messageBody,
@@ -69,7 +69,7 @@ router.beforeEach(async (to, from, next) => {
                 let rou = []
                 resolveRouter(data.functions, rou)
                 await router.addRoutes(rou)
-                next({...to, replace: true})
+                next({ ...to, replace: true })
             }
         }
     } else {
@@ -87,4 +87,4 @@ router.beforeEach(async (to, from, next) => {
     }
     next()
 })
-import 'vue-vibe'
+

@@ -6,12 +6,12 @@
 module.exports = {
   publicPath: "./",
   //打包输出文件夹
-  outputDir:"dms",
+  outputDir: "dms",
   chainWebpack: config => {
     //关闭语法检查
     config.module.rules.delete('eslint');
     config.plugin('html').tap((args) => {
-      args[0].title = 'myproject';
+      args[0].title = 'dms';
       return args;
     });
   },
