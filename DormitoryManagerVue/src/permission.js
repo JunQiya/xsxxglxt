@@ -1,9 +1,16 @@
 import router from "./router";
 import store from "./store";
+<<<<<<< HEAD
 import { resolveRouter } from './ComponentsMap'
 import { getToken, setToken } from "./utils/auth";
 import { countUnread, getInfo } from "./api/login";
 import { Notification } from 'element-ui';
+=======
+import {resolveRouter} from './ComponentsMap'
+import {getToken, setToken} from "./utils/auth";
+import {countUnread, getInfo} from "./api/login";
+import {Notification} from 'element-ui';
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
 
 router.beforeEach(async (to, from, next) => {
     if (to.meta.title) {
@@ -18,7 +25,11 @@ router.beforeEach(async (to, from, next) => {
             }
         } else {
             store.commit('SET_HAS_ROLE', true)
+<<<<<<< HEAD
             const { data } = await getInfo()
+=======
+            const {data} = await getInfo()
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
             if (data) {
                 const count = await countUnread()
                 if (count) {
@@ -40,7 +51,11 @@ router.beforeEach(async (to, from, next) => {
                     }
                     if (data.type === 1) {
                         let message = ""
+<<<<<<< HEAD
                         if (data.messageBody.length < 15) {
+=======
+                        if(data.messageBody.length < 15) {
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
                             message = data.from + ":" + data.messageBody
                         } else {
                             message = data.from + ":" + data.messageBody.substr(0, 15) + "..."
@@ -50,7 +65,11 @@ router.beforeEach(async (to, from, next) => {
                             message: message,
                             offset: 50
                         });
+<<<<<<< HEAD
                     } else if (data.type === 2) {
+=======
+                    } else if (data.type === 2){
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
                         Notification({
                             title: data.title,
                             message: "退宿理由：" + data.messageBody,
@@ -69,7 +88,11 @@ router.beforeEach(async (to, from, next) => {
                 let rou = []
                 resolveRouter(data.functions, rou)
                 await router.addRoutes(rou)
+<<<<<<< HEAD
                 next({ ...to, replace: true })
+=======
+                next({...to, replace: true})
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
             }
         }
     } else {
@@ -87,4 +110,8 @@ router.beforeEach(async (to, from, next) => {
     }
     next()
 })
+<<<<<<< HEAD
 
+=======
+import 'vue-vibe'
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07

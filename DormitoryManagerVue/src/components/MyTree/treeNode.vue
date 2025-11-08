@@ -1,5 +1,6 @@
 <template>
   <div>
+<<<<<<< HEAD
     <!-- 树节点内容 -->
     <div class="el-tree-node__content" :style="{ 'padding-left': padding + 'px' }"
       @click="childrenDisplay = !childrenDisplay">
@@ -22,6 +23,25 @@
         <!-- 递归调用tree-node组件，用于展示子节点 -->
         <tree-node @on-data-change="onDateChange" v-for="item1 in item.children" :checked="checked" :item="item1"
           :key="item1.id" :padding="padding + 18" class="el-tree-node__children"></tree-node>
+=======
+    <div class="el-tree-node__content" :style="{'padding-left':padding + 'px'}"
+         @click="childrenDisplay = !childrenDisplay">
+            <span v-if="item.children && item.children.length>0 && !childrenDisplay"
+                  class="el-tree-node__expand-icon el-icon-caret-right"></span>
+      <span v-else-if="item.children && item.children.length>0 && childrenDisplay"
+            class="expanded el-tree-node__expand-icon el-icon-caret-right"></span>
+      <span v-else class="placeholder"></span>
+      <el-checkbox @change="dateChanged" v-model="check" :label="item.id">
+        {{ '' }}
+      </el-checkbox>
+      <span class="el-checkbox__label">{{ item.name }}</span>
+    </div>
+    <el-collapse-transition>
+      <div v-show="childrenDisplay">
+        <tree-node @on-data-change="onDateChange" v-for="item1 in item.children" :checked="checked"
+                   :item="item1" :key="item1.id" :padding="padding + 18"
+                   class="el-tree-node__children"></tree-node>
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
       </div>
     </el-collapse-transition>
   </div>

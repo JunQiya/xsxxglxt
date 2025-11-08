@@ -14,11 +14,14 @@ import './assets/font/iconfont.css'
 import './assets/font2/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/assets/icons/iconfont.css'
+<<<<<<< HEAD
 // Vue Router
 // import Vue from 'vue'
 // import VueRouter from 'vue-router'
 // Vue.use(VueRouter)
 
+=======
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
 Vue.config.productionTip = false
 Vue.use(permission)
 Vue.use(ElementUI)

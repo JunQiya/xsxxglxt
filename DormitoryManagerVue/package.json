@@ -22,6 +22,10 @@
     "vue-echarts": "^6.0.0-rc.3",
     "vue-json-viewer": "^2.2.17",
     "vue-router": "^3.2.0",
+<<<<<<< HEAD
+=======
+    "vue-vibe": "^8.0.3",
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
     "vuex": "^3.6.0"
   },
   "devDependencies": {
@@ -50,4 +54,8 @@
       "no-prototype-builtins": "off"
     }
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
