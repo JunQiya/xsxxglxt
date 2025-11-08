@@ -2,30 +2,14 @@
     <div class="home">
         <el-row :gutter="70">
             <el-col :span="12">
-<<<<<<< HEAD
                 <!-- el-card组件 -->
                 <el-card class="grid-content">
                     <div class="avatar">
                         <!-- el-avatar组件 -->
                         <el-avatar :size="100" shape="square" :src="icon" v-if="icon !== undefined">
-                            <img src="http://localhost:9142/02.jpg" />
+                            <img src="http://123.60.165.61:9142/02.jpg" />
                         </el-avatar>
                         <el-avatar :size="70" v-else @error="errorHandler">{{ name }}</el-avatar>
-=======
-                <el-card class="grid-content">
-                    <div class="avatar">
-                        <el-avatar
-                            :size="100"
-                            shape="square"
-                            :src="icon"
-                            v-if="icon !== undefined"
-                        >
-                            <img src="http://localhost:9142/02.jpg" />
-                        </el-avatar>
-                        <el-avatar :size="70" v-else @error="errorHandler">{{
-                            name
-                        }}</el-avatar>
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
                     </div>
                     <div class="welcome-content" style="font-size: 22px">
                         <div>欢迎您， {{ name }}</div>
@@ -37,7 +21,6 @@
                         </div>
                     </div>
 
-<<<<<<< HEAD
                     <img :src="require('@/assets/home.png')" style="width: 100%" />
                 </el-card>
             </el-col>
@@ -46,24 +29,11 @@
                 <!-- 使用element-ui的卡片组件el-card，并设置样式 -->
                 <el-card class="grid-content" style="padding-top: 25px">
                     <!-- 居中显示标题 -->
-=======
-                    <img
-                        :src="require('@/assets/home.png')"
-                        style="width: 100%"
-                    />
-                </el-card>
-            </el-col>
-            <el-col :span="12">
-                <el-card class="grid-content" style="padding-top: 25px">
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
                     <div style="text-align: center; margin-bottom: 15px">
                         <h1>欢迎访问学生宿舍管理系统</h1>
                     </div>
                     <hr />
-<<<<<<< HEAD
                     <!-- 水平分割线 -->
-=======
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
                     <div style="margin-top: 15px;font-size: 1vw;">
                         第一条、按时归寝，按时就寝，严格执行宿舍的作息时间。<br /><br />
                         第二条、个人因事、因病要离开宿舍时，必须向寝室长汇报。<br /><br />
@@ -78,7 +48,6 @@
                     </div>
                 </el-card>
             </el-col>
-<<<<<<< HEAD
             <el-col :span="12">
                 <!-- 使用element-ui的卡片组件el-card，并设置样式 -->
                 <el-card class="grid-content" style="padding-top: 25px">
@@ -118,8 +87,7 @@
                         附件：<a class="ssxz"
                             href="http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D%E5%AE%89%E5%85%A8%E5%86%85%E5%8A%A1%E6%A3%80%E6%9F%A5%E6%A0%87%E5%87%86.doc&userName=admin&userId=1"
                             target="_blank">学生宿舍安全内务检查标准
-                        </a><a href="https://wxb.lxxno.cn/office/xueshengsusnwujianch.doc"
-                            class="ssxz">[下载]</a>
+                        </a><a href="https://wxb.lxxno.cn/office/xueshengsusnwujianch.doc" class="ssxz">[下载]</a>
                         <div style="text-align: right;">
                             保卫处<br>
                             学生工作处<br>
@@ -130,28 +98,19 @@
                     </div>
                 </el-card>
             </el-col>
-=======
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
         </el-row>
     </div>
 </template>
 
 <script>
-<<<<<<< HEAD
 // 导入名为 store 的 Vuex store
 import store from "../store";
 // 导入名为 get 的来自 "@/api/system/home" 的函数
-=======
-import store from "../store";
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
 import { get } from "@/api/system/home";
 
 export default {
     name: "Home",
-<<<<<<< HEAD
     // 数据
-=======
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
     data() {
         return {
             statistics: {
@@ -164,68 +123,46 @@ export default {
             },
         };
     },
-<<<<<<< HEAD
     // 计算属性
     computed: {
         // 活动菜单
-=======
-    computed: {
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
         activeMenu() {
             const route = this.$route;
             const { path } = route;
             return path;
         },
-<<<<<<< HEAD
         // 名字
         name() {
             return store.state.userName;
         },
         // 图标
-=======
-        name() {
-            return store.state.userName;
-        },
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
         icon() {
             return store.state.userIcon;
         },
     },
-<<<<<<< HEAD
     // 方法
     methods: {
         // 异步获取数据
-=======
-    methods: {
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
         async get() {
             const { data } = await get();
             this.statistics = data;
         },
     },
-<<<<<<< HEAD
     // 创建时执行
-=======
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
     created() {
         this.get();
     },
 };
 </script>
-<<<<<<< HEAD
 
 <style scoped>
 /* 在这个部分设置了一些样式，使用了 scoped 属性确保样式只作用于当前组件 */
 
 /* 定义了.avatar类的样式 */
-=======
-<style scoped>
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
 .avatar {
     margin: 20px 20px;
     float: left;
 }
-<<<<<<< HEAD
 
 /* 定义了.home类的样式 */
 .home {
@@ -239,24 +176,12 @@ export default {
 }
 
 /* 定义了.grid-content类的样式 */
-=======
-.home {
-    padding: 20px;
-}
-.welcome-content {
-    /*float: left;*/
-    margin: 30px 0;
-}
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
 .grid-content {
     margin: 10px 0;
     position: relative;
 }
-<<<<<<< HEAD
 
 /* 定义了.fixed类的样式并使用了:after伪元素 */
-=======
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
 .fixed:after {
     content: "";
     clear: both;
@@ -265,26 +190,16 @@ export default {
     height: 0;
     width: 0;
 }
-<<<<<<< HEAD
 
 /* 定义了.little类的样式 */
-=======
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
 .little {
     font-size: 16px;
     color: #909399;
     margin-top: 8px;
 }
-<<<<<<< HEAD
 
 /* 定义了.mid类的样式 */
 .mid {
     text-align: center;
 }
 </style>
-=======
-.mid {
-    text-align: center;
-}
-</style>
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07

@@ -44,11 +44,7 @@
                         <el-menu-item index="" @click="tob_tp">网络投票</el-menu-item>
                         <el-menu-item index="" @click="toa">学生宿舍查寝</el-menu-item>
                         <el-menu-item index="" @click="to_zdb">学生走读申请表</el-menu-item>
-<<<<<<< HEAD
                         <el-menu-item index="" @click="tob">勤工助学申请</el-menu-item>
-=======
-                        <el-menu-item index="" @click="tob_qg">勤工助学申请</el-menu-item>
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
                         <el-menu-item index="1-7" @click="to_bxd">学生宿舍报修申请表</el-menu-item>
                         <el-menu-item index="1-8" @click="to_zlgl">个人网盘</el-menu-item>
 
@@ -78,15 +74,7 @@
                         </div>
                         <div class="icon">
                             <el-avatar :src="icon" v-if="icon" @error="errorHandler" :size="50">
-<<<<<<< HEAD
-<<<<<<< HEAD
                                 <img src="http://123.60.165.61:9142/02.jpg" />
-=======
-                                <img src="http://localhost:9142/02.jpg" />
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
-=======
-                                <img src="http://localhost:9142/02.jpg" />
->>>>>>> parent of 99ae58fb (修正代码，并打包成功上传部署到服务器（测试IP地址）)
                             </el-avatar>
                             <el-avatar v-else> {{ name }}</el-avatar>
                         </div>
@@ -157,15 +145,7 @@ export default {
     methods: {
         // 错误处理函数
         errorHandler() {
-<<<<<<< HEAD
-<<<<<<< HEAD
             this.icon = "http://123.60.165.61:9142/02.jpg";
-=======
-            this.icon = "http://localhost:9142/02.jpg";
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
-=======
-            this.icon = "http://localhost:9142/02.jpg";
->>>>>>> parent of 99ae58fb (修正代码，并打包成功上传部署到服务器（测试IP地址）)
             console.log(111);
         },
         // 显示邮件对话框
@@ -192,15 +172,7 @@ export default {
         },
         // 投票
         tob_tp() {
-<<<<<<< HEAD
-<<<<<<< HEAD
             window.open("http://123.60.165.619:8077");
-=======
-            window.open("http://124.221.100.59:8077");
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
-=======
-            window.open("http://124.221.100.59:8077");
->>>>>>> parent of 99ae58fb (修正代码，并打包成功上传部署到服务器（测试IP地址）)
         },
         // 问卷调查
         tob_wj() {
@@ -219,13 +191,6 @@ export default {
         to_zdb() {
             window.open("http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E8%B5%B0%E8%AF%BB%E7%94%B3%E8%AF%B7%E8%A1%A8.docx&userName=admin&userId=1");
         },
-<<<<<<< HEAD
-=======
-        // 勤工助学
-        tob_qg() {
-            window.open("http://47.108.196.182:8080/edit?name=%E5%AD%A6%E7%94%9F%E5%8B%A4%E5%B7%A5%E5%8A%A9%E5%AD%A6%E7%94%B3%E8%AF%B7%E8%A1%A8.doc&userName=admin&userId=1");
-        },
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
         // 处理命令
         handleCommand(command) {
             if (command === "logout") {

@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
     <!-- 使用 Element UI 的 el-breadcrumb 组件创建面包屑导航 -->
     <el-breadcrumb class="app-breadcrumb" separator-class="el-icon-arrow-right">
         <!-- 使用 Vue 的 transition-group 组件管理列表的过渡效果 -->
@@ -16,27 +15,6 @@
                 <a v-else @click.prevent="handleLink(item)"> {{
                 item.meta.title
             }}</a>
-=======
-    <el-breadcrumb class="app-breadcrumb" separator-class="el-icon-arrow-right">
-        <transition-group name="breadcrumb">
-            <el-breadcrumb-item
-                v-for="(item, index) in levelList"
-                :key="item.path"
-                style="font-size: 22px;"
-            >
-                <i class="el-icon-a-011" v-if="index == 0"></i>
-                <span
-                    v-if="
-                        item.redirect === 'noRedirect' ||
-                        index === levelList.length - 1
-                    "
-                    class="no-redirect"
-                    > {{ item.meta.title }}</span
-                >
-                <a v-else @click.prevent="handleLink(item)"> {{
-                    item.meta.title
-                }}</a>
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
             </el-breadcrumb-item>
         </transition-group>
     </el-breadcrumb>
@@ -46,7 +24,6 @@
 export default {
     data() {
         return {
-<<<<<<< HEAD
             levelList: null,  // 存储面包屑导航列表
         };
     },
@@ -64,46 +41,19 @@ export default {
     methods: {
         getBreadcrumb() {
             // 只显示具有meta.title的路由
-=======
-            levelList: null,
-        };
-    },
-    watch: {
-        $route(route) {
-            if (route.path.startsWith("/redirect/")) {
-                return;
-            }
-            this.getBreadcrumb();
-        },
-    },
-    created() {
-        this.getBreadcrumb();
-    },
-    methods: {
-        getBreadcrumb() {
-            // only show routes with meta.title
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
             let matched = this.$route.matched.filter(
                 (item) => item.meta && item.meta.title
             );
             const first = matched[0];
 
-<<<<<<< HEAD
             // 如果不是主页，则添加首页路由
             if (!this.isDashboard(first)) {
                 matched = [{ path: "/index", meta: { title: "首页" } }].concat(
-=======
-            if (!this.isDashboard(first)) {
-                matched = [{ path: "/index", meta: { title: "首 页" } }].concat(
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
                     matched
                 );
             }
 
-<<<<<<< HEAD
             // 过滤出具有meta.title且meta.breadcrumb不为false的路由，存入levelList
-=======
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
             this.levelList = matched.filter(
                 (item) =>
                     item.meta &&
@@ -122,30 +72,17 @@ export default {
         },
         pathCompile(path) {
             const { params } = this.$route;
-<<<<<<< HEAD
             var pathToRegexp = require("path-to-regexp");  // 从外部库引入path-to-regexp
             var toPath = pathToRegexp.compile(path);  // 编译路由路径
             return toPath(params);  // 返回编译后的路径
-=======
-            var pathToRegexp = require("path-to-regexp");
-            var toPath = pathToRegexp.compile(path);
-            return toPath(params);
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
         },
         handleLink(item) {
             const { redirect, path } = item;
             if (redirect) {
-<<<<<<< HEAD
                 this.$router.push(redirect);  // 如果存在重定向路径，则跳转至重定向路径
                 return;
             }
             this.$router.push(this.pathCompile(path));  // 否则根据路由路径跳转
-=======
-                this.$router.push(redirect);
-                return;
-            }
-            this.$router.push(this.pathCompile(path));
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
         },
     },
 };

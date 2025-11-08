@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "dev": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@riophae/vue-treeselect": "^0.4.0",
     "axios": "^0.21.0",
+    "build": "^0.1.4",
     "core-js": "^3.6.5",
     "element-ui": "^2.14.1",
     "js-cookie": "^2.2.1",
@@ -20,16 +21,7 @@
     "vue": "^2.6.11",
     "vue-echarts": "^6.0.0-rc.3",
     "vue-json-viewer": "^2.2.17",
-<<<<<<< HEAD
     "vue-router": "^3.2.0",
-<<<<<<< HEAD
-=======
-    "vue-vibe": "^8.0.3",
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
-=======
-    "vue-router": "^3.6.5",
-    "vue-vibe": "^8.0.3",
->>>>>>> parent of 99ae58fb (修正代码，并打包成功上传部署到服务器（测试IP地址）)
     "vuex": "^3.6.0"
   },
   "devDependencies": {
@@ -58,12 +50,4 @@
       "no-prototype-builtins": "off"
     }
   }
-<<<<<<< HEAD
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
-=======
-}
->>>>>>> parent of 99ae58fb (修正代码，并打包成功上传部署到服务器（测试IP地址）)
