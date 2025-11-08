@@ -79,10 +79,14 @@
                         <div class="icon">
                             <el-avatar :src="icon" v-if="icon" @error="errorHandler" :size="50">
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 <img src="http://123.60.165.61:9142/02.jpg" />
 =======
                                 <img src="http://localhost:9142/02.jpg" />
 >>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
+=======
+                                <img src="http://localhost:9142/02.jpg" />
+>>>>>>> parent of 99ae58fb (修正代码，并打包成功上传部署到服务器（测试IP地址）)
                             </el-avatar>
                             <el-avatar v-else> {{ name }}</el-avatar>
                         </div>
@@ -154,10 +158,14 @@ export default {
         // 错误处理函数
         errorHandler() {
 <<<<<<< HEAD
+<<<<<<< HEAD
             this.icon = "http://123.60.165.61:9142/02.jpg";
 =======
             this.icon = "http://localhost:9142/02.jpg";
 >>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
+=======
+            this.icon = "http://localhost:9142/02.jpg";
+>>>>>>> parent of 99ae58fb (修正代码，并打包成功上传部署到服务器（测试IP地址）)
             console.log(111);
         },
         // 显示邮件对话框
@@ -185,10 +193,14 @@ export default {
         // 投票
         tob_tp() {
 <<<<<<< HEAD
+<<<<<<< HEAD
             window.open("http://123.60.165.619:8077");
 =======
             window.open("http://124.221.100.59:8077");
 >>>>>>> e6897d3eee7dd92889ec4638067e9f9148ca1f07
+=======
+            window.open("http://124.221.100.59:8077");
+>>>>>>> parent of 99ae58fb (修正代码，并打包成功上传部署到服务器（测试IP地址）)
         },
         // 问卷调查
         tob_wj() {
