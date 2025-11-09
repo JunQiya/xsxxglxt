@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rabbiter.dm.dao.ScoreMapper">
+    <resultMap id="baseMap" type="Score">
+        <id column="id" property="id"/>
+        <result column="room_id" property="room_id"/>
+        <result column="global_score" property="global_score" />
+        <result column="building_score" property="building_score"/>
+        <result column="bed_score" property="bed_score"/>
+        <result column="indoor_score" property="indoor_score"/>
+        <result column="rated_at" property="rated_at"/>
+        <association property="room" javaType="com.rabbiter.dm.entity.Room">
+            <id column="room_id" property="id"/>
+            <result column="room_name" property="number"/>
+        </association>
+        <association property="building" javaType="com.rabbiter.dm.entity.Building">
+            <id property="id" column="building_id"/>
+            <result property="name" column="building_name"/>
+        </association>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into score(room_id,global_score,building_score,bed_score,indoor_score,rated_at)
+        values (#{room_id}, #{global_score}, #{building_score}, #{bed_score}, #{indoor_score},now())
+    </insert>
+    <update id="update">
+        update score
+        set global_score   = #{global_score},
+            building_score = #{building_score},
+            bed_score      = #{bed_score},
+            indoor_score   = #{indoor_score},
+            rated_at       = now()
+        where room_id = #{room_id}
+    </update>
+    <select id="listByRoomId" resultMap="baseMap">
+        select * from score where room_id = #{roomId}
+    </select>
+    <select id="listRoomsWithScores" resultMap="baseMap">
+        SELECT
+        s.id,
+        s.global_score,
+        s.building_score,
+        s.bed_score,
+        s.indoor_score,
+        s.rated_at,
+        r.id AS room_id,
+        r.number AS room_name,
+        b.id AS building_id,
+        b.name AS building_name
+        FROM score s
+        LEFT JOIN room r ON s.room_id = r.id
+        LEFT JOIN building b ON r.building_id = b.id
+        WHERE 1=1
+        <if test="buildingId != null">
+            AND b.id = #{buildingId}
+        </if>
+        <if test="number != null and number != ''">
+            AND r.number LIKE CONCAT('%', #{number}, '%')
+        </if>
+        <if test="time != null">
+            AND rated_at >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+            AND rated_at &lt; DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+        </if>
+    </select>
+    <select id="scoreTrend" resultType="com.rabbiter.dm.entity.ScoreTrend">
+        SELECT
+            DATE_FORMAT(rated_at, '%Y-%m') AS month,
+              AVG(global_score) AS globalAvg,
+              AVG(building_score) AS buildingAvg,
+              AVG(bed_score) AS bedAvg,
+              AVG(indoor_score) AS indoorAvg
+        FROM score
+            GROUP BY month
+            ORDER BY month
+    </select>
+</mapper>

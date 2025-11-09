@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rabbiter.dm.dao.LeaveApplicationMapper">
+    <resultMap id="BaseResultMap" type="com.rabbiter.dm.entity.LeaveApplication">
+        <id column="apply_id" property="applyId"/>
+        <result column="student_no" property="studentNo"/>
+        <result column="student_name" property="studentName"/>
+        <result column="gender" property="gender"/>
+        <result column="department" property="department"/>
+        <result column="class_name" property="className"/>
+        <result column="phone" property="phone"/>
+        <result column="parent_name" property="parentName"/>
+        <result column="parent_phone" property="parentPhone"/>
+        <result column="address" property="address"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="reason" property="reason"/>
+        <result column="emergency_contact" property="emergencyContact"/>
+        <result column="emergency_phone" property="emergencyPhone"/>
+        <result column="parent_opinion" property="parentOpinion"/>
+        <result column="parent_agree" property="parentAgree"/>
+        <result column="counselor_status" property="counselorStatus"/>
+        <result column="college_status" property="collegeStatus"/>
+        <result column="student_signature" property="studentSignature"/>
+        <result column="parent_signature" property="parentSignature"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="id_card_path" property="idCardPath"/>
+        <result column="contract_path" property="contractPath"/>
+        <result column="other_file_path" property="otherFilePath"/>
+    </resultMap>
+
+    <!-- 插入申请（修正版） -->
+    <insert id="insertApplication" parameterType="LeaveApplication">
+        INSERT INTO leave_applications
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">apply_id,</if>
+            <if test="studentSignature != null and studentSignature != ''">student_signature,</if>
+            <if test="parentSignature != null and parentSignature != ''">parent_signature,</if>
+            student_no, student_name, gender, department,
+            class_name, phone, parent_name, parent_phone,
+            address, start_date, end_date, reason,
+            emergency_contact, emergency_phone, parent_opinion, parent_agree,
+            counselor_status, college_status, status, create_time, update_time,
+            id_card_path, contract_path, other_file_path
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">#{applyId},</if>
+            <if test="studentSignature != null and studentSignature != ''">#{studentSignature},</if>
+            <if test="parentSignature != null and parentSignature != ''">#{parentSignature},</if>
+            #{studentNo}, #{studentName}, #{gender}, #{department},
+            #{className}, #{phone}, #{parentName}, #{parentPhone},
+            #{address}, #{startDate}, #{endDate}, #{reason},
+            #{emergencyContact}, #{emergencyPhone}, #{parentOpinion}, #{parentAgree},
+            #{counselorStatus}, #{collegeStatus}, #{status}, NOW(), NOW(),
+            #{idCardPath}, #{contractPath}, #{otherFilePath}
+        </trim>
+    </insert>
+
+    <!-- 更新申请（已优化） -->
+    <update id="updateApplication" parameterType="LeaveApplication">
+        UPDATE leave_applications
+        <set>
+            <if test="studentName != null">student_name = #{studentName},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="department != null">department = #{department},</if>
+            <if test="className != null">class_name = #{className},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="parentName != null">parent_name = #{parentName},</if>
+            <if test="parentPhone != null">parent_phone = #{parentPhone},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="emergencyContact != null">emergency_contact = #{emergencyContact},</if>
+            <if test="emergencyPhone != null">emergency_phone = #{emergencyPhone},</if>
+            <if test="parentOpinion != null">parent_opinion = #{parentOpinion},</if>
+            <if test="parentAgree != null">parent_agree = #{parentAgree},</if>  <!-- 新增parentAgree字段 -->
+            <if test="counselorStatus != null">counselor_status = #{counselorStatus},</if>
+            <if test="collegeStatus != null">college_status = #{collegeStatus},</if>
+            <if test="studentSignature != null">student_signature = #{studentSignature},</if>
+            <if test="parentSignature != null">parent_signature = #{parentSignature},</if>
+            status = #{status},
+            update_time = NOW()
+        </set>
+        WHERE apply_id = #{applyId}
+    </update>
+
+    <!-- 状态更新 -->
+    <update id="updateApplicationStatus">
+        UPDATE leave_applications
+        SET status = #{status}, update_time = NOW()
+        WHERE apply_id = #{applyId}
+    </update>
+
+    <!-- 查询申请 -->
+    <select id="selectByStudentNo" resultType="LeaveApplication">
+        SELECT * FROM leave_applications
+        WHERE student_no = #{studentNo}
+    </select>
+
+    <!-- 审批列表 -->
+    <select id="selectPendingApplications" resultType="LeaveApplication">
+        SELECT * FROM leave_applications
+        WHERE status = 'submitted'
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 获取待辅导员审批列表 -->
+    <select id="selectCounselorApplications" resultType="LeaveApplication">
+        SELECT * FROM leave_applications
+        WHERE counselor_status = '待审核'
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 删除附件 -->
+    <delete id="deleteAttachments">
+        DELETE FROM leave_applications
+        WHERE apply_id = #{applyId}
+    </delete>
+<!--    主键查询-->
+    <select id="selectByPrimaryKey" resultType="LeaveApplication">
+        SELECT * FROM leave_applications
+        WHERE apply_id = #{applyId}
+    </select>
+    <!-- 根据状态查询申请 -->
+    <select id="selectByStatus" resultType="LeaveApplication">
+        SELECT * FROM leave_applications
+        WHERE status = #{status}
+        ORDER BY create_time DESC
+    </select>
+
+
+    <!-- 更新辅导员审批状态 -->
+    <update id="updateCounselorStatus">
+        UPDATE leave_applications
+        SET counselor_status = #{status}, update_time = NOW()
+        WHERE apply_id = #{applyId}
+    </update>
+
+    <!-- 通过班级查询（模糊） -->
+    <select id="selectByClassName" resultMap="BaseResultMap">
+        SELECT * FROM leave_applications
+        WHERE class_name LIKE CONCAT('%', #{className}, '%')
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 通过姓名查询待审核申请 -->
+    <select id="selectByStudentName" resultMap="BaseResultMap">
+        SELECT * FROM leave_applications
+        WHERE student_name = #{studentName}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 通过学号查询待审核申请 -->
+    <select id="selectByStudentNoAndStatus" resultMap="BaseResultMap">
+        SELECT * FROM leave_applications
+        WHERE student_no = #{studentNo}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 查询辅导员已通过的申请 -->
+    <select id="selectApprovedApplications" resultMap="BaseResultMap">
+        SELECT * FROM leave_applications
+        WHERE counselor_status = '已通过'
+        ORDER BY update_time DESC
+    </select>
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(*) from leave_application
+    </select>
+
+
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rabbiter.dm.dao.ScoreImageMapper">
+    <resultMap id="baseMap" type="ScoreImage">
+        <id column="id" property="id"/>
+        <result column="score_id" property="score_id"/>
+        <result column="file_name" property="file_name" />
+        <result column="original_name" property="original_name"/>
+        <result column="md5" property="md5"/>
+        <result column="uploadTime" property="uploadTime"/>
+    </resultMap>
+    <insert id="save">
+        insert into score_image(score_id,file_name,original_name,md5,create_time)
+        VALUE (#{score_id},#{file_name},#{original_name},#{md5},now())
+    </insert>
+    <select id="selectByMd5" resultType="com.rabbiter.dm.entity.ScoreImage">
+        select * from score_image where md5 = #{md5}
+    </select>
+    <select id="selectByScoreId" resultType="java.lang.String">
+        SELECT file_name FROM score_image
+        WHERE score_id = #{score_id}
+        ORDER BY create_time DESC
+            LIMIT 1
+    </select>
+
+
+</mapper>

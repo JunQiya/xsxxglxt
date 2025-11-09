@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rabbiter.dm.dao.AbsenceRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.rabbiter.dm.entity.AbsenceRecord">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="school" property="school" jdbcType="VARCHAR"/>
+        <result column="department" property="department" jdbcType="VARCHAR"/>
+        <result column="registrar" property="registrar" jdbcType="VARCHAR"/>
+        <result column="registrar_phone" property="registrarPhone" jdbcType="VARCHAR"/>
+        <result column="report_date" property="reportDate" jdbcType="DATE"/>
+        <result column="absent_date" property="absentDate" jdbcType="DATE"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="TINYINT"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="class_id" property="classId" jdbcType="BIGINT"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="symptoms" property="symptoms" jdbcType="VARCHAR"/>
+        <result column="visit_date" property="visitDate" jdbcType="DATE"/>
+        <result column="hospital" property="hospital" jdbcType="VARCHAR"/>
+        <result column="diagnosis" property="diagnosis" jdbcType="VARCHAR"/>
+        <result column="return_date" property="returnDate" jdbcType="DATE"/>
+        <result column="is_cured" property="isCured" jdbcType="TINYINT"/>
+        <result column="is_infectious" property="isInfectious" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, school, department, registrar, registrar_phone,
+        report_date, absent_date, name, gender, age, class_id,
+        phone, symptoms, visit_date, hospital, diagnosis,
+        return_date, is_cured, is_infectious
+    </sql>
+
+
+    <!-- 修改条件判断前缀 -->
+    <sql id="Condition_Where">
+        <where>
+            <if test="condition.name != null and condition.name != ''">
+                AND name LIKE CONCAT('%', #{condition.name}, '%')
+            </if>
+            <if test="condition.absentDate != null">
+                AND absent_date = #{condition.absentDate}
+            </if>
+            <if test="condition.classId != null">
+                AND class_id = #{condition.classId}
+            </if>
+            <if test="condition.beginReturnDate != null">
+                AND return_date >= #{condition.beginReturnDate}
+            </if>
+            <if test="condition.endReturnDate != null">
+                AND return_date &lt;= #{condition.endReturnDate}
+            </if>
+            <if test="condition.beginAbsentDate != null">
+                AND absent_date >= #{condition.beginAbsentDate}
+            </if>
+            <if test="condition.endAbsentDate != null">
+                AND absent_date &lt;= #{condition.endAbsentDate}
+            </if>
+        </where>
+    </sql>
+
+<!--    <sql id="Condition_Where">-->
+<!--        <where>-->
+<!--            <if test="name != null and name != ''">-->
+<!--                AND name LIKE CONCAT('%', #{name}, '%')-->
+<!--            </if>-->
+<!--            <if test="absentDate != null">-->
+<!--                AND absent_date = #{absentDate}-->
+<!--            </if>-->
+<!--            <if test="classId != null">-->
+<!--                AND class_id = #{classId}-->
+<!--            </if>-->
+<!--            <if test="beginReturnDate != null">-->
+<!--                AND return_date >= #{beginReturnDate}-->
+<!--            </if>-->
+<!--            <if test="endReturnDate != null">-->
+<!--                AND return_date &lt;= #{endReturnDate}-->
+<!--            </if>-->
+<!--            <if test="beginAbsentDate != null">-->
+<!--                AND absent_date >= #{beginAbsentDate}-->
+<!--            </if>-->
+<!--            <if test="endAbsentDate != null">-->
+<!--                AND absent_date &lt;= #{endAbsentDate}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </sql>-->
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO absence_record (
+            school, department, registrar, registrar_phone, report_date,
+            absent_date, name, gender, age, class_id, phone,
+            symptoms, visit_date, hospital, diagnosis, return_date,
+            is_cured, is_infectious
+        )
+        VALUES (
+                   #{school}, #{department}, #{registrar}, #{registrarPhone}, #{reportDate},
+                   #{absentDate}, #{name}, #{gender}, #{age}, #{classId}, #{phone},
+                   #{symptoms}, #{visitDate}, #{hospital}, #{diagnosis}, #{returnDate},
+                   #{isCured}, #{isInfectious}
+               )
+    </insert>
+
+    <update id="update">
+        UPDATE absence_record
+        <set>
+            <if test="school != null">school = #{school},</if>
+            <if test="department != null">department = #{department},</if>
+            <if test="registrar != null">registrar = #{registrar},</if>
+            <if test="registrarPhone != null">registrar_phone = #{registrarPhone},</if>
+            <if test="reportDate != null">report_date = #{reportDate},</if>
+            <if test="absentDate != null">absent_date = #{absentDate},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="classId != null">class_id = #{classId},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="symptoms != null">symptoms = #{symptoms},</if>
+            <if test="visitDate != null">visit_date = #{visitDate},</if>
+            <if test="hospital != null">hospital = #{hospital},</if>
+            <if test="diagnosis != null">diagnosis = #{diagnosis},</if>
+            <if test="returnDate != null">return_date = #{returnDate},</if>
+            <if test="isCured != null">is_cured = #{isCured},</if>
+            <if test="isInfectious != null">is_infectious = #{isInfectious}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM absence_record
+        <include refid="Condition_Where"/>
+        ORDER BY absent_date DESC
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM absence_record
+        WHERE name LIKE CONCAT('%', #{name}, '%')
+    </select>
+
+    <select id="selectByAbsentDate" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM absence_record
+        WHERE absent_date = #{absentDate}
+    </select>
+
+    <select id="selectByClassId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM absence_record
+        WHERE class_id = #{classId}
+    </select>
+
+    <select id="selectByReturnDateRange" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM absence_record
+        WHERE return_date BETWEEN #{beginDate} AND #{endDate}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM absence_record
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM absence_record
+        ORDER BY id DESC
+    </select>
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(*) from absence_record
+    </select>
+</mapper>
