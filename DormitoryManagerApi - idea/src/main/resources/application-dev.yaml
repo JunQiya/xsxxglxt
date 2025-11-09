@@ -1,0 +1,39 @@
+server:
+  port: 9141
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/dormitory_manager2?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
+  devtools:
+    restart:
+      enabled: true
+  jackson:
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+  redis:
+    host: 127.0.0.1
+    port: 6379
+#    password: 123456
+    timeout: 3000ms
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.rabbiter.dm.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    lazy-loading-enabled: false
+    aggressive-lazy-loading: false
+pagehelper:
+  reasonable: true
+constant:
+  upload-path: /www/wwwroot/DormitoryManager/upload
+logging:
+  level:
+    com.rabbiter.dm.aop: info

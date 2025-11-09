@@ -157,11 +157,10 @@
                             <template slot-scope="scope">
                                 <span
                                     style="color: #67c23a"
-                                    v-if="scope.row.back"
+                                    v-if="scope.row.isBack"
                                     >是</span
                                 >
-                                <span style="color: #909399" v-else
-                                    >否
+                                <span style="color: #909399" v-else>否
                                     <span
                                         v-if="
                                             new Date() >

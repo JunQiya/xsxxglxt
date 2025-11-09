@@ -1,3245 +1,2927 @@
-/*
- Navicat Premium Data Transfer
+-- phpMyAdmin SQL Dump
+-- version 4.4.15.10
+-- https://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: 2025-04-30 16:54:05
+-- 服务器版本： 8.0.24
+-- PHP Version: 5.5.38
 
- Source Server         : localhost
- Source Server Type    : MySQL
- Source Server Version : 80019
- Source Host           : localhost:3306
- Source Schema         : dormitory_manager
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
- Target Server Type    : MySQL
- Target Server Version : 80019
- File Encoding         : 65001
 
- Date: 17/08/2023 20:49:11
-*/
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-SET NAMES utf8;
-SET FOREIGN_KEY_CHECKS = 0;
+--
+-- Database: `dormitory_manager`
+--
 
--- ----------------------------
--- Table structure for back_late
--- ----------------------------
-DROP TABLE IF EXISTS `back_late`;
-CREATE TABLE `back_late`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `student_id` bigint(0) NULL DEFAULT NULL,
-  `back_date` datetime NULL DEFAULT NULL,
-  `reason` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_s_s`(`student_id`) USING BTREE,
-  CONSTRAINT `fk_s_s` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+-- --------------------------------------------------------
 
--- ----------------------------
--- Records of back_late
--- ----------------------------
-INSERT INTO `back_late` VALUES (1, 2060, '2023-04-15 19:35:29', '太晚了');
-INSERT INTO `back_late` VALUES (2, 2034, '2023-04-15 19:34:29', '这么晚发234');
+--
+-- 表的结构 `absence_record`
+--
 
--- ----------------------------
--- Table structure for building
--- ----------------------------
-DROP TABLE IF EXISTS `building`;
-CREATE TABLE `building`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `parent_id` bigint(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_pid`(`parent_id`) USING BTREE,
-  CONSTRAINT `fk_pid` FOREIGN KEY (`parent_id`) REFERENCES `building` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+CREATE TABLE IF NOT EXISTS `absence_record` (
+  `id` int NOT NULL COMMENT '主键ID',
+  `school` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '学校名称',
+  `department` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '二级学院/部门',
+  `registrar` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '登记人',
+  `registrar_phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '登记人电话',
+  `report_date` date NOT NULL COMMENT '报送日期',
+  `absent_date` date NOT NULL COMMENT '缺勤日期',
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '姓名',
+  `gender` tinyint NOT NULL COMMENT '性别（0:女 1:男）',
+  `age` int DEFAULT NULL COMMENT '年龄',
+  `class_id` bigint NOT NULL COMMENT '班级ID（关联faculty表）',
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '联系电话',
+  `symptoms` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '主要症状',
+  `visit_date` date DEFAULT NULL COMMENT '就诊日期',
+  `hospital` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '就诊医院',
+  `diagnosis` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '诊断结果',
+  `return_date` date DEFAULT NULL COMMENT '返校时间',
+  `is_cured` tinyint DEFAULT '0' COMMENT '是否治愈（0:否 1:是）',
+  `is_infectious` tinyint DEFAULT '0' COMMENT '是否传染病（0:否 1:是）'
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='因病缺勤登记表';
 
--- ----------------------------
--- Records of building
--- ----------------------------
-INSERT INTO `building` VALUES (1, '清华大学', NULL);
-INSERT INTO `building` VALUES (2, '宿舍楼A', 1);
-INSERT INTO `building` VALUES (3, '宿舍楼B', 1);
-INSERT INTO `building` VALUES (5, '宿舍楼C', 1);
-INSERT INTO `building` VALUES (6, 'A1入口', 2);
-INSERT INTO `building` VALUES (13, 'A2入口', 2);
-INSERT INTO `building` VALUES (14, 'A3入口', 2);
-INSERT INTO `building` VALUES (15, 'B1入口', 3);
-INSERT INTO `building` VALUES (16, 'B2入口', 3);
-INSERT INTO `building` VALUES (17, 'B3入口', 3);
-INSERT INTO `building` VALUES (18, 'C1入口', 5);
-INSERT INTO `building` VALUES (19, 'C2入口', 5);
-INSERT INTO `building` VALUES (20, '北京大学', NULL);
-INSERT INTO `building` VALUES (21, '宿舍楼A', 20);
+--
+-- 转存表中的数据 `absence_record`
+--
 
--- ----------------------------
--- Table structure for depart_application
--- ----------------------------
-DROP TABLE IF EXISTS `depart_application`;
-CREATE TABLE `depart_application`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `apply_user_id` bigint(0) NULL DEFAULT NULL,
-  `reason` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `time` datetime NULL DEFAULT NULL,
-  `student_id` bigint(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_oui`(`apply_user_id`) USING BTREE,
-  INDEX `fk_si`(`student_id`) USING BTREE,
-  CONSTRAINT `fk_oui` FOREIGN KEY (`apply_user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `fk_si` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+INSERT INTO `absence_record` (`id`, `school`, `department`, `registrar`, `registrar_phone`, `report_date`, `absent_date`, `name`, `gender`, `age`, `class_id`, `phone`, `symptoms`, `visit_date`, `hospital`, `diagnosis`, `return_date`, `is_cured`, `is_infectious`) VALUES
+(13, '云南旅游职业学院', '信息工程', '13333333', '1322323232', '2025-04-23', '2025-04-27', '刘洋', 1, 0, 15, '133232323232', '发热，咳嗽', '2025-04-28', '光华医院', '', '2025-04-30', 0, 1),
+(14, '云南旅游职业学院', '信息工程学院', '李老师', '133332323', '2025-04-27', '2025-04-29', '张一牟', 1, 22, 11, '13333332323', '拉肚子，发热', '2025-04-27', '第一医院', '发热', '2025-05-01', 0, 0),
+(16, '云南旅游职业学院', '信息工程学院', '王老师', '13333333', '2025-04-29', '2025-04-28', '李不白', 1, 19, 15, '13333333', '脚腕疼', '2025-04-29', '光华医院', '骨折', '2025-04-30', 0, 0),
+(17, '云南旅游职业学院', '信息工程', '张老师', '13333333', '2025-04-28', '2025-04-28', '吴亦', 1, 18, 15, '133333333', '发热，流涕', '2025-04-28', '第一医院', '流行性感冒', '2025-04-28', 0, 1),
+(18, '云南旅游职业学院', '信息工程', '孙老师', '13332323232', '2025-04-28', '2025-04-29', '张云', 1, 20, 11, '1333323232323', '皮肤瘙痒，长水泡', '2025-04-28', '光华医院', '疱疹', '2025-04-30', 0, 1),
+(19, '云南旅游职业学院', '', '张鹏', '13429889999', '2025-03-14', '2025-03-14', '张三', 1, 18, 11, '13422223333', '流鼻涕', '2025-03-14', '昆华医院', '感冒', '2025-03-15', 1, 0);
 
--- ----------------------------
--- Records of depart_application
--- ----------------------------
-INSERT INTO `depart_application` VALUES (16, 23, '退学了', '2021-02-10 00:21:25', 2075);
-INSERT INTO `depart_application` VALUES (17, 41, NULL, '2021-02-10 10:56:11', 2073);
-INSERT INTO `depart_application` VALUES (18, 41, '不想住了', '2021-02-10 13:42:08', 2073);
-INSERT INTO `depart_application` VALUES (19, 23, '不想住了', '2021-02-10 13:46:45', 2073);
-INSERT INTO `depart_application` VALUES (20, 1, NULL, '2021-02-10 13:48:20', 2075);
-INSERT INTO `depart_application` VALUES (21, 41, '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', '2021-02-10 14:55:34', 2053);
-INSERT INTO `depart_application` VALUES (22, 41, NULL, '2021-02-10 15:07:00', 2050);
-INSERT INTO `depart_application` VALUES (23, 1, NULL, '2021-03-10 16:29:47', 2074);
-INSERT INTO `depart_application` VALUES (25, 37, '不住了', '2021-03-13 12:08:26', 2050);
-INSERT INTO `depart_application` VALUES (27, 29, NULL, '2021-03-18 13:47:14', 2069);
-INSERT INTO `depart_application` VALUES (28, 24, '.....', '2021-05-07 14:08:31', 2033);
+-- --------------------------------------------------------
 
--- ----------------------------
--- Table structure for depart_application_user
--- ----------------------------
-DROP TABLE IF EXISTS `depart_application_user`;
-CREATE TABLE `depart_application_user`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `operate_user_id` bigint(0) NULL DEFAULT NULL,
-  `is_agree` tinyint(1) NULL DEFAULT NULL,
-  `operate_time` datetime NULL DEFAULT NULL,
-  `reason` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `application_id` bigint(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_op_uid`(`operate_user_id`) USING BTREE,
-  INDEX `fk_dpId`(`application_id`) USING BTREE,
-  CONSTRAINT `fk_dpId` FOREIGN KEY (`application_id`) REFERENCES `depart_application` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `fk_op_uid` FOREIGN KEY (`operate_user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+--
+-- 表的结构 `back_late`
+--
 
--- ----------------------------
--- Records of depart_application_user
--- ----------------------------
-INSERT INTO `depart_application_user` VALUES (16, 1, 0, '2021-02-10 10:53:20', '不通过', 16);
-INSERT INTO `depart_application_user` VALUES (17, 43, 1, '2021-02-10 10:56:49', NULL, 17);
-INSERT INTO `depart_application_user` VALUES (18, 23, 1, '2021-02-10 10:57:11', NULL, 17);
-INSERT INTO `depart_application_user` VALUES (19, 1, 0, '2021-02-10 13:31:04', '没有申请理由', 17);
-INSERT INTO `depart_application_user` VALUES (20, 43, 0, '2021-02-10 13:45:32', '不同意', 18);
-INSERT INTO `depart_application_user` VALUES (21, 1, 1, '2021-02-10 13:47:26', NULL, 19);
-INSERT INTO `depart_application_user` VALUES (22, 43, 1, '2021-02-10 15:02:57', NULL, 21);
-INSERT INTO `depart_application_user` VALUES (23, 23, 1, '2021-02-10 15:03:22', NULL, 21);
-INSERT INTO `depart_application_user` VALUES (24, 1, 1, '2021-02-10 15:04:28', '通过', 21);
-INSERT INTO `depart_application_user` VALUES (25, 43, 0, '2021-03-13 12:09:17', '滚', 22);
-INSERT INTO `depart_application_user` VALUES (26, 43, 1, '2021-03-13 12:09:30', '好', 25);
-INSERT INTO `depart_application_user` VALUES (27, 23, 1, '2021-03-13 12:10:11', '行', 25);
-INSERT INTO `depart_application_user` VALUES (28, 1, 0, '2021-03-13 12:10:38', '不行', 25);
-INSERT INTO `depart_application_user` VALUES (30, 23, 1, '2021-03-18 13:47:51', NULL, 27);
-INSERT INTO `depart_application_user` VALUES (31, 1, 0, '2021-03-18 13:48:28', NULL, 27);
-INSERT INTO `depart_application_user` VALUES (32, 29, 1, '2021-05-07 14:12:56', '通过', 28);
-INSERT INTO `depart_application_user` VALUES (33, 23, NULL, NULL, NULL, 28);
+CREATE TABLE IF NOT EXISTS `back_late` (
+  `id` bigint NOT NULL,
+  `student_id` bigint DEFAULT NULL,
+  `back_date` datetime DEFAULT NULL,
+  `reason` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
--- ----------------------------
--- Table structure for faculty
--- ----------------------------
-DROP TABLE IF EXISTS `faculty`;
-CREATE TABLE `faculty`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `parent_id` bigint(0) NULL DEFAULT NULL,
-  `order_num` int(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_parent`(`parent_id`) USING BTREE,
-  CONSTRAINT `fk_parent` FOREIGN KEY (`parent_id`) REFERENCES `faculty` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+--
+-- 转存表中的数据 `back_late`
+--
 
--- ----------------------------
--- Records of faculty
--- ----------------------------
-INSERT INTO `faculty` VALUES (1, '清华大学', NULL, 2);
-INSERT INTO `faculty` VALUES (2, '信息工程学院', 1, 0);
-INSERT INTO `faculty` VALUES (4, '吉利汽车学院', 1, 5);
-INSERT INTO `faculty` VALUES (5, '特种设备学院', 1, 4);
-INSERT INTO `faculty` VALUES (7, '软件技术', 2, 1);
-INSERT INTO `faculty` VALUES (10, '软件1811', 7, 1);
-INSERT INTO `faculty` VALUES (11, '软件1812', 7, 2);
-INSERT INTO `faculty` VALUES (12, '软件1813', 7, 3);
-INSERT INTO `faculty` VALUES (13, '有嘉机电学院', 1, 5);
-INSERT INTO `faculty` VALUES (14, '计算机技术', 2, 2);
-INSERT INTO `faculty` VALUES (15, '计算机1821', 14, 1);
-INSERT INTO `faculty` VALUES (16, '计算机1822', 14, 2);
-INSERT INTO `faculty` VALUES (17, '应用电子技术', 2, 4);
-INSERT INTO `faculty` VALUES (18, '应电1811', 17, 1);
-INSERT INTO `faculty` VALUES (19, '应电1812', 17, 2);
-INSERT INTO `faculty` VALUES (20, '应电1841', 17, 3);
-INSERT INTO `faculty` VALUES (21, '信息安全技术', 2, 3);
-INSERT INTO `faculty` VALUES (22, '信安1811', 21, 1);
-INSERT INTO `faculty` VALUES (23, '信安1841', 21, 2);
-INSERT INTO `faculty` VALUES (24, '北京大学', NULL, 1);
-INSERT INTO `faculty` VALUES (25, '机械工程学院', 24, 0);
-INSERT INTO `faculty` VALUES (26, '计算机学院', 24, 1);
+INSERT INTO `back_late` (`id`, `student_id`, `back_date`, `reason`) VALUES
+(3, 4285, '2025-04-27 18:23:25', '堵车了'),
+(4, 4273, '2025-04-26 00:00:00', '朋友过生日'),
+(5, 4283, '2025-04-23 00:00:00', '临时有事'),
+(6, 4282, '2025-04-26 00:00:00', '地铁停运'),
+(7, 4281, '2025-04-16 00:00:00', '出去玩'),
+(8, 4282, '2025-04-29 00:00:00', '堵车了');
 
--- ----------------------------
--- Table structure for image
--- ----------------------------
-DROP TABLE IF EXISTS `image`;
-CREATE TABLE `image`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `building`
+--
+
+CREATE TABLE IF NOT EXISTS `building` (
+  `id` bigint NOT NULL,
+  `name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `parent_id` bigint DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `building`
+--
+
+INSERT INTO `building` (`id`, `name`, `parent_id`) VALUES
+(1, '云南旅游职业学院', NULL),
+(2, '28栋', 1),
+(3, '27栋', 1),
+(5, '26栋', 1),
+(6, 'A1', 2),
+(13, 'A2', 2),
+(14, 'A3', 2),
+(15, 'B1', 3),
+(16, 'B2', 3),
+(17, 'B3', 3),
+(18, 'C1', 5),
+(19, 'C2', 5),
+(21, '得英苑', 1);
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `depart_application`
+--
+
+CREATE TABLE IF NOT EXISTS `depart_application` (
+  `id` bigint NOT NULL,
+  `apply_user_id` bigint DEFAULT NULL,
+  `reason` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `time` datetime DEFAULT NULL,
+  `student_id` bigint DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `depart_application_user`
+--
+
+CREATE TABLE IF NOT EXISTS `depart_application_user` (
+  `id` bigint NOT NULL,
+  `operate_user_id` bigint DEFAULT NULL,
+  `is_agree` tinyint(1) DEFAULT NULL,
+  `operate_time` datetime DEFAULT NULL,
+  `reason` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `application_id` bigint DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `faculty`
+--
+
+CREATE TABLE IF NOT EXISTS `faculty` (
+  `id` bigint NOT NULL,
+  `name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `parent_id` bigint DEFAULT NULL,
+  `order_num` int DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `faculty`
+--
+
+INSERT INTO `faculty` (`id`, `name`, `parent_id`, `order_num`) VALUES
+(1, '云南旅游职业学院', NULL, 2),
+(2, '信息工程学院', 1, 0),
+(4, '资源工程学院', 1, 5),
+(5, '文化艺术学院', 1, 4),
+(7, '软件技术', 2, 1),
+(10, '软件2201', 7, 1),
+(11, '软件2301', 7, 2),
+(12, '软件2401', 7, 3),
+(13, '旅游学院', 1, 5),
+(14, '计算机技术', 2, 2),
+(15, '计算机2301', 14, 1),
+(16, '计算机2401', 14, 2),
+(17, '经济管理学院', 2, 4),
+(18, '电商2201', 29, 1),
+(19, '电商2301', 29, 2),
+(20, '电商2401', 29, 3),
+(21, '网络技术', 2, 3),
+(22, '网络2301', 21, 1),
+(23, '网络2401', 21, 2),
+(29, '电商管理', 17, 0),
+(30, '导游', 13, 0),
+(31, '导游2201', 30, 0),
+(32, '导游2301', 30, 0),
+(33, '工艺美术', 5, 0),
+(34, '工艺2201', 33, 0),
+(35, '工艺2301', 33, 0),
+(36, '工艺2401', 33, 0),
+(37, '工程测量技术', 4, 0),
+(38, '工程2201', 37, 0),
+(39, '工程2301', 37, 0),
+(40, '工程2401', 37, 0),
+(41, '导游2401', 30, 0);
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `image`
+--
+
+CREATE TABLE IF NOT EXISTS `image` (
+  `id` bigint NOT NULL,
   `save_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `original_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `md5` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `upload_user` bigint(0) NOT NULL,
-  `upload_time` datetime NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `md5`(`md5`) USING BTREE,
-  INDEX `fk_userid`(`upload_user`) USING BTREE,
-  CONSTRAINT `fk_userid` FOREIGN KEY (`upload_user`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  `upload_user` bigint NOT NULL,
+  `upload_time` datetime DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
--- ----------------------------
--- Records of image
--- ----------------------------
-INSERT INTO `image` VALUES (6, '01c8c897-a9ce-43e0-b344-827e70149849.png', '03b0d39583f48206768a7534e55bcpng.png', '08803B0D39583F48206768A7534E55BC', 1, '2021-03-19 16:39:20');
-INSERT INTO `image` VALUES (7, '8c9b05b5-6820-4a6a-82f7-eb39ee2f5ffe.png', '006gMemDly8gk9wejsed7j30ro0rodgv.jpg', 'E258A24CD0D3C992BA15C7864D59BFB3', 1, '2021-03-19 16:39:25');
-INSERT INTO `image` VALUES (8, '3d130778-d05a-4c75-9796-a04ed086c495.png', '0f4cf1af-2e31-11eb-a0ca-2016b988fa0d.png', '230AA9BB6ADEF187C6E1FFB2136AF2B7', 1, '2021-03-23 16:10:51');
-INSERT INTO `image` VALUES (9, 'bf796bfa-8c1f-4352-83d6-514ec6b72c1c.png', '0ccef5a0-2e24-11eb-a19e-2016b988fa0d.png', '7D2C56441C0EF4FA6FEEE7FB770D048C', 25, '2021-03-23 16:11:38');
-INSERT INTO `image` VALUES (10, '721e1934-39c1-4a39-a83e-46e613acda0e.png', '0d49e427-2e29-11eb-9a80-2016b988fa0d.png', 'FF5917F7C55C764D7EAD26C3D9DFCD04', 26, '2021-03-23 16:12:06');
-INSERT INTO `image` VALUES (11, 'ecdbb708-1eba-4342-8c22-88481a5824cc.png', '02baac8c-2e33-11eb-87d5-2016b988fa0d.png', '7F2A11DB9A12FF072C06561671569661', 31, '2021-03-23 16:12:29');
-INSERT INTO `image` VALUES (12, 'bc21e192-bc6e-4a6b-a543-d61ce4cb49b2.png', '1ebd0166-2e33-11eb-bb61-2016b988fa0d.png', '2F6F7613A3C93F0B3C700178283F0CFA', 43, '2021-03-23 16:13:12');
-INSERT INTO `image` VALUES (14, '33bc7241-3694-432f-90f6-36cdd42cf8e7.png', '020519-js4-1602.jpg', '67C2F639889A3CC4224F0B8F9F39045F', 1, '2021-04-13 15:02:42');
-INSERT INTO `image` VALUES (15, '82369579-e15b-4888-a3e0-3c70e4c0a698.png', 'ksc-71pc-178.jpg', '8DADE443CB11D9A53FB87601B5725789', 1, '2021-04-13 15:03:01');
-INSERT INTO `image` VALUES (16, 'fd16a365-db2f-4140-8fbb-5bf4c301a2ee.png', 'PIA23265_hires.jpg', '23CAB9C2A47635F0BB4AEB9C23EE0538', 1, '2021-04-13 15:03:12');
-INSERT INTO `image` VALUES (17, 'be20211b-267e-4d76-9bc4-11df6aebb7f7.png', 'aeroshell_vab_.jpg', 'C9F1B6143A7388BD78ACBCF5C2E77FFA', 1, '2021-04-13 15:03:15');
-INSERT INTO `image` VALUES (18, '18358239-196d-4901-b2bd-3e849dc5227c.png', 'as11-44-6667.jpg', '092F8B5E3865A2C6BF75C0DF6CD16044', 1, '2021-04-13 15:15:03');
-INSERT INTO `image` VALUES (19, '090325c6-3d90-49dd-ae88-58807f8d09f7.png', 'pia23056.jpg', 'DF1417E4885D31FAC4F07B77E5312D7F', 1, '2021-04-14 11:37:06');
-INSERT INTO `image` VALUES (20, '0c76d2fa-62d6-469c-b8da-0f6f039c80af.png', '02.jpg', '1E5802C8B96198FD524CC91AD3F9D476', 23, '2023-06-12 00:13:19');
-INSERT INTO `image` VALUES (21, 'eee5cfeb-1a78-4a5d-80eb-7b58f11bc4ca.png', 'logo2.jpg', '96564DE9ED610ACFF96BC60B5D98E375', 1, '2023-08-07 13:35:50');
-INSERT INTO `image` VALUES (22, '7c7ac2ee-1b7a-4ea8-a30e-9086e1cc1e72.png', '01.jpg', '5C072037E4E9662831FE448E28795770', 1, '2023-08-10 00:15:45');
-INSERT INTO `image` VALUES (23, '6e07ecc5-3af1-4d46-b9b9-476057ab764f.png', '02.png', '2C3A088B474CB2144645411F2E3DA9C6', 23, '2023-08-10 00:38:43');
-INSERT INTO `image` VALUES (24, '691fd671-2b3a-4ead-93e3-2af25a344f24.png', '05.jpg', '2072965F45BADD49799E8D2C727DF9CE', 23, '2023-08-10 00:50:29');
+--
+-- 转存表中的数据 `image`
+--
 
--- ----------------------------
--- Table structure for leave
--- ----------------------------
-DROP TABLE IF EXISTS `leave`;
-CREATE TABLE `leave`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `time` datetime NULL DEFAULT NULL,
-  `reason` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `is_back` tinyint(1) NULL DEFAULT NULL,
-  `student_id` bigint(0) NULL DEFAULT NULL,
-  `target` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `back_date` date NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_student_id`(`student_id`) USING BTREE,
-  CONSTRAINT `fk_student_id` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+INSERT INTO `image` (`id`, `save_name`, `original_name`, `md5`, `upload_user`, `upload_time`) VALUES
+(26, 'c15e2f61-19ba-4a71-95e7-36168aab0360.png', '水龙头漏水.jpg', '0E0A4C0E272310A0E4408C2025B765AC', 1, '2025-04-27 18:33:30'),
+(27, '39f620d0-2ad8-493a-9708-a6a4120abbe9.png', 'logo.png', '52BF443C8D40B1876BEAE8DDF631E97B', 1, '2025-04-28 16:02:21');
 
--- ----------------------------
--- Records of leave
--- ----------------------------
-INSERT INTO `leave` VALUES (1, '2023-04-17 18:47:09', '病假', 0, 2060, '北京', '2023-04-17');
+-- --------------------------------------------------------
 
--- ----------------------------
--- Table structure for notice
--- ----------------------------
-DROP TABLE IF EXISTS `notice`;
-CREATE TABLE `notice`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `msg` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-  `user_id` bigint(0) NULL DEFAULT NULL,
-  `time` datetime NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_user_notice`(`user_id`) USING BTREE,
-  CONSTRAINT `fk_user_notice` FOREIGN KEY (`user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 49 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+--
+-- 表的结构 `leave`
+--
 
--- ----------------------------
--- Records of notice
--- ----------------------------
-INSERT INTO `notice` VALUES (28, '今年放假时间：2021-02-06', 1, '2021-02-06 16:33:47');
-INSERT INTO `notice` VALUES (48, '今年开学时间：2021年3月1日', 1, '2021-02-07 18:32:24');
+CREATE TABLE IF NOT EXISTS `leave` (
+  `id` bigint NOT NULL,
+  `time` datetime DEFAULT NULL,
+  `reason` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `is_back` tinyint(1) DEFAULT NULL,
+  `student_id` bigint DEFAULT NULL,
+  `target` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `back_date` date NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
--- ----------------------------
--- Table structure for notice_user
--- ----------------------------
-DROP TABLE IF EXISTS `notice_user`;
-CREATE TABLE `notice_user`  (
-  `user_id` bigint(0) NOT NULL,
-  `notice_id` bigint(0) NOT NULL,
-  `is_read` tinyint(1) NULL DEFAULT NULL,
-  `is_delete` tinyint(1) NULL DEFAULT 0,
-  INDEX `fk_msg1`(`notice_id`) USING BTREE,
-  INDEX `fk_user1`(`user_id`) USING BTREE,
-  CONSTRAINT `fk_msg1` FOREIGN KEY (`notice_id`) REFERENCES `notice` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `fk_user1` FOREIGN KEY (`user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+--
+-- 转存表中的数据 `leave`
+--
 
--- ----------------------------
--- Records of notice_user
--- ----------------------------
-INSERT INTO `notice_user` VALUES (1, 28, 1, 0);
-INSERT INTO `notice_user` VALUES (23, 28, 1, 0);
-INSERT INTO `notice_user` VALUES (24, 28, 1, 0);
-INSERT INTO `notice_user` VALUES (25, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (26, 28, 1, 0);
-INSERT INTO `notice_user` VALUES (27, 28, 1, 0);
-INSERT INTO `notice_user` VALUES (28, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (29, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (30, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (31, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (32, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (33, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (34, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (35, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (36, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (37, 28, 1, 0);
-INSERT INTO `notice_user` VALUES (38, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (39, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (40, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (41, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (42, 28, 0, 0);
-INSERT INTO `notice_user` VALUES (43, 28, 1, 0);
-INSERT INTO `notice_user` VALUES (1, 48, 1, 0);
-INSERT INTO `notice_user` VALUES (23, 48, 1, 0);
-INSERT INTO `notice_user` VALUES (24, 48, 1, 0);
-INSERT INTO `notice_user` VALUES (25, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (26, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (27, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (28, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (29, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (30, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (31, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (32, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (33, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (34, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (35, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (36, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (37, 48, 1, 0);
-INSERT INTO `notice_user` VALUES (38, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (39, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (40, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (41, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (42, 48, 0, 0);
-INSERT INTO `notice_user` VALUES (43, 48, 1, 0);
+INSERT INTO `leave` (`id`, `time`, `reason`, `is_back`, `student_id`, `target`, `back_date`) VALUES
+(8, '2025-04-27 18:26:38', '亲戚结婚', 0, 4280, '云南省昆明市官渡区', '2025-04-30'),
+(9, '2025-04-27 18:27:15', '亲戚生病去看望', 0, 3461, '云南省昆明市五华区', '2025-04-25'),
+(10, '2025-04-27 18:27:45', '出去玩', 0, 3580, '云南省昆明市 西山区', '2025-04-29'),
+(11, '2025-03-27 18:28:32', '出去比赛', 0, 4277, '云南省昆明市高新区', '2025-03-24'),
+(12, '2025-04-27 18:29:11', '探望亲戚', 0, 4118, '浙江省金华市', '2025-05-01'),
+(13, '2025-05-01 18:29:36', '做手术', 0, 4275, '云南省昆明市五华区', '2025-05-07'),
+(14, '2025-04-27 18:31:29', '走访亲友', 1, 4274, '云南省昆明市五华区', '2025-03-12'),
+(15, '2025-03-27 21:10:53', '走访亲友', 1, 4274, '云南省昆明市五华区', '2025-03-28'),
+(17, '2025-04-28 18:34:16', '出去玩', 1, 4282, '云南省昆明市五华区', '2025-04-29');
 
--- ----------------------------
--- Table structure for repair
--- ----------------------------
-DROP TABLE IF EXISTS `repair`;
-CREATE TABLE `repair`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `room_id` bigint(0) NOT NULL,
-  `describe` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `status` tinyint(1) NULL DEFAULT NULL,
-  `create_date` date NULL DEFAULT NULL,
-  `finish_date` date NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `service___fk_rid`(`room_id`) USING BTREE,
-  CONSTRAINT `service___fk_rid` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '报修记录' ROW_FORMAT = Dynamic;
+-- --------------------------------------------------------
 
--- ----------------------------
--- Records of repair
--- ----------------------------
-INSERT INTO `repair` VALUES (4, 1, '天花板塌了。。', 1, '2021-04-13', '2021-04-13');
-INSERT INTO `repair` VALUES (5, 262, '卫生间漏水', 0, '2021-04-13', NULL);
+--
+-- 表的结构 `leave_applications`
+--
 
--- ----------------------------
--- Table structure for repair_picture
--- ----------------------------
-DROP TABLE IF EXISTS `repair_picture`;
-CREATE TABLE `repair_picture`  (
-  `picture` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `repair_id` bigint(0) NULL DEFAULT NULL,
-  INDEX `fk_repair_id`(`repair_id`) USING BTREE,
-  CONSTRAINT `fk_repair_id` FOREIGN KEY (`repair_id`) REFERENCES `repair` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+CREATE TABLE IF NOT EXISTS `leave_applications` (
+  `apply_id` bigint NOT NULL COMMENT '申请ID',
+  `student_no` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '学号',
+  `student_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '学生姓名',
+  `gender` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '性别',
+  `department` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '所在院系',
+  `class_name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '所属班级',
+  `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '学生电话',
+  `parent_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '家长姓名',
+  `parent_phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '家长电话',
+  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '校外居住地址',
+  `start_date` date DEFAULT NULL COMMENT '开始日期',
+  `end_date` date DEFAULT NULL COMMENT '结束日期',
+  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '走读原因',
+  `emergency_contact` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '紧急联系人',
+  `emergency_phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '紧急联系人电话',
+  `parent_agree` enum('未确认','已同意','已拒绝') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '未确认' COMMENT '家长意见',
+  `parent_opinion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `counselor_status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '待审核' COMMENT '辅导员审核',
+  `college_status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '待审核' COMMENT '二级学院审核',
+  `audit_comments` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '审批意见',
+  `id_card_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '身份证照片路径',
+  `contract_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '租房合同路径',
+  `other_file_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '其他证明路径',
+  `student_signature` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '学生签名图片路径',
+  `parent_signature` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '家长签名图片路径',
+  `status` enum('draft','submitted','approved','rejected','expired') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'draft' COMMENT '申请状态',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='大学生走读申请单';
 
--- ----------------------------
--- Records of repair_picture
--- ----------------------------
-INSERT INTO `repair_picture` VALUES ('18358239-196d-4901-b2bd-3e849dc5227c.png', 4);
-INSERT INTO `repair_picture` VALUES ('8c9b05b5-6820-4a6a-82f7-eb39ee2f5ffe.png', 4);
+--
+-- 转存表中的数据 `leave_applications`
+--
 
--- ----------------------------
--- Table structure for room
--- ----------------------------
-DROP TABLE IF EXISTS `room`;
-CREATE TABLE `room`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `number` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `building_id` bigint(0) NULL DEFAULT NULL,
-  `max_capacity` int(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_buding_id`(`building_id`) USING BTREE,
-  CONSTRAINT `fk_buding_id` FOREIGN KEY (`building_id`) REFERENCES `building` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 402 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+INSERT INTO `leave_applications` (`apply_id`, `student_no`, `student_name`, `gender`, `department`, `class_name`, `phone`, `parent_name`, `parent_phone`, `address`, `start_date`, `end_date`, `reason`, `emergency_contact`, `emergency_phone`, `parent_agree`, `parent_opinion`, `counselor_status`, `college_status`, `audit_comments`, `id_card_path`, `contract_path`, `other_file_path`, `student_signature`, `parent_signature`, `status`, `create_time`, `update_time`) VALUES
+(33, '22453426338', '华旭', 'male', '', '软件2201', '18018520168', '华元', '13333332323', '云南省昆明市桃源村1', '2025-05-06', '2025-06-19', '不适用宿舍', '华元', '', '已同意', '同意', '待审核', '待审核', NULL, NULL, NULL, NULL, '华旭', '华元', 'draft', '2025-04-27 18:57:46', '2025-04-27 18:57:46'),
+(34, '22939615013', '卫强', 'male', '信息工程学院', '工程2301', '18003413827', '卫国', '13333232333', '云南省昆明市五华区1', '2025-04-07', '2025-05-06', '不适应宿舍环境', '卫国', '', '已同意', '同意', '已通过', '待审核', NULL, NULL, NULL, NULL, '卫强', '卫国', 'draft', '2025-04-27 21:28:06', '2025-04-28 16:25:31'),
+(35, '22409414615', '孙浩翔', 'male', '', '工程2301', '18080206432', NULL, '13080205421', '云南省昆明市盘龙区穿金路美树橙', NULL, NULL, '离家近，走读更方便', NULL, '', '已同意', '同意', '已通过', '待审核', NULL, NULL, NULL, NULL, '孙浩翔', '孙浩', 'draft', '2025-04-28 16:46:05', '2025-04-28 17:00:06'),
+(36, '24069428933', '吕睿萌', 'male', '', '导游2401', '18032393971', NULL, '13632393972', '云南省昆明市盘龙区穿金路美树橙', '2025-04-28', '2025-06-30', '离家近，回家更方便', NULL, '', '已同意', '同意', '已通过', '待审核', NULL, NULL, NULL, NULL, '吕睿萌', '吕冰', 'draft', '2025-04-28 17:27:10', '2025-04-28 17:27:15'),
+(37, '23021073682', '姜萌', 'male', '信息工程学院', '电商2301', '18043656294', '李平安', '13333232333', '云南省昆明市五华区1', '2025-04-07', '2025-05-21', '生病需要回家修养', '李平安', '', '已同意', '同意', '待审核', '待审核', NULL, NULL, NULL, NULL, '姜萌', '李平安', 'draft', '2025-04-28 18:04:01', '2025-04-28 18:04:01'),
+(38, '23913798171', '严欣', 'male', '信息工程学院', '工艺2301', '18078754221', '严白', '13232323223', '云南省昆明市桃源村1号', '2025-05-21', '2025-05-21', '需要回家养病', '严白', '', '已同意', '同意', '已通过', '待审核', NULL, NULL, NULL, NULL, '严欣', '严白', 'draft', '2025-04-28 19:32:56', '2025-04-28 19:33:09');
 
--- ----------------------------
--- Records of room
--- ----------------------------
-INSERT INTO `room` VALUES (1, 'A1001', 6, 4);
-INSERT INTO `room` VALUES (2, 'A1002', 6, 4);
-INSERT INTO `room` VALUES (3, 'A1003', 6, 4);
-INSERT INTO `room` VALUES (4, 'A1004', 6, 4);
-INSERT INTO `room` VALUES (5, 'A1005', 6, 4);
-INSERT INTO `room` VALUES (6, 'A1006', 6, 4);
-INSERT INTO `room` VALUES (7, 'A1007', 6, 4);
-INSERT INTO `room` VALUES (8, 'A1008', 6, 4);
-INSERT INTO `room` VALUES (9, 'A1009', 6, 4);
-INSERT INTO `room` VALUES (10, 'A1010', 6, 4);
-INSERT INTO `room` VALUES (11, 'A2001', 6, 4);
-INSERT INTO `room` VALUES (12, 'A2002', 6, 4);
-INSERT INTO `room` VALUES (13, 'A2003', 6, 4);
-INSERT INTO `room` VALUES (14, 'A2004', 6, 4);
-INSERT INTO `room` VALUES (15, 'A2005', 6, 4);
-INSERT INTO `room` VALUES (16, 'A2006', 6, 4);
-INSERT INTO `room` VALUES (17, 'A2007', 6, 4);
-INSERT INTO `room` VALUES (18, 'A2008', 6, 4);
-INSERT INTO `room` VALUES (19, 'A2009', 6, 4);
-INSERT INTO `room` VALUES (20, 'A2010', 6, 4);
-INSERT INTO `room` VALUES (21, 'A3001', 6, 4);
-INSERT INTO `room` VALUES (22, 'A3002', 6, 4);
-INSERT INTO `room` VALUES (23, 'A3003', 6, 4);
-INSERT INTO `room` VALUES (24, 'A3004', 6, 4);
-INSERT INTO `room` VALUES (25, 'A3005', 6, 4);
-INSERT INTO `room` VALUES (26, 'A3006', 6, 4);
-INSERT INTO `room` VALUES (27, 'A3007', 6, 4);
-INSERT INTO `room` VALUES (28, 'A3008', 6, 4);
-INSERT INTO `room` VALUES (29, 'A3009', 6, 4);
-INSERT INTO `room` VALUES (30, 'A3010', 6, 4);
-INSERT INTO `room` VALUES (31, 'A4001', 6, 4);
-INSERT INTO `room` VALUES (32, 'A4002', 6, 4);
-INSERT INTO `room` VALUES (33, 'A4003', 6, 4);
-INSERT INTO `room` VALUES (34, 'A4004', 6, 4);
-INSERT INTO `room` VALUES (35, 'A4005', 6, 4);
-INSERT INTO `room` VALUES (36, 'A4006', 6, 4);
-INSERT INTO `room` VALUES (37, 'A4007', 6, 4);
-INSERT INTO `room` VALUES (38, 'A4008', 6, 4);
-INSERT INTO `room` VALUES (39, 'A4009', 6, 4);
-INSERT INTO `room` VALUES (40, 'A4010', 6, 4);
-INSERT INTO `room` VALUES (41, 'A5001', 6, 4);
-INSERT INTO `room` VALUES (42, 'A5002', 6, 4);
-INSERT INTO `room` VALUES (43, 'A5003', 6, 4);
-INSERT INTO `room` VALUES (44, 'A5004', 6, 4);
-INSERT INTO `room` VALUES (45, 'A5005', 6, 4);
-INSERT INTO `room` VALUES (46, 'A5006', 6, 4);
-INSERT INTO `room` VALUES (47, 'A5007', 6, 4);
-INSERT INTO `room` VALUES (48, 'A5008', 6, 4);
-INSERT INTO `room` VALUES (49, 'A5009', 6, 4);
-INSERT INTO `room` VALUES (50, 'A5010', 6, 4);
-INSERT INTO `room` VALUES (51, 'A6001', 6, 4);
-INSERT INTO `room` VALUES (52, 'A6002', 6, 4);
-INSERT INTO `room` VALUES (53, 'A6003', 6, 4);
-INSERT INTO `room` VALUES (54, 'A6004', 6, 4);
-INSERT INTO `room` VALUES (55, 'A6005', 6, 4);
-INSERT INTO `room` VALUES (56, 'A6006', 6, 4);
-INSERT INTO `room` VALUES (57, 'A6007', 6, 4);
-INSERT INTO `room` VALUES (58, 'A6008', 6, 4);
-INSERT INTO `room` VALUES (59, 'A6009', 6, 4);
-INSERT INTO `room` VALUES (60, 'A6010', 6, 4);
-INSERT INTO `room` VALUES (61, 'A1011', 13, 6);
-INSERT INTO `room` VALUES (62, 'A1012', 13, 6);
-INSERT INTO `room` VALUES (63, 'A1013', 13, 6);
-INSERT INTO `room` VALUES (64, 'A1014', 13, 6);
-INSERT INTO `room` VALUES (65, 'A1015', 13, 6);
-INSERT INTO `room` VALUES (66, 'A1016', 13, 6);
-INSERT INTO `room` VALUES (67, 'A1017', 13, 6);
-INSERT INTO `room` VALUES (68, 'A1018', 13, 6);
-INSERT INTO `room` VALUES (69, 'A1019', 13, 6);
-INSERT INTO `room` VALUES (70, 'A1020', 13, 6);
-INSERT INTO `room` VALUES (71, 'A2011', 13, 6);
-INSERT INTO `room` VALUES (72, 'A2012', 13, 6);
-INSERT INTO `room` VALUES (73, 'A2013', 13, 6);
-INSERT INTO `room` VALUES (74, 'A2014', 13, 6);
-INSERT INTO `room` VALUES (75, 'A2015', 13, 6);
-INSERT INTO `room` VALUES (76, 'A2016', 13, 6);
-INSERT INTO `room` VALUES (77, 'A2017', 13, 6);
-INSERT INTO `room` VALUES (78, 'A2018', 13, 6);
-INSERT INTO `room` VALUES (79, 'A2019', 13, 6);
-INSERT INTO `room` VALUES (80, 'A2020', 13, 6);
-INSERT INTO `room` VALUES (81, 'A3011', 13, 6);
-INSERT INTO `room` VALUES (82, 'A3012', 13, 6);
-INSERT INTO `room` VALUES (83, 'A3013', 13, 6);
-INSERT INTO `room` VALUES (84, 'A3014', 13, 6);
-INSERT INTO `room` VALUES (85, 'A3015', 13, 6);
-INSERT INTO `room` VALUES (86, 'A3016', 13, 6);
-INSERT INTO `room` VALUES (87, 'A3017', 13, 6);
-INSERT INTO `room` VALUES (88, 'A3018', 13, 6);
-INSERT INTO `room` VALUES (89, 'A3019', 13, 6);
-INSERT INTO `room` VALUES (90, 'A3020', 13, 6);
-INSERT INTO `room` VALUES (91, 'A4011', 13, 6);
-INSERT INTO `room` VALUES (92, 'A4012', 13, 6);
-INSERT INTO `room` VALUES (93, 'A4013', 13, 6);
-INSERT INTO `room` VALUES (94, 'A4014', 13, 6);
-INSERT INTO `room` VALUES (95, 'A4015', 13, 6);
-INSERT INTO `room` VALUES (96, 'A4016', 13, 6);
-INSERT INTO `room` VALUES (97, 'A4017', 13, 6);
-INSERT INTO `room` VALUES (98, 'A4018', 13, 6);
-INSERT INTO `room` VALUES (99, 'A4019', 13, 6);
-INSERT INTO `room` VALUES (100, 'A4020', 13, 6);
-INSERT INTO `room` VALUES (101, 'A5011', 13, 6);
-INSERT INTO `room` VALUES (102, 'A5012', 13, 6);
-INSERT INTO `room` VALUES (103, 'A5013', 13, 6);
-INSERT INTO `room` VALUES (104, 'A5014', 13, 6);
-INSERT INTO `room` VALUES (105, 'A5015', 13, 6);
-INSERT INTO `room` VALUES (106, 'A5016', 13, 6);
-INSERT INTO `room` VALUES (107, 'A5017', 13, 6);
-INSERT INTO `room` VALUES (108, 'A5018', 13, 6);
-INSERT INTO `room` VALUES (109, 'A5019', 13, 6);
-INSERT INTO `room` VALUES (110, 'A5020', 13, 6);
-INSERT INTO `room` VALUES (111, 'A6011', 13, 6);
-INSERT INTO `room` VALUES (112, 'A6012', 13, 6);
-INSERT INTO `room` VALUES (113, 'A6013', 13, 6);
-INSERT INTO `room` VALUES (114, 'A6014', 13, 6);
-INSERT INTO `room` VALUES (115, 'A6015', 13, 6);
-INSERT INTO `room` VALUES (116, 'A6016', 13, 6);
-INSERT INTO `room` VALUES (117, 'A6017', 13, 6);
-INSERT INTO `room` VALUES (118, 'A6018', 13, 6);
-INSERT INTO `room` VALUES (119, 'A6019', 13, 6);
-INSERT INTO `room` VALUES (120, 'A6020', 13, 6);
-INSERT INTO `room` VALUES (121, 'A1021', 14, 6);
-INSERT INTO `room` VALUES (122, 'A1022', 14, 6);
-INSERT INTO `room` VALUES (123, 'A1023', 14, 6);
-INSERT INTO `room` VALUES (124, 'A1024', 14, 6);
-INSERT INTO `room` VALUES (125, 'A1025', 14, 6);
-INSERT INTO `room` VALUES (126, 'A1026', 14, 6);
-INSERT INTO `room` VALUES (127, 'A1027', 14, 6);
-INSERT INTO `room` VALUES (128, 'A1028', 14, 6);
-INSERT INTO `room` VALUES (129, 'A1029', 14, 6);
-INSERT INTO `room` VALUES (130, 'A1030', 14, 6);
-INSERT INTO `room` VALUES (131, 'A2021', 14, 6);
-INSERT INTO `room` VALUES (132, 'A2022', 14, 6);
-INSERT INTO `room` VALUES (133, 'A2023', 14, 6);
-INSERT INTO `room` VALUES (134, 'A2024', 14, 6);
-INSERT INTO `room` VALUES (135, 'A2025', 14, 6);
-INSERT INTO `room` VALUES (136, 'A2026', 14, 6);
-INSERT INTO `room` VALUES (137, 'A2027', 14, 6);
-INSERT INTO `room` VALUES (138, 'A2028', 14, 6);
-INSERT INTO `room` VALUES (139, 'A2029', 14, 6);
-INSERT INTO `room` VALUES (140, 'A2030', 14, 6);
-INSERT INTO `room` VALUES (141, 'A3021', 14, 6);
-INSERT INTO `room` VALUES (142, 'A3022', 14, 6);
-INSERT INTO `room` VALUES (143, 'A3023', 14, 6);
-INSERT INTO `room` VALUES (144, 'A3024', 14, 6);
-INSERT INTO `room` VALUES (145, 'A3025', 14, 6);
-INSERT INTO `room` VALUES (146, 'A3026', 14, 6);
-INSERT INTO `room` VALUES (147, 'A3027', 14, 6);
-INSERT INTO `room` VALUES (148, 'A3028', 14, 6);
-INSERT INTO `room` VALUES (149, 'A3029', 14, 6);
-INSERT INTO `room` VALUES (150, 'A3030', 14, 6);
-INSERT INTO `room` VALUES (151, 'A4021', 14, 6);
-INSERT INTO `room` VALUES (152, 'A4022', 14, 6);
-INSERT INTO `room` VALUES (153, 'A4023', 14, 6);
-INSERT INTO `room` VALUES (154, 'A4024', 14, 6);
-INSERT INTO `room` VALUES (155, 'A4025', 14, 6);
-INSERT INTO `room` VALUES (156, 'A4026', 14, 6);
-INSERT INTO `room` VALUES (157, 'A4027', 14, 6);
-INSERT INTO `room` VALUES (158, 'A4028', 14, 6);
-INSERT INTO `room` VALUES (159, 'A4029', 14, 6);
-INSERT INTO `room` VALUES (160, 'A4030', 14, 6);
-INSERT INTO `room` VALUES (161, 'A5021', 14, 6);
-INSERT INTO `room` VALUES (162, 'A5022', 14, 6);
-INSERT INTO `room` VALUES (163, 'A5023', 14, 6);
-INSERT INTO `room` VALUES (164, 'A5024', 14, 6);
-INSERT INTO `room` VALUES (165, 'A5025', 14, 6);
-INSERT INTO `room` VALUES (166, 'A5026', 14, 6);
-INSERT INTO `room` VALUES (167, 'A5027', 14, 6);
-INSERT INTO `room` VALUES (168, 'A5028', 14, 6);
-INSERT INTO `room` VALUES (169, 'A5029', 14, 6);
-INSERT INTO `room` VALUES (170, 'A5030', 14, 6);
-INSERT INTO `room` VALUES (171, 'A6021', 14, 6);
-INSERT INTO `room` VALUES (172, 'A6022', 14, 6);
-INSERT INTO `room` VALUES (173, 'A6023', 14, 6);
-INSERT INTO `room` VALUES (174, 'A6024', 14, 6);
-INSERT INTO `room` VALUES (175, 'A6025', 14, 6);
-INSERT INTO `room` VALUES (176, 'A6026', 14, 6);
-INSERT INTO `room` VALUES (177, 'A6027', 14, 6);
-INSERT INTO `room` VALUES (178, 'A6028', 14, 6);
-INSERT INTO `room` VALUES (179, 'A6029', 14, 6);
-INSERT INTO `room` VALUES (180, 'A6030', 14, 6);
-INSERT INTO `room` VALUES (181, 'B1001', 15, 6);
-INSERT INTO `room` VALUES (182, 'B1002', 15, 6);
-INSERT INTO `room` VALUES (183, 'B1003', 15, 6);
-INSERT INTO `room` VALUES (184, 'B1004', 15, 6);
-INSERT INTO `room` VALUES (185, 'B1005', 15, 6);
-INSERT INTO `room` VALUES (186, 'B1006', 15, 6);
-INSERT INTO `room` VALUES (187, 'B1007', 15, 6);
-INSERT INTO `room` VALUES (188, 'B1008', 15, 6);
-INSERT INTO `room` VALUES (189, 'B1009', 15, 6);
-INSERT INTO `room` VALUES (190, 'B1010', 15, 6);
-INSERT INTO `room` VALUES (191, 'B1011', 16, 6);
-INSERT INTO `room` VALUES (192, 'B1012', 16, 6);
-INSERT INTO `room` VALUES (193, 'B1013', 16, 6);
-INSERT INTO `room` VALUES (194, 'B1014', 16, 6);
-INSERT INTO `room` VALUES (195, 'B1015', 16, 6);
-INSERT INTO `room` VALUES (196, 'B1016', 16, 6);
-INSERT INTO `room` VALUES (197, 'B1017', 16, 6);
-INSERT INTO `room` VALUES (198, 'B1018', 16, 6);
-INSERT INTO `room` VALUES (199, 'B1019', 16, 6);
-INSERT INTO `room` VALUES (200, 'B1020', 16, 6);
-INSERT INTO `room` VALUES (201, 'B1021', 17, 6);
-INSERT INTO `room` VALUES (202, 'B1022', 17, 6);
-INSERT INTO `room` VALUES (203, 'B1023', 17, 6);
-INSERT INTO `room` VALUES (204, 'B1024', 17, 6);
-INSERT INTO `room` VALUES (205, 'B1025', 17, 6);
-INSERT INTO `room` VALUES (206, 'B1026', 17, 6);
-INSERT INTO `room` VALUES (207, 'B1027', 17, 6);
-INSERT INTO `room` VALUES (208, 'B1028', 17, 6);
-INSERT INTO `room` VALUES (209, 'B1029', 17, 6);
-INSERT INTO `room` VALUES (210, 'B1030', 17, 6);
-INSERT INTO `room` VALUES (211, 'B2001', 15, 6);
-INSERT INTO `room` VALUES (212, 'B2002', 15, 6);
-INSERT INTO `room` VALUES (213, 'B2003', 15, 6);
-INSERT INTO `room` VALUES (214, 'B2004', 15, 6);
-INSERT INTO `room` VALUES (215, 'B2005', 15, 6);
-INSERT INTO `room` VALUES (216, 'B2006', 15, 6);
-INSERT INTO `room` VALUES (217, 'B2007', 15, 6);
-INSERT INTO `room` VALUES (218, 'B2008', 15, 6);
-INSERT INTO `room` VALUES (219, 'B2009', 15, 6);
-INSERT INTO `room` VALUES (220, 'B2010', 15, 6);
-INSERT INTO `room` VALUES (221, 'B2011', 16, 6);
-INSERT INTO `room` VALUES (222, 'B2012', 16, 6);
-INSERT INTO `room` VALUES (223, 'B2013', 16, 6);
-INSERT INTO `room` VALUES (224, 'B2014', 16, 6);
-INSERT INTO `room` VALUES (225, 'B2015', 16, 6);
-INSERT INTO `room` VALUES (226, 'B2016', 16, 6);
-INSERT INTO `room` VALUES (227, 'B2017', 16, 6);
-INSERT INTO `room` VALUES (228, 'B2018', 16, 6);
-INSERT INTO `room` VALUES (229, 'B2019', 16, 6);
-INSERT INTO `room` VALUES (230, 'B2020', 16, 6);
-INSERT INTO `room` VALUES (231, 'B2021', 17, 6);
-INSERT INTO `room` VALUES (232, 'B2022', 17, 6);
-INSERT INTO `room` VALUES (233, 'B2023', 17, 6);
-INSERT INTO `room` VALUES (234, 'B2024', 17, 6);
-INSERT INTO `room` VALUES (235, 'B2025', 17, 6);
-INSERT INTO `room` VALUES (236, 'B2026', 17, 6);
-INSERT INTO `room` VALUES (237, 'B2027', 17, 6);
-INSERT INTO `room` VALUES (238, 'B2028', 17, 6);
-INSERT INTO `room` VALUES (239, 'B2029', 17, 6);
-INSERT INTO `room` VALUES (240, 'B2030', 17, 6);
-INSERT INTO `room` VALUES (241, 'B3001', 15, 6);
-INSERT INTO `room` VALUES (242, 'B3002', 15, 6);
-INSERT INTO `room` VALUES (243, 'B3003', 15, 6);
-INSERT INTO `room` VALUES (244, 'B3004', 15, 6);
-INSERT INTO `room` VALUES (245, 'B3005', 15, 6);
-INSERT INTO `room` VALUES (246, 'B3006', 15, 6);
-INSERT INTO `room` VALUES (247, 'B3007', 15, 6);
-INSERT INTO `room` VALUES (248, 'B3008', 15, 6);
-INSERT INTO `room` VALUES (249, 'B3009', 15, 6);
-INSERT INTO `room` VALUES (250, 'B3010', 15, 6);
-INSERT INTO `room` VALUES (251, 'B3011', 16, 6);
-INSERT INTO `room` VALUES (252, 'B3012', 16, 6);
-INSERT INTO `room` VALUES (253, 'B3013', 16, 6);
-INSERT INTO `room` VALUES (254, 'B3014', 16, 6);
-INSERT INTO `room` VALUES (255, 'B3015', 16, 6);
-INSERT INTO `room` VALUES (256, 'B3016', 16, 6);
-INSERT INTO `room` VALUES (257, 'B3017', 16, 6);
-INSERT INTO `room` VALUES (258, 'B3018', 16, 6);
-INSERT INTO `room` VALUES (259, 'B3019', 16, 6);
-INSERT INTO `room` VALUES (260, 'B3020', 16, 6);
-INSERT INTO `room` VALUES (261, 'B3021', 17, 6);
-INSERT INTO `room` VALUES (262, 'B3022', 17, 6);
-INSERT INTO `room` VALUES (263, 'B3023', 17, 6);
-INSERT INTO `room` VALUES (264, 'B3024', 17, 6);
-INSERT INTO `room` VALUES (265, 'B3025', 17, 6);
-INSERT INTO `room` VALUES (266, 'B3026', 17, 6);
-INSERT INTO `room` VALUES (267, 'B3027', 17, 6);
-INSERT INTO `room` VALUES (268, 'B3028', 17, 6);
-INSERT INTO `room` VALUES (269, 'B3029', 17, 6);
-INSERT INTO `room` VALUES (270, 'B3030', 17, 6);
-INSERT INTO `room` VALUES (271, 'B4001', 15, 6);
-INSERT INTO `room` VALUES (272, 'B4002', 15, 6);
-INSERT INTO `room` VALUES (273, 'B4003', 15, 6);
-INSERT INTO `room` VALUES (274, 'B4004', 15, 6);
-INSERT INTO `room` VALUES (275, 'B4005', 15, 6);
-INSERT INTO `room` VALUES (276, 'B4006', 15, 6);
-INSERT INTO `room` VALUES (277, 'B4007', 15, 6);
-INSERT INTO `room` VALUES (278, 'B4008', 15, 6);
-INSERT INTO `room` VALUES (279, 'B4009', 15, 6);
-INSERT INTO `room` VALUES (280, 'B4010', 15, 6);
-INSERT INTO `room` VALUES (281, 'B4011', 16, 6);
-INSERT INTO `room` VALUES (282, 'B4012', 16, 6);
-INSERT INTO `room` VALUES (283, 'B4013', 16, 6);
-INSERT INTO `room` VALUES (284, 'B4014', 16, 6);
-INSERT INTO `room` VALUES (285, 'B4015', 16, 6);
-INSERT INTO `room` VALUES (286, 'B4016', 16, 6);
-INSERT INTO `room` VALUES (287, 'B4017', 16, 6);
-INSERT INTO `room` VALUES (288, 'B4018', 16, 6);
-INSERT INTO `room` VALUES (289, 'B4019', 16, 6);
-INSERT INTO `room` VALUES (290, 'B4020', 16, 6);
-INSERT INTO `room` VALUES (291, 'B4021', 17, 6);
-INSERT INTO `room` VALUES (292, 'B4022', 17, 6);
-INSERT INTO `room` VALUES (293, 'B4023', 17, 6);
-INSERT INTO `room` VALUES (294, 'B4024', 17, 6);
-INSERT INTO `room` VALUES (295, 'B4025', 17, 6);
-INSERT INTO `room` VALUES (296, 'B4026', 17, 6);
-INSERT INTO `room` VALUES (297, 'B4027', 17, 6);
-INSERT INTO `room` VALUES (298, 'B4028', 17, 6);
-INSERT INTO `room` VALUES (299, 'B4029', 17, 6);
-INSERT INTO `room` VALUES (300, 'B4030', 17, 6);
-INSERT INTO `room` VALUES (301, 'C1001', 18, 4);
-INSERT INTO `room` VALUES (302, 'C1002', 18, 4);
-INSERT INTO `room` VALUES (303, 'C1003', 18, 4);
-INSERT INTO `room` VALUES (304, 'C1004', 18, 4);
-INSERT INTO `room` VALUES (305, 'C1005', 18, 4);
-INSERT INTO `room` VALUES (306, 'C1006', 18, 4);
-INSERT INTO `room` VALUES (307, 'C1007', 18, 4);
-INSERT INTO `room` VALUES (308, 'C1008', 18, 4);
-INSERT INTO `room` VALUES (309, 'C1009', 18, 4);
-INSERT INTO `room` VALUES (310, 'C1010', 18, 4);
-INSERT INTO `room` VALUES (311, 'C1011', 19, 4);
-INSERT INTO `room` VALUES (312, 'C1012', 19, 4);
-INSERT INTO `room` VALUES (313, 'C1013', 19, 4);
-INSERT INTO `room` VALUES (314, 'C1014', 19, 4);
-INSERT INTO `room` VALUES (315, 'C1015', 19, 4);
-INSERT INTO `room` VALUES (316, 'C1016', 19, 4);
-INSERT INTO `room` VALUES (317, 'C1017', 19, 4);
-INSERT INTO `room` VALUES (318, 'C1018', 19, 4);
-INSERT INTO `room` VALUES (319, 'C1019', 19, 4);
-INSERT INTO `room` VALUES (320, 'C1020', 19, 4);
-INSERT INTO `room` VALUES (321, 'C2001', 18, 4);
-INSERT INTO `room` VALUES (322, 'C2002', 18, 4);
-INSERT INTO `room` VALUES (323, 'C2003', 18, 4);
-INSERT INTO `room` VALUES (324, 'C2004', 18, 4);
-INSERT INTO `room` VALUES (325, 'C2005', 18, 4);
-INSERT INTO `room` VALUES (326, 'C2006', 18, 4);
-INSERT INTO `room` VALUES (327, 'C2007', 18, 4);
-INSERT INTO `room` VALUES (328, 'C2008', 18, 4);
-INSERT INTO `room` VALUES (329, 'C2009', 18, 4);
-INSERT INTO `room` VALUES (330, 'C2010', 18, 4);
-INSERT INTO `room` VALUES (331, 'C2011', 19, 4);
-INSERT INTO `room` VALUES (332, 'C2012', 19, 4);
-INSERT INTO `room` VALUES (333, 'C2013', 19, 4);
-INSERT INTO `room` VALUES (334, 'C2014', 19, 4);
-INSERT INTO `room` VALUES (335, 'C2015', 19, 4);
-INSERT INTO `room` VALUES (336, 'C2016', 19, 4);
-INSERT INTO `room` VALUES (337, 'C2017', 19, 4);
-INSERT INTO `room` VALUES (338, 'C2018', 19, 4);
-INSERT INTO `room` VALUES (339, 'C2019', 19, 4);
-INSERT INTO `room` VALUES (340, 'C2020', 19, 4);
-INSERT INTO `room` VALUES (341, 'C3001', 18, 4);
-INSERT INTO `room` VALUES (342, 'C3002', 18, 4);
-INSERT INTO `room` VALUES (343, 'C3003', 18, 4);
-INSERT INTO `room` VALUES (344, 'C3004', 18, 4);
-INSERT INTO `room` VALUES (345, 'C3005', 18, 4);
-INSERT INTO `room` VALUES (346, 'C3006', 18, 4);
-INSERT INTO `room` VALUES (347, 'C3007', 18, 4);
-INSERT INTO `room` VALUES (348, 'C3008', 18, 4);
-INSERT INTO `room` VALUES (349, 'C3009', 18, 4);
-INSERT INTO `room` VALUES (350, 'C3010', 18, 4);
-INSERT INTO `room` VALUES (351, 'C3011', 19, 4);
-INSERT INTO `room` VALUES (352, 'C3012', 19, 4);
-INSERT INTO `room` VALUES (353, 'C3013', 19, 4);
-INSERT INTO `room` VALUES (354, 'C3014', 19, 4);
-INSERT INTO `room` VALUES (355, 'C3015', 19, 4);
-INSERT INTO `room` VALUES (356, 'C3016', 19, 4);
-INSERT INTO `room` VALUES (357, 'C3017', 19, 4);
-INSERT INTO `room` VALUES (358, 'C3018', 19, 4);
-INSERT INTO `room` VALUES (359, 'C3019', 19, 4);
-INSERT INTO `room` VALUES (360, 'C3020', 19, 4);
-INSERT INTO `room` VALUES (361, 'C4001', 18, 4);
-INSERT INTO `room` VALUES (362, 'C4002', 18, 4);
-INSERT INTO `room` VALUES (363, 'C4003', 18, 4);
-INSERT INTO `room` VALUES (364, 'C4004', 18, 4);
-INSERT INTO `room` VALUES (365, 'C4005', 18, 4);
-INSERT INTO `room` VALUES (366, 'C4006', 18, 4);
-INSERT INTO `room` VALUES (367, 'C4007', 18, 4);
-INSERT INTO `room` VALUES (368, 'C4008', 18, 4);
-INSERT INTO `room` VALUES (369, 'C4009', 18, 4);
-INSERT INTO `room` VALUES (370, 'C4010', 18, 4);
-INSERT INTO `room` VALUES (371, 'C4011', 19, 4);
-INSERT INTO `room` VALUES (372, 'C4012', 19, 4);
-INSERT INTO `room` VALUES (373, 'C4013', 19, 4);
-INSERT INTO `room` VALUES (374, 'C4014', 19, 4);
-INSERT INTO `room` VALUES (375, 'C4015', 19, 4);
-INSERT INTO `room` VALUES (376, 'C4016', 19, 4);
-INSERT INTO `room` VALUES (377, 'C4017', 19, 4);
-INSERT INTO `room` VALUES (378, 'C4018', 19, 4);
-INSERT INTO `room` VALUES (379, 'C4019', 19, 4);
-INSERT INTO `room` VALUES (380, 'C4020', 19, 4);
-INSERT INTO `room` VALUES (381, 'C5001', 18, 4);
-INSERT INTO `room` VALUES (382, 'C5002', 18, 4);
-INSERT INTO `room` VALUES (383, 'C5003', 18, 4);
-INSERT INTO `room` VALUES (384, 'C5004', 18, 4);
-INSERT INTO `room` VALUES (385, 'C5005', 18, 4);
-INSERT INTO `room` VALUES (386, 'C5006', 18, 4);
-INSERT INTO `room` VALUES (387, 'C5007', 18, 4);
-INSERT INTO `room` VALUES (388, 'C5008', 18, 4);
-INSERT INTO `room` VALUES (389, 'C5009', 18, 4);
-INSERT INTO `room` VALUES (390, 'C5010', 18, 4);
-INSERT INTO `room` VALUES (391, 'C5011', 19, 4);
-INSERT INTO `room` VALUES (392, 'C5012', 19, 4);
-INSERT INTO `room` VALUES (393, 'C5013', 19, 4);
-INSERT INTO `room` VALUES (394, 'C5014', 19, 4);
-INSERT INTO `room` VALUES (395, 'C5015', 19, 4);
-INSERT INTO `room` VALUES (396, 'C5016', 19, 4);
-INSERT INTO `room` VALUES (397, 'C5017', 19, 4);
-INSERT INTO `room` VALUES (398, 'C5018', 19, 4);
-INSERT INTO `room` VALUES (399, 'C5019', 19, 4);
-INSERT INTO `room` VALUES (400, 'C5020', 19, 4);
-INSERT INTO `room` VALUES (401, 'A1001', 21, 4);
+-- --------------------------------------------------------
 
--- ----------------------------
--- Table structure for student
--- ----------------------------
-DROP TABLE IF EXISTS `student`;
-CREATE TABLE `student`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `name` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `room_id` bigint(0) NULL DEFAULT NULL,
-  `faculty_id` bigint(0) NULL DEFAULT NULL,
-  `number` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `registration_date` date NULL DEFAULT NULL,
-  `phone` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `photo` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `is_leave` tinyint(1) NULL DEFAULT 0,
-  `is_delete` tinyint(1) NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_faculty`(`faculty_id`) USING BTREE,
-  INDEX `fk_s_r`(`room_id`) USING BTREE,
-  CONSTRAINT `fk_faculty` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `fk_s_r` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 2084 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+--
+-- 表的结构 `notice`
+--
 
--- ----------------------------
--- Records of student
--- ----------------------------
-INSERT INTO `student` VALUES (5, '张娜', 130, 22, '2151797766', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (6, '冯秀兰', 271, 12, '1831200243', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (7, '张红梅', 136, 19, '2527799207', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (8, '张玉兰', 51, 16, '1275088524', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (9, '韩桂珍', 238, 16, '4673563850', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (10, '李玉英', 372, 16, '9224218663', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (11, '赵莹', 57, 16, '3087948245', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (12, '郑莹', 353, 16, '6810855538', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (13, '李建国', 112, 11, '8221754625', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (14, '郑瑜', 318, 23, '9319598270', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (15, '吴小红', 378, 20, '7772315118', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (16, '张建', 324, 15, '4466889873', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (17, '庞雪梅', 195, 15, '9079307402', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (18, '郑凤兰', 89, 16, '2651056926', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (19, '漆兵', 142, 10, '2539710146', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (20, '刘林', 168, 16, '6660667818', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (21, '朱彬', 354, 19, '2056651270', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (22, '林秀云', 246, 20, '2983622793', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (23, '徐英', 146, 15, '6529505115', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (24, '李静', 95, 18, '2321249971', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (25, '夏鹏', 228, 10, '8062590640', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (26, '何红霞', 7, 19, '0978814411', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (27, '丁强', 286, 15, '9330067915', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (28, '李刚', 265, 18, '8603713126', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (29, '周玉梅', 161, 11, '4691404051', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (30, '贺艳', 373, 10, '7053623812', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (31, '冯健', 11, 23, '7642086095', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (32, '叶成', 30, 22, '6757773592', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (33, '刘军', 89, 10, '1606044926', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (34, '金桂兰', 92, 23, '2909533827', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (35, '潘磊', 374, 20, '7213999945', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (36, '谢磊', 109, 15, '2438052897', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (37, '叶辉', 136, 11, '3381244267', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (38, '胡桂兰', 146, 18, '4462561382', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (39, '田桂荣', 349, 18, '4882913702', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (40, '漆兵', 100, 22, '6969863296', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (41, '温丽丽', 366, 22, '7443540825', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (42, '郑旭', 229, 23, '1421499072', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (43, '赵辉', 243, 12, '3961359183', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (44, '马欣', 275, 11, '6039319992', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (45, '陈璐', 321, 16, '1271062502', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (46, '廖涛', 321, 20, '0783260773', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (47, '汪丹', 218, 16, '7986444378', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (48, '张桂芝', 297, 19, '7207199417', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (49, '石建军', 318, 20, '4811953976', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (50, '钟桂花', 203, 10, '4616521713', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (51, '张桂兰', 153, 16, '3409725964', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (52, '石桂花', 315, 10, '2843228640', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (53, '崔波', 318, 11, '4400982367', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (54, '王丽丽', 11, 15, '9577535253', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (55, '张华', 367, 11, '5086015811', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (56, '郭浩', 258, 15, '0446099567', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (57, '林秀云', 264, 11, '4292594872', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (58, '卢利', 387, 12, '3722042478', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (59, '刘宇', 110, 11, '0195182380', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (60, '卫成', 333, 19, '5793028434', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (61, '隋红梅', 50, 10, '0343175749', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (62, '李岩', 137, 10, '1173756607', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (63, '王淑兰', 302, 19, '3871470183', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (64, '郭玲', 268, 12, '4891736017', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (65, '穆强', 284, 15, '2991659941', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (66, '晏桂兰', 67, 18, '0127069967', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (67, '陶莉', 135, 23, '4305212925', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (68, '周静', 7, 10, '1904474750', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (69, '魏瑜', 326, 10, '5889438009', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (70, '路瑜', 314, 12, '8115246439', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (71, '陈桂芝', 34, 16, '8059943841', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (72, '耿红霞', 277, 18, '3246184237', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (73, '车峰', 316, 18, '3406178732', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (74, '危波', 239, 11, '7311442846', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (75, '李婷', 159, 16, '0268811578', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (76, '刘桂香', 10, 22, '5092787438', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (77, '谢岩', 314, 19, '2928023930', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (78, '冯柳', 46, 18, '1481253731', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (79, '王磊', 380, 19, '8704770833', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (80, '雷岩', 333, 11, '7096211332', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (81, '江丽', 89, 15, '6931015212', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (82, '刘颖', 74, 15, '9971553127', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (83, '田楠', 260, 15, '2260615899', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (84, '贺飞', 40, 22, '9943283245', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (85, '刘帆', 231, 19, '3230377928', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (86, '毕金凤', 340, 11, '7276471215', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (87, '张飞', 96, 20, '8274989288', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (88, '滕鑫', 208, 20, '0449150209', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (89, '郭冬梅', 82, 11, '0585673079', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (90, '凌淑华', 339, 20, '6319790875', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (91, '吴丹丹', 387, 19, '4839815273', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (92, '张玉', 97, 18, '2163821847', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (93, '杨桂香', 262, 22, '2905654163', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (94, '李桂兰', 149, 23, '0154395452', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (95, '党雪梅', 391, 18, '4247129761', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (96, '张娜', 171, 20, '2830497761', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (97, '杨畅', 259, 12, '8765632289', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (98, '祝红', 348, 20, '2965481038', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (99, '王霞', 6, 22, '1054976617', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (100, '芦淑英', 192, 15, '9106896950', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (101, '王健', 389, 11, '1251848495', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (102, '卞丽', 230, 10, '9600903422', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (103, '张颖', 53, 16, '9278994717', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (104, '陆斌', 130, 15, '5017189892', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (105, '李宁', 283, 20, '2611305527', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (106, '刘杰', 257, 22, '1536145024', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (107, '张亮', 325, 19, '8411559510', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (108, '蔡云', 28, 22, '2885716775', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (109, '唐林', 386, 15, '0571249733', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (110, '杜阳', 292, 18, '3904592244', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (111, '杨丽华', 322, 11, '7490054885', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (112, '张旭', 96, 16, '0609386434', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (113, '李桂芳', 170, 20, '1398524702', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (114, '牛倩', 264, 20, '3772286879', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (115, '李飞', 208, 12, '4776561557', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (116, '张建', 2, 19, '7870207876', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (117, '鲍欢', 129, 19, '4831537933', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (118, '王桂珍', 372, 18, '7993451622', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (119, '李楠', 341, 10, '3399052521', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (120, '吴林', 393, 12, '7299389392', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (121, '李建华', 117, 10, '9366378272', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (122, '王帅', 110, 19, '5501625507', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (123, '靳华', 380, 12, '3162058975', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (124, '李飞', 285, 16, '3029593905', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (125, '李凯', 264, 18, '0779436113', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (126, '陈凤英', 367, 15, '3400832154', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (127, '董雷', 333, 23, '5452299580', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (128, '雷建', 15, 11, '6162873372', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (129, '况超', 337, 19, '0439269505', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (130, '杨小红', 79, 19, '2682030687', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (131, '唐玉', 37, 19, '3706254725', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (132, '杨红', 40, 10, '7573266601', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (133, '张桂兰', 96, 15, '7101391587', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (134, '门欢', 137, 10, '5089051621', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (135, '范琳', 209, 23, '9256512069', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (136, '邓涛', 148, 12, '7739241486', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (137, '李秀珍', 176, 22, '3705543604', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (138, '雷瑜', 381, 20, '5912653884', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (139, '刘颖', 234, 19, '5241256324', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (140, '陈健', 353, 16, '4641052812', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (141, '李帆', 348, 10, '7086353025', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (142, '陶桂花', 205, 23, '6694094396', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (143, '王敏', 320, 15, '1778776494', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (144, '栾红梅', 387, 19, '3869107019', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (145, '卢丽娟', 33, 19, '7306963438', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (146, '孟玲', 25, 12, '0937851618', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (147, '姜玉华', 95, 16, '7111384008', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (148, '王璐', 239, 11, '9265694893', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (149, '黄丹', 323, 12, '9263072194', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (150, '严丽华', 166, 22, '5124505909', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (151, '刘冬梅', 283, 15, '6748374176', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (152, '郑建', 1, 18, '5012737510', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (153, '王涛', 378, 22, '9698066279', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (154, '郭秀华', 231, 12, '4758577870', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (155, '张秀兰', 122, 18, '1775099701', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (156, '魏春梅', 372, 23, '9169125766', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (157, '宁超', 130, 19, '6009361358', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (158, '房秀珍', 169, 15, '5713606473', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (159, '黄雷', 347, 18, '8907623329', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (160, '胡阳', 252, 23, '4895810209', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (161, '刘丽娟', 49, 19, '3592753963', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (162, '薛丹丹', 56, 18, '7066090057', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (163, '金涛', 324, 16, '4083615757', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (164, '侯丽娟', 386, 22, '9923514232', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (165, '江淑珍', 22, 18, '1249416625', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (166, '刘秀云', 263, 16, '5840198207', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (167, '成莹', 158, 15, '8231520559', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (168, '冯欣', 390, 18, '7300008317', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (169, '萧红梅', 118, 11, '8007576428', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (170, '李秀兰', 398, 23, '2558235860', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (171, '李玲', 18, 19, '6836920138', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (172, '陈畅', 82, 12, '1127082061', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (173, '管想', 33, 16, '1367492036', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (174, '曹建平', 158, 11, '6498779153', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (175, '李丽娟', 164, 22, '8289560087', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (176, '车亮', 89, 23, '7975553858', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (177, '陆杨', 191, 15, '3207429708', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (178, '杨瑜', 47, 19, '7880855837', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (179, '陶健', 107, 22, '8870698729', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (180, '朱秀梅', 219, 18, '6717653335', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (181, '舒峰', 265, 20, '1216411801', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (182, '陆成', 52, 10, '1262743146', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (183, '沈婷', 166, 15, '8549777903', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (184, '李柳', 247, 12, '4270956355', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (185, '刘莹', 154, 20, '1842507696', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (186, '李刚', 323, 11, '5841727061', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (187, '马华', 111, 23, '8140272812', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (188, '张畅', 108, 20, '8040930955', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (189, '崔建华', 305, 19, '2321635369', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (190, '吴波', 229, 19, '2362984306', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (191, '张霞', 33, 18, '6228802439', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (192, '李梅', 283, 18, '5334073195', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (193, '邱冬梅', 110, 15, '6325470226', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (194, '刘超', 52, 12, '2261040783', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (195, '黄淑华', 11, 20, '4457248819', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (196, '谢桂花', 99, 20, '2444396895', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (197, '陈璐', 304, 16, '4329280796', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (198, '刘文', 118, 16, '2648452512', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (199, '林凤英', 378, 10, '4790928336', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (200, '邹兰英', 139, 10, '9500422031', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (201, '谢婷', 298, 23, '7649558607', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (202, '路彬', 164, 22, '1683095928', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (203, '郭峰', 380, 10, '1620112790', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (204, '李玲', 342, 18, '3920195140', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (205, '符秀英', 27, 22, '2712649950', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (206, '李桂英', 140, 10, '0102817730', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (207, '袁海燕', 278, 19, '0287766277', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (208, '陈荣', 113, 19, '0529012876', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (209, '郭小红', 245, 12, '7570466471', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (210, '夏红霞', 356, 20, '0759385811', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (211, '裴彬', 111, 18, '8618287911', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (212, '陈丽丽', 126, 20, '8375198381', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (213, '张璐', 118, 20, '0589805849', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (214, '张颖', 257, 12, '2659681968', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (215, '蔡莉', 202, 10, '1929341263', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (216, '王秀兰', 278, 15, '2463815510', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (217, '孙涛', 112, 19, '2480907412', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (218, '余俊', 250, 18, '2905326521', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (219, '王秀芳', 36, 12, '1192585730', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (220, '叶桂芳', 372, 10, '4341240527', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (221, '郭阳', 190, 15, '7356826575', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (222, '覃宁', 84, 15, '1833032843', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (223, '魏丹', 127, 11, '7661905505', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (224, '宋丽娟', 23, 18, '4358819993', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (225, '赵平', 347, 10, '5744002667', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (226, '邱红霞', 137, 19, '3815112935', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (227, '彭桂香', 65, 11, '6065546629', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (228, '胡玉兰', 83, 19, '0364551861', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (229, '王秀华', 167, 15, '5868474662', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (230, '刘小红', 81, 19, '6321593679', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (231, '张玉梅', 95, 15, '4536876382', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (232, '张丹丹', 129, 10, '9580730016', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (233, '董凯', 5, 11, '8415443924', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (234, '杨秀兰', 38, 11, '5233353194', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (235, '黄淑华', 378, 19, '9160165748', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (236, '金慧', 357, 11, '6207849982', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (237, '刘杨', 282, 20, '3422814648', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (238, '王秀梅', 157, 11, '8632352079', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (239, '何璐', 319, 19, '5041626097', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (240, '张倩', 32, 22, '5550705123', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (241, '龙秀梅', 193, 10, '5982218074', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (242, '阳瑞', 131, 11, '7576818373', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (243, '赵娜', 160, 10, '2938207371', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (244, '位琴', 138, 23, '9383865653', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (245, '陈杨', 96, 19, '7086294616', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (246, '赖伟', 40, 12, '5134780114', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (247, '李雪', 350, 19, '4027619706', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (248, '王桂英', 97, 16, '9426874558', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (249, '陶彬', 195, 18, '8015782891', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (250, '韩瑜', 252, 23, '6546028623', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (251, '李静', 393, 10, '3158806375', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (252, '钟柳', 338, 11, '4304611060', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (253, '邓秀珍', 79, 18, '0238701150', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (254, '隋玉华', 364, 12, '0280124183', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (255, '任倩', 38, 15, '7244581667', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (256, '胡勇', 93, 10, '5816558439', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (257, '秦桂芝', 17, 19, '1962400912', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (258, '王欢', 316, 12, '6402849142', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (259, '王淑珍', 104, 22, '1904783795', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (260, '叶志强', 395, 16, '6713616677', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (261, '王明', 216, 20, '7336056798', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (262, '李晶', 180, 22, '3674883157', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (263, '李桂荣', 7, 15, '5672818668', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (264, '袁小红', 297, 12, '4764409773', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (265, '谢婷婷', 274, 22, '1546879145', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (266, '叶建华', 266, 19, '2489695573', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (267, '周春梅', 220, 12, '0954659472', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (268, '冯建平', 398, 16, '7342746860', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (269, '李文', 232, 23, '0310779962', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (270, '黄淑英', 19, 16, '5506817215', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (271, '张帅', 32, 15, '1972468956', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (272, '陈玉英', 95, 20, '7113973614', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (273, '裴彬', 180, 18, '1727303436', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (274, '王晨', 143, 10, '7641767500', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (275, '李磊', 362, 18, '3126299466', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (276, '牛倩', 366, 20, '0104565609', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (277, '曾华', 253, 15, '4060959036', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (278, '荣桂花', 336, 11, '4562418381', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (279, '朱晶', 338, 11, '8238119870', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (280, '杨柳', 400, 23, '2215301270', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (281, '卢娜', 389, 23, '2729462748', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (282, '汪丹', 197, 19, '9324716242', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (283, '易荣', 213, 15, '6732290795', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (284, '陈芳', 221, 15, '0506590049', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (285, '汪玉英', 264, 18, '8125365867', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (286, '温平', 396, 10, '9994018848', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (287, '关瑜', 330, 10, '5038820731', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (288, '柯丽', 324, 19, '8215986987', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (289, '周刚', 362, 19, '3042805299', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (290, '王春梅', 48, 16, '7903409028', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (291, '晋欣', 129, 12, '5207695614', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (292, '谢秀英', 371, 22, '8545313864', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (293, '夏欢', 350, 11, '0486134960', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (294, '张淑华', 366, 18, '6979402886', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (295, '龙琴', 168, 11, '5355835071', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (296, '张博', 329, 11, '5315873676', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (297, '胡玉兰', 213, 11, '8679020920', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (298, '唐桂荣', 176, 16, '7086979001', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (299, '荣桂花', 135, 20, '9096757155', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (300, '杜婷', 297, 12, '8176848543', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (301, '钱磊', 183, 10, '9914129985', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (302, '陈玲', 36, 11, '9495391369', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (303, '雷岩', 41, 22, '7222649292', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (304, '刘杨', 67, 23, '3293966178', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (305, '白慧', 386, 18, '8449360341', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (306, '王霞', 353, 15, '7861161515', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (307, '何莉', 302, 23, '0251733535', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (308, '韦丹丹', 353, 18, '0759256643', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (309, '晏桂兰', 285, 23, '7175251957', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (310, '彭阳', 284, 12, '0467839770', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (311, '邬亮', 88, 10, '7070643555', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (312, '宋想', 119, 22, '3274427604', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (313, '刘旭', 29, 16, '4094792785', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (314, '张淑珍', 380, 11, '6178829857', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (315, '彭波', 176, 10, '0041012949', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (316, '陈红', 85, 23, '0285395689', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (317, '黄杰', 363, 10, '2090691921', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (318, '范桂珍', 113, 10, '0451403597', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (319, '魏军', 257, 16, '0771027648', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (320, '李龙', 80, 20, '7528547384', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (321, '田想', 62, 16, '0380149827', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (322, '李杨', 295, 15, '4406209331', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (323, '陈梅', 58, 19, '4964164133', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (324, '曹建平', 88, 11, '4865880534', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (325, '冯桂花', 140, 23, '2702838225', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (326, '林明', 92, 15, '5396326976', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (327, '戴宇', 109, 19, '7098901254', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (328, '何玲', 172, 10, '5417940295', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (329, '吕海燕', 121, 23, '1103897172', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (330, '张鹏', 205, 23, '1288499726', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (331, '刘楠', 130, 10, '9794171334', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (332, '胡琳', 322, 11, '6037845918', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (333, '季秀珍', 360, 16, '7213777322', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (334, '周丽华', 166, 18, '3188025036', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (335, '杨帅', 35, 19, '0744563184', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (336, '邓霞', 95, 12, '2159562078', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (337, '叶成', 54, 11, '6822098731', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (338, '唐琴', 331, 10, '8988158142', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (339, '黄鹏', 83, 16, '4711787075', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (340, '李艳', 213, 10, '2006132547', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (341, '陈帅', 99, 18, '5343409749', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (342, '孟玲', 315, 15, '1292387896', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (343, '张玉英', 295, 22, '4823160784', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (344, '岳坤', 48, 19, '4069430166', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (345, '崔晨', 66, 19, '2848680996', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (346, '陈龙', 120, 20, '3972352084', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (347, '张浩', 91, 12, '6354038435', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (348, '王秀英', 151, 11, '3742863914', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (349, '郑俊', 139, 19, '5300216343', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (350, '姚鹏', 16, 12, '2968679204', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (351, '郭瑜', 75, 20, '8470522522', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (352, '陈倩', 106, 12, '7900284465', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (353, '鲍建平', 166, 19, '2957095736', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (354, '祝红', 317, 23, '4908881637', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (355, '蒋萍', 40, 22, '6125107253', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (356, '徐洋', 314, 22, '0634215414', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (357, '郭峰', 300, 19, '6615040493', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (358, '杜欣', 310, 18, '5363375032', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (359, '罗海燕', 276, 15, '1061314064', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (360, '马丽华', 211, 20, '9990953313', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (361, '吴秀珍', 172, 10, '1922684212', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (362, '孙兰英', 212, 10, '6074385059', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (363, '何丹', 302, 12, '3289470394', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (364, '任洁', 63, 11, '4253729412', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (365, '马辉', 267, 15, '2898668149', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (366, '陈鑫', 208, 23, '2670555136', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (367, '罗柳', 113, 18, '8248057274', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (368, '朱秀梅', 26, 16, '3146882012', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (369, '张勇', 149, 23, '4800480129', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (370, '蔡刚', 355, 18, '0235803726', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (371, '潘岩', 315, 12, '5051522852', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (372, '王英', 279, 20, '2679221800', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (373, '张慧', 345, 20, '3223655338', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (374, '李萍', 141, 11, '5071410308', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (375, '李波', 324, 20, '4400602143', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (376, '杜欣', 142, 12, '2997713050', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (377, '陈柳', 363, 12, '3000618807', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (378, '雷芳', 361, 10, '6389341271', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (379, '罗玉英', 142, 11, '7807555886', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (380, '李淑华', 222, 16, '3005296828', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (381, '王旭', 63, 23, '3273686048', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (382, '张斌', 51, 12, '8237378043', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (383, '陈凤英', 166, 23, '7732533045', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (384, '田淑兰', 150, 15, '7623429712', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (385, '廖岩', 74, 11, '6953750807', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (386, '斯静', 195, 19, '9756559016', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (387, '何桂珍', 70, 22, '9637288577', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (388, '施淑兰', 277, 19, '4577389663', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (389, '曹坤', 187, 22, '8157308714', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (390, '裴丹丹', 98, 12, '0694669223', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (391, '张健', 254, 20, '7622522000', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (392, '桂欣', 308, 19, '1537845093', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (393, '葛龙', 366, 20, '6566780261', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (394, '余东', 347, 23, '4869594578', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (395, '吴萍', 123, 16, '0962656422', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (396, '张金凤', 101, 19, '0887273915', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (397, '王玉', 265, 19, '6705844290', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (398, '梁磊', 125, 20, '5542717821', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (399, '许志强', 41, 20, '7591626828', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (400, '戴鑫', 311, 10, '5062370886', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (401, '马芳', 303, 18, '1032658296', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (402, '陈雷', 257, 19, '4051212992', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (403, '裴彬', 72, 18, '8673014028', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (404, '苗彬', 313, 18, '4871459402', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (405, '吴秀珍', 58, 16, '4327420259', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (406, '张丽丽', 294, 19, '6526140376', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (407, '赵伟', 29, 12, '7700273098', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (408, '龙琴', 314, 10, '7717662545', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (409, '赵秀荣', 46, 11, '7883138704', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (410, '吴浩', 354, 16, '6375266951', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (411, '王英', 125, 23, '3068761292', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (412, '邹健', 395, 15, '2005691683', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (413, '耿帅', 323, 15, '1632842321', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (414, '陆秀梅', 200, 10, '9860579072', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (415, '袁颖', 170, 11, '5913488782', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (416, '吴桂兰', 264, 20, '4884118307', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (417, '何红霞', 397, 19, '6929648373', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (418, '靳华', 94, 18, '4409714189', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (419, '杨莉', 289, 20, '0133584170', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (420, '施丽丽', 298, 11, '3107028219', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (421, '周璐', 375, 11, '1700175827', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (422, '祝辉', 217, 18, '7701883815', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (423, '崔宇', 33, 20, '3065513401', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (424, '萧利', 78, 15, '8818623821', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (425, '刘亮', 263, 15, '4999858344', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (426, '支凯', 339, 16, '8572390858', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (427, '余秀荣', 22, 10, '7931515507', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (428, '孙坤', 144, 11, '3158966307', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (429, '杨博', 217, 20, '6698379669', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (430, '钟涛', 262, 23, '7178167070', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (431, '姜帅', 108, 22, '7920262875', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (432, '黄琴', 307, 12, '0981223339', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (433, '韩霞', 350, 20, '4682162911', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (434, '谢岩', 160, 15, '9363204049', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (435, '邹兰英', 293, 12, '1380828485', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (436, '郑瑜', 83, 16, '1823517613', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (437, '邹丽丽', 359, 10, '6942712464', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (438, '朱丹丹', 68, 22, '6501060283', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (439, '黄军', 185, 15, '9484453187', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (440, '彭波', 66, 16, '5360812275', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (441, '曾华', 13, 12, '3842418301', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (442, '潘磊', 165, 19, '5270876602', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (443, '路瑜', 184, 20, '1358215768', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (444, '张晨', 389, 20, '0392304631', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (445, '陈金凤', 225, 10, '5557992469', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (446, '李雪', 301, 12, '8972691394', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (447, '罗刚', 276, 15, '5789181559', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (448, '杨慧', 106, 23, '7657511506', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (449, '刁云', 172, 15, '1321370649', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (450, '邓霞', 258, 12, '2321024710', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (451, '李秀珍', 270, 11, '2146160388', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (452, '赵琴', 92, 23, '8925606648', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (453, '马桂芳', 192, 15, '9655888748', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (454, '史桂芝', 22, 10, '5538810954', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (455, '杨秀兰', 21, 22, '1528662753', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (456, '陈兵', 137, 11, '5948061174', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (457, '林凤英', 305, 12, '6183853491', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (458, '陈淑英', 120, 22, '1089033968', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (459, '邓欢', 367, 19, '3815590657', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (460, '王洁', 387, 10, '8288723820', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (461, '夏艳', 358, 11, '6776515931', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (462, '李鹏', 393, 11, '1493170162', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (463, '黄建国', 254, 23, '0379080971', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (464, '杨杨', 383, 18, '8013366258', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (465, '唐志强', 240, 19, '1120762103', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (466, '邓涛', 383, 12, '9986221962', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (467, '段桂珍', 223, 10, '4187617682', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (468, '赵淑珍', 370, 19, '9714399466', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (469, '罗帆', 133, 12, '1113015886', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (470, '王杰', 154, 12, '6604583716', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (471, '颜楠', 7, 16, '5617315111', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (472, '陈文', 208, 15, '0673180325', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (473, '余龙', 82, 18, '8808727257', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (474, '吴秀梅', 201, 23, '8099371411', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (475, '李萍', 12, 18, '2006511643', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (476, '柏涛', 180, 15, '4130603959', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (477, '叶莉', 20, 19, '4616844694', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (478, '曹楠', 327, 23, '4159984170', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (479, '刘超', 186, 11, '2298239388', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (480, '贾欢', 196, 10, '9741120165', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (481, '李玉兰', 173, 23, '3716269709', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (482, '管飞', 210, 20, '5018456433', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (483, '周兰英', 222, 19, '1994132524', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (484, '张玉珍', 363, 19, '6870417109', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (485, '郭玉华', 51, 20, '5727830793', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (486, '吴晨', 341, 23, '8144922133', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (487, '吕桂香', 299, 23, '7516622634', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (488, '李志强', 277, 19, '4816227336', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (489, '张娟', 3, 18, '8756457213', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (490, '李春梅', 117, 22, '3202481373', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (491, '陈玲', 29, 11, '6888765385', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (492, '张婷婷', 149, 22, '1259681376', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (493, '刘桂香', 303, 19, '4946752509', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (494, '李建华', 260, 11, '5695784691', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (495, '马芳', 269, 18, '4112800222', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (496, '杨淑英', 66, 23, '3910296285', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (497, '敖杨', 162, 20, '4001990976', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (498, '潘鑫', 18, 11, '8290935863', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (499, '李楠', 114, 16, '7706464134', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (500, '梅刚', 365, 20, '3113422334', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (501, '鞠建国', 169, 12, '8990550864', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (502, '刘玉英', 115, 16, '2293394718', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (503, '李芳', 28, 10, '4699805200', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (504, '赖红', 274, 20, '9996691893', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (505, '曹军', 161, 22, '2948084496', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (506, '韦婷', 295, 23, '4238270315', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (507, '叶成', 302, 20, '4087365172', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (508, '霍兵', 199, 19, '9460003596', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (509, '陈慧', 115, 22, '4523151911', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (510, '玉兰英', 288, 15, '0001917956', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (511, '杨飞', 232, 15, '7985098747', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (512, '朱畅', 12, 12, '3445054006', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (513, '陈洁', 55, 15, '1869814138', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (514, '杨霞', 95, 20, '7061191052', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (515, '符玲', 328, 20, '9708949500', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (516, '卢娜', 16, 23, '5554187182', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (517, '杜春梅', 36, 11, '6200049225', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (518, '祝辉', 374, 16, '5654724269', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (519, '杨亮', 316, 15, '4763465591', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (520, '邵磊', 99, 16, '7368591360', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (521, '江雷', 339, 19, '6380600865', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (522, '李宁', 42, 10, '0461324910', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (523, '张飞', 72, 10, '1071817988', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (524, '侯丽娟', 218, 10, '5843658803', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (525, '隋红梅', 75, 20, '2091948035', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (526, '王刚', 118, 15, '2825462733', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (527, '安凤兰', 36, 15, '9578067545', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (528, '杜军', 213, 19, '0320803502', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (529, '盛文', 136, 22, '8506066273', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (530, '和秀荣', 298, 15, '0740280722', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (531, '刘建华', 205, 22, '8259148301', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (532, '李红霞', 269, 19, '6345014119', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (533, '周琴', 323, 15, '9778627035', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (534, '陈龙', 191, 23, '1055204620', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (535, '刘超', 263, 18, '6128200411', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (536, '周楠', 363, 16, '8542467363', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (537, '李欢', 184, 10, '6263266598', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (538, '刘娟', 25, 12, '4387682143', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (539, '王强', 22, 20, '6678033237', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (540, '蓝红', 52, 15, '9589187541', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (541, '刘文', 192, 19, '0375129542', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (542, '黎鑫', 290, 11, '7763022269', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (543, '张洋', 376, 12, '5137948852', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (544, '王桂兰', 297, 16, '4131987221', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (545, '王洁', 110, 19, '2441100762', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (546, '韩建', 79, 23, '1160264099', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (547, '楚玉兰', 30, 10, '0589926520', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (548, '卢娜', 38, 15, '5776865005', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (549, '张楠', 184, 22, '4618726341', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (550, '刘玉', 219, 15, '5477953573', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (551, '金玉华', 108, 12, '1407455040', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (552, '杨凤兰', 92, 22, '4623988712', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (553, '吴敏', 239, 18, '4445512056', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (554, '张玉梅', 333, 15, '3737235666', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (555, '秦金凤', 73, 20, '6779055245', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (556, '董红', 282, 11, '7198311486', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (557, '鞠俊', 113, 20, '4123670694', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (558, '卢飞', 214, 11, '5762080856', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (559, '李婷', 383, 18, '5144377143', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (560, '温丽丽', 56, 16, '1022582105', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (561, '钟柳', 181, 10, '8898192523', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (562, '张浩', 72, 10, '8198181030', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (563, '缪凤英', 349, 23, '6927967838', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (564, '王刚', 183, 11, '8588750192', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (565, '王杰', 57, 16, '9840790185', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (566, '张云', 259, 15, '2132519700', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (567, '文瑞', 147, 15, '0354617607', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (568, '冯倩', 364, 19, '5336377380', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (569, '刘丽', 21, 12, '1546825997', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (570, '苑成', 232, 19, '1518558614', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (571, '郑建军', 139, 20, '4767127186', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (572, '张秀荣', 257, 15, '1427971965', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (573, '熊磊', 110, 23, '1804890873', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (574, '崔想', 391, 23, '1583308060', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (575, '颜晶', 141, 10, '7785770456', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (576, '韦婷', 216, 11, '0275290351', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (577, '汤凤英', 122, 19, '3438988105', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (578, '祝林', 45, 11, '7945494971', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (579, '梁玉英', 66, 20, '7683974776', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (580, '石璐', 26, 10, '6329388440', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (581, '洪丽娟', 272, 18, '4427275496', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (582, '韦俊', 398, 20, '1415262804', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (583, '黄建国', 141, 23, '1233154981', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (584, '詹淑英', 346, 23, '6833006300', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (585, '李玉珍', 359, 12, '9146356158', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (586, '王阳', 388, 16, '2094745871', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (587, '马海燕', 48, 11, '2354658727', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (588, '徐淑珍', 356, 12, '3729254898', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (589, '罗玉英', 156, 15, '2309508350', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (590, '邹雷', 1, 22, '0434311328', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (591, '张桂香', 143, 10, '1703205730', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (592, '马秀荣', 112, 23, '7023375025', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (593, '杨丽', 290, 19, '1428518530', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (594, '高桂香', 203, 23, '6215420936', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (595, '彭帆', 27, 16, '6589672014', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (596, '江勇', 68, 23, '4893893007', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (597, '韦婷', 228, 22, '2990798832', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (598, '林婷', 283, 18, '2170709146', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (599, '杜阳', 94, 19, '9926629488', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (600, '杨萍', 66, 23, '4552918352', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (601, '郭桂兰', 47, 12, '7718460301', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (602, '章冬梅', 70, 11, '5304864925', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (603, '董倩', 396, 19, '9139118870', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (604, '崔波', 206, 16, '9306712620', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (605, '张红', 82, 18, '2932012257', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (606, '苏旭', 120, 11, '1389534921', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (607, '叶红梅', 325, 18, '5929431594', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (608, '赵建华', 83, 11, '2573782399', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (609, '李旭', 210, 11, '3757969541', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (610, '程兰英', 44, 10, '6934467753', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (611, '王健', 155, 19, '8276715769', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (612, '王丹', 236, 23, '7923627277', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (613, '隋红梅', 259, 23, '9393844044', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (614, '彭帆', 161, 18, '5931471765', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (615, '杨峰', 18, 23, '4175519270', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (616, '彭超', 270, 22, '4669975317', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (617, '连欢', 298, 16, '2665817792', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (618, '姜秀华', 238, 10, '4275111836', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (619, '杨春梅', 254, 18, '7294087590', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (620, '杨琳', 296, 15, '2874905261', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (621, '邓宁', 219, 10, '9840139525', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (622, '杨建', 344, 12, '4136351403', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (623, '李杨', 340, 10, '6065844861', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (624, '谭艳', 233, 19, '7667222699', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (625, '白慧', 176, 22, '5846855373', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (626, '李宇', 111, 10, '3036926811', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (627, '田丹', 319, 20, '9857813005', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (628, '胡婷', 368, 11, '1810850573', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (629, '叶东', 342, 19, '0427298185', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (630, '王鹏', 217, 10, '9467598198', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (631, '邱婷婷', 250, 23, '6639527889', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (632, '刘娜', 356, 10, '4219926724', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (633, '彭杨', 243, 22, '5567091204', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (634, '冯磊', 304, 18, '9529791761', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (635, '王阳', 48, 22, '4417341991', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (636, '兰丽华', 14, 12, '4940223822', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (637, '刘建华', 21, 15, '4098313259', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (638, '张秀云', 87, 19, '9284168071', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (639, '阳瑞', 168, 19, '4639137757', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (640, '屈勇', 278, 22, '8971857572', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (641, '陈芳', 245, 12, '6426357184', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (642, '陈丽娟', 297, 20, '7593090455', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (643, '陈亮', 355, 15, '4389252226', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (644, '温超', 197, 15, '2772872592', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (645, '康军', 271, 23, '4518939846', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (646, '杜玉兰', 179, 20, '3797613798', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (647, '张畅', 297, 19, '7100591799', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (648, '殷淑华', 138, 22, '8860941864', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (649, '彭杨', 120, 15, '4087627738', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (650, '卢飞', 39, 16, '2156698465', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (651, '练畅', 167, 22, '5255459639', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (652, '傅玉兰', 307, 23, '9274396665', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (653, '尹红梅', 344, 18, '8640809756', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (654, '张超', 29, 10, '4954217930', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (655, '蔡秀英', 86, 12, '5178356797', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (656, '孙帆', 263, 23, '9048399031', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (657, '吴佳', 47, 20, '7076171637', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (658, '周玉珍', 151, 23, '6641744119', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (659, '顾玉梅', 81, 19, '4509225542', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (660, '王飞', 4, 12, '3519427070', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (661, '张晶', 171, 15, '4135813912', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (662, '王秀梅', 358, 22, '8092182536', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (663, '刘玉珍', 17, 18, '6904100201', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (664, '杜帆', 241, 20, '3551570129', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (665, '杨莹', 289, 18, '1565196474', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (666, '韦金凤', 183, 23, '5840696796', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (667, '余秀珍', 68, 22, '0776256206', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (668, '程小红', 200, 10, '0090144319', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (669, '刘刚', 248, 23, '8320264757', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (670, '赵辉', 307, 15, '8569673120', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (671, '任桂芝', 142, 15, '4794632979', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (672, '陈萍', 392, 10, '1482096466', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (673, '郭红', 354, 15, '3698615915', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (674, '刘兰英', 44, 11, '0936567899', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (675, '赵辉', 115, 10, '6264316348', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (676, '陈建', 367, 10, '8540213374', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (677, '田成', 294, 15, '4687484954', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (678, '周桂珍', 75, 10, '7192100808', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (679, '黄建国', 54, 15, '2769094459', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (680, '鞠丹丹', 187, 10, '0017695952', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (681, '马红梅', 137, 10, '7690401367', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (682, '陈秀梅', 306, 12, '2860317239', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (683, '尹志强', 270, 18, '0528828198', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (684, '严丽华', 34, 20, '5130496569', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (685, '罗霞', 274, 19, '9409991162', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (686, '钟涛', 19, 19, '5069113857', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (687, '谢桂花', 146, 12, '5809117143', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (688, '韩秀英', 351, 16, '9029578981', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (689, '倪英', 244, 20, '0449201018', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (690, '赵欢', 214, 20, '6840571930', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (691, '卢凤英', 83, 11, '8081092808', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (692, '李燕', 165, 20, '4394864362', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (693, '马欢', 141, 20, '1461624335', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (694, '管红', 56, 19, '0440777801', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (695, '李晨', 191, 16, '4215128226', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (696, '郭桂兰', 270, 22, '0825218911', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (697, '刘东', 17, 23, '3784694660', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (698, '蔡建华', 383, 15, '5602656896', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (699, '彭帆', 108, 10, '8755859783', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (700, '吴淑英', 39, 20, '6664082243', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (701, '吴桂芝', 228, 23, '9970147672', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (702, '潘欣', 107, 19, '0297270283', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (703, '张龙', 137, 20, '5536827788', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (704, '刘浩', 114, 22, '5025191048', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (705, '杨洁', 134, 16, '5022174512', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (706, '黄金凤', 289, 19, '8251030294', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (707, '马丽丽', 320, 12, '0257477130', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (708, '刘兰英', 371, 11, '7599997334', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (709, '王玲', 94, 20, '8275175294', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (710, '李飞', 352, 11, '1451143716', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (711, '尹丽', 389, 11, '5433297958', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (712, '黄秀英', 98, 16, '0615288299', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (713, '蓝红', 271, 23, '4818855274', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (714, '孙俊', 50, 11, '2109129900', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (715, '陆楠', 343, 18, '9065516298', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (716, '余俊', 290, 23, '4291448337', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (717, '王玉', 277, 19, '4297829868', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (718, '周秀兰', 114, 20, '7503535476', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (719, '李兰英', 215, 23, '3984291141', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (720, '陈杨', 337, 11, '4937290571', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (721, '张燕', 241, 19, '1019284344', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (722, '李桂珍', 346, 15, '2016701825', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (723, '周桂珍', 226, 16, '4648514205', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (724, '张宁', 332, 23, '9915947705', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (725, '黄瑜', 51, 20, '0092902451', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (726, '徐玉英', 182, 10, '7336418507', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (727, '左浩', 289, 20, '1032423152', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (728, '王杰', 289, 20, '2099977159', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (729, '陆平', 270, 20, '5150110459', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (730, '田想', 47, 12, '4189995423', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (731, '刘建', 113, 22, '7052990025', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (732, '朱洁', 113, 16, '2851596699', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (733, '魏文', 224, 10, '8924041245', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (734, '刘坤', 150, 20, '3850236758', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (735, '岳坤', 325, 11, '3680168966', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (736, '陶莉', 375, 18, '3779629588', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (737, '王丽', 28, 10, '9158459490', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (738, '白桂香', 296, 15, '8751013618', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (739, '陶海燕', 271, 22, '2982713488', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (740, '王丽丽', 13, 11, '9774323905', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (741, '梁芳', 118, 19, '8245875568', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (742, '魏桂兰', 159, 22, '8915719297', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (743, '俞琳', 384, 10, '1679247123', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (744, '黄建国', 16, 15, '8460456247', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (745, '李欢', 264, 22, '0538777750', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (746, '黄艳', 123, 20, '5209920367', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (747, '张秀梅', 128, 18, '9476246965', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (748, '刘雷', 170, 11, '0803440777', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (749, '苏兵', 94, 10, '7849215085', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (750, '费瑜', 107, 19, '7358758313', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (751, '倪利', 107, 18, '3108766242', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (752, '李燕', 293, 15, '7913104446', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (753, '李华', 150, 16, '1082389434', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (754, '陈娟', 349, 20, '5626768324', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (755, '宋婷', 202, 23, '7954804749', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (756, '彭杨', 147, 12, '6875900880', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (757, '郑建军', 356, 18, '1895388968', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (758, '胡雪', 60, 22, '0699220603', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (759, '陈玉华', 134, 18, '2173101868', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (760, '郭欣', 93, 22, '8733383101', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (761, '滕辉', 18, 11, '2207793723', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (762, '隆秀华', 222, 22, '5482902057', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (763, '李琴', 386, 11, '0025638981', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (764, '邵娜', 260, 12, '6218729655', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (765, '刘凤兰', 54, 23, '8053557284', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (766, '谭桂香', 338, 18, '9890734962', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (767, '支辉', 142, 20, '1261249648', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (768, '刘强', 322, 18, '2230325496', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (769, '杨萍', 273, 15, '0867114459', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (770, '陈莹', 49, 18, '3114128632', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (771, '吴龙', 53, 23, '9745850497', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (772, '曹桂花', 61, 16, '2922667748', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (773, '余晨', 155, 16, '9977590130', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (774, '李东', 251, 18, '6395228802', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (775, '朱丹丹', 179, 16, '7686666207', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (776, '吕玉英', 99, 23, '5214498449', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (777, '萧秀云', 208, 23, '2008651149', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (778, '张波', 100, 18, '2897531615', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (779, '刘瑞', 156, 15, '3692827653', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (780, '林凤英', 205, 23, '6986134438', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (781, '林宁', 196, 10, '0407613399', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (782, '张桂兰', 223, 12, '6959258433', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (783, '迟桂芝', 138, 22, '2777924407', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (784, '殷林', 309, 20, '6134648870', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (785, '李建国', 329, 18, '2086753132', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (786, '张博', 11, 11, '2137208785', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (787, '王燕', 37, 23, '5363257983', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (788, '张文', 34, 12, '6765158678', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (789, '吴淑英', 268, 18, '1196874772', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (790, '刘婷', 78, 20, '3635632271', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (791, '汪建', 141, 23, '8484098829', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (792, '何敏', 139, 11, '1010081494', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (793, '韦兰英', 162, 16, '3500619247', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (794, '杨红霞', 226, 10, '2157684173', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (795, '聂建平', 136, 11, '2131502112', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (796, '侯秀英', 82, 10, '2689909972', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (797, '潘鹏', 207, 16, '2948256054', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (798, '汪红霞', 21, 18, '5364571243', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (799, '虞丽华', 257, 19, '8197741434', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (800, '唐燕', 393, 11, '3772954756', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (801, '姜柳', 135, 11, '1941731384', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (802, '叶红霞', 141, 15, '7317300985', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (803, '范慧', 397, 15, '3263625002', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (804, '王磊', 339, 16, '2855124505', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (805, '张楠', 385, 22, '0127424579', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (806, '李慧', 14, 12, '2000349834', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (807, '王冬梅', 161, 12, '4293612507', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (808, '高志强', 45, 10, '2598158135', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (809, '张畅', 211, 12, '3700473410', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (810, '吕金凤', 92, 20, '7976601634', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (811, '李梅', 294, 18, '7458576021', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (812, '方平', 234, 19, '9996960785', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (813, '李雪', 13, 23, '4506324668', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (814, '杨洋', 80, 19, '5239837919', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (815, '赵璐', 328, 10, '9453001405', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (816, '伍倩', 358, 11, '0788215456', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (817, '郭雪梅', 152, 10, '5208767578', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (818, '武静', 192, 12, '8740749511', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (819, '费瑜', 71, 22, '2283893060', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (820, '范琳', 229, 10, '5769071853', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (821, '韩成', 9, 11, '3822375363', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (822, '李云', 251, 16, '1052435640', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (823, '张兵', 255, 23, '2697542835', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (824, '李鑫', 322, 20, '8498830543', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (825, '杨红', 230, 19, '3811870995', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (826, '梁芳', 210, 20, '2810744816', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (827, '黄佳', 27, 20, '6969105879', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (828, '颜帅', 271, 10, '0228613833', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (829, '朱刚', 139, 10, '2257613605', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (830, '陈建国', 277, 19, '6170782930', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (831, '尚洋', 282, 19, '5102009351', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (832, '张畅', 273, 15, '0311940727', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (833, '盛玉', 196, 10, '5402118648', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (834, '米雪', 60, 12, '7781253698', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (835, '萧秀云', 223, 19, '0365895000', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (836, '戴春梅', 63, 11, '4821000529', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (837, '吕荣', 151, 22, '4128860610', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (838, '赵俊', 293, 19, '8535618545', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (839, '钱丽华', 244, 20, '2311096038', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (840, '李艳', 196, 18, '1393891776', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (841, '陈凯', 34, 22, '7334424097', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (842, '张建', 64, 16, '6945644296', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (843, '朱畅', 349, 12, '4488433912', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (844, '黄云', 236, 19, '1957402697', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (845, '袁玉梅', 319, 20, '3364483332', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (846, '张明', 74, 23, '7566566062', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (847, '杜佳', 119, 20, '9313088013', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (848, '卢飞', 370, 20, '5280045767', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (849, '王霞', 59, 11, '0822527050', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (850, '王丽华', 128, 20, '0972565938', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (851, '王健', 61, 22, '6470588459', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (852, '刘云', 321, 22, '2139676104', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (853, '殷淑华', 140, 11, '0275127548', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (854, '郜桂香', 10, 23, '6735501427', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (855, '金静', 220, 20, '9566787933', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (856, '郭梅', 381, 16, '9815120724', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (857, '李超', 368, 23, '9840984463', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (858, '王秀云', 192, 15, '3027255628', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (859, '孔帆', 221, 22, '9568375832', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (860, '黎秀华', 25, 19, '4198213018', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (861, '裴丹丹', 189, 20, '5116848958', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (862, '蔡莉', 176, 23, '9117580232', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (863, '杨玉华', 266, 16, '3526961354', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (864, '杨淑珍', 173, 11, '2289098599', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (865, '徐玉英', 216, 22, '1008356124', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (866, '王建军', 117, 23, '4982641404', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (867, '哈建', 77, 18, '5198058272', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (868, '冯秀英', 266, 20, '6509704041', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (869, '张淑珍', 150, 22, '7311380174', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (870, '李杨', 251, 11, '7072591533', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (871, '宋娟', 230, 19, '0023616350', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (872, '游桂芝', 236, 15, '3639853208', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (873, '罗凯', 274, 10, '8645051229', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (874, '王丽丽', 395, 15, '6715108354', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (875, '赵峰', 289, 10, '3498880839', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (876, '柏涛', 292, 23, '1776249605', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (877, '余淑兰', 177, 15, '2138124054', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (878, '沈建军', 375, 15, '3695278276', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (879, '王刚', 355, 16, '9039566629', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (880, '李莉', 92, 16, '5226868617', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (881, '任倩', 148, 22, '0209646756', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (882, '方秀珍', 315, 20, '3993725589', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (883, '武静', 154, 16, '9389713054', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (884, '张荣', 283, 18, '1609272359', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (885, '马雪梅', 344, 23, '8714000979', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (886, '陈英', 296, 15, '4898305956', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (887, '危勇', 58, 12, '3729943628', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (888, '路瑜', 123, 15, '9755891934', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (889, '周帅', 377, 20, '0677998492', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (890, '孟瑜', 301, 23, '4469179522', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (891, '刘楠', 167, 18, '7113240653', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (892, '杜帆', 143, 16, '7460946588', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (893, '王淑珍', 102, 19, '2192044014', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (894, '潘鹏', 331, 19, '0283285319', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (895, '范华', 77, 19, '8320427125', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (896, '袁玉梅', 73, 20, '6540362841', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (897, '孙彬', 260, 19, '2110480241', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (898, '陈桂英', 396, 23, '5540303358', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (899, '朱梅', 357, 18, '8187550572', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (900, '郭雪梅', 364, 23, '1074990680', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (901, '许峰', 99, 15, '3543595092', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (902, '张建军', 279, 10, '5981051243', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (903, '项玉', 209, 18, '1329388639', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (904, '凌淑华', 186, 12, '0153825435', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (905, '蒋洁', 111, 16, '9967505071', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (906, '张帆', 176, 10, '6367198073', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (907, '田淑兰', 147, 15, '4302768144', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (908, '卢彬', 23, 16, '4847259153', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (909, '马林', 126, 22, '0460750127', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (910, '祖丹丹', 170, 11, '8510448992', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (911, '唐海燕', 199, 19, '3812163468', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (912, '邓欢', 300, 20, '0986391686', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (913, '萧兰英', 385, 20, '0250385904', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (914, '郭阳', 159, 22, '7022255788', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (915, '白东', 228, 23, '9894433020', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (916, '薛丽华', 23, 23, '2589606461', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (917, '张敏', 311, 19, '2352618528', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (918, '黄红霞', 109, 10, '9958135237', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (919, '牟芳', 45, 22, '4792227086', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (920, '裴彬', 227, 22, '3543531464', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (921, '刘秀华', 334, 11, '2416626688', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (922, '姜玉华', 161, 23, '7709088348', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (923, '王刚', 76, 23, '0947048090', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (924, '曾超', 63, 10, '1122749212', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (925, '李超', 392, 22, '9337272802', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (926, '陶彬', 290, 22, '0856701201', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (927, '孔建军', 233, 19, '6319245673', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (928, '魏春梅', 111, 22, '0015924094', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (929, '傅秀华', 343, 16, '5053648886', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (930, '李秀珍', 161, 19, '0122686236', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (931, '卢利', 24, 18, '4557467680', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (932, '王阳', 338, 23, '5912478297', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (933, '马晶', 266, 22, '1341023440', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (934, '刘金凤', 325, 11, '6210075011', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (935, '王丹', 80, 16, '4235709402', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (936, '程小红', 357, 18, '9420361720', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (937, '孙淑华', 348, 12, '4411035461', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (938, '韦丹丹', 173, 16, '4269027248', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (939, '祝鹏', 263, 22, '0450830927', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (940, '吴建军', 80, 18, '1711379801', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (941, '王玉', 104, 23, '5933646200', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (942, '甘超', 330, 22, '0303171035', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (943, '李龙', 235, 12, '5834669664', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (944, '宋丽华', 199, 22, '2362116437', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (945, '张桂芝', 255, 10, '2388192135', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (946, '单宇', 90, 11, '2914724019', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (947, '钟阳', 281, 12, '4235649323', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (948, '柴荣', 125, 15, '9178400728', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (949, '丁涛', 143, 18, '1686556156', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (950, '陈建', 140, 23, '2854321663', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (951, '彭桂花', 371, 22, '3510971242', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (952, '张淑珍', 143, 19, '6532698955', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (953, '刘丽娟', 292, 11, '2248032298', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (954, '谭桂香', 75, 16, '0192414672', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (955, '钱玉兰', 75, 12, '2976283580', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (956, '徐金凤', 62, 12, '7140486747', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (957, '李红霞', 296, 12, '0786919092', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (958, '韩桂香', 237, 10, '4666529265', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (959, '谢鑫', 80, 11, '0589569922', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (960, '王浩', 313, 12, '5416873458', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (961, '牛欢', 120, 18, '8513390824', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (962, '黄旭', 306, 23, '3991336606', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (963, '葛龙', 77, 10, '6422138163', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (964, '张刚', 148, 22, '8538528463', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (965, '倪秀芳', 12, 11, '5318530061', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (966, '许宇', 100, 10, '4657098737', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (967, '徐飞', 346, 16, '6040554514', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (968, '苗燕', 312, 16, '1519945356', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (969, '刘玲', 388, 16, '2881446286', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (970, '郭秀英', 328, 11, '9951362213', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (971, '郑建', 237, 19, '8423564224', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (972, '李丽娟', 1, 19, '2274591517', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (973, '王峰', 78, 18, '7483650007', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (974, '李欢', 131, 20, '1714763296', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (975, '刘丹丹', 255, 18, '0532831865', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (976, '王金凤', 241, 22, '2022623157', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (977, '袁平', 350, 19, '7123161077', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (978, '王阳', 203, 22, '0506236796', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (979, '李欢', 63, 10, '4628309732', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (980, '宗莉', 6, 10, '9506151772', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (981, '喻鑫', 147, 11, '2111755064', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (982, '王建华', 69, 16, '3753533683', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (983, '赵超', 184, 20, '9525651904', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (984, '王静', 77, 20, '2553551185', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (985, '刘淑华', 235, 12, '1263504806', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (986, '王阳', 107, 18, '1260249806', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (987, '李浩', 162, 20, '9316881094', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (988, '陈静', 280, 16, '0258633548', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (989, '龚兰英', 69, 10, '8027983073', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (990, '刘莉', 126, 18, '9061463234', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (991, '王淑兰', 166, 19, '9280071164', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (992, '张柳', 286, 22, '1301036094', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (993, '邢欣', 175, 11, '8700157092', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (994, '茹丽', 66, 20, '4538128983', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (995, '刘浩', 146, 16, '4715656663', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (996, '杨云', 93, 11, '1822646692', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (997, '刘建', 238, 20, '8835818719', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (998, '杨淑珍', 250, 15, '1018248807', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (999, '单宇', 111, 22, '9199332925', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1000, '李桂荣', 73, 20, '4936947677', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1001, '章桂兰', 239, 16, '3391547223', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1002, '谭玉华', 164, 18, '5471803093', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1003, '李涛', 156, 10, '2273656865', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1004, '董金凤', 390, 20, '3242250813', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1005, '李旭', 214, 22, '9856830008', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1006, '许淑兰', 294, 10, '0398519820', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1007, '余龙', 226, 12, '1435371555', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1008, '刘娜', 105, 20, '5581032216', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1009, '罗雪', 355, 22, '5685770208', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1010, '张彬', 41, 16, '5348989557', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1011, '魏林', 392, 18, '1651434558', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1012, '夏林', 332, 10, '0460196549', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1013, '董玉华', 3, 19, '5033006324', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1014, '冯荣', 94, 19, '6234332628', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1015, '李明', 316, 19, '2577618303', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1016, '杨建华', 212, 11, '4273062618', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1017, '高红梅', 247, 19, '2952519045', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1018, '尹凯', 241, 15, '8381058942', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1019, '张红霞', 344, 23, '7921388681', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1020, '王英', 115, 10, '6677299092', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1021, '王健', 384, 10, '3168103274', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1022, '卢凤英', 163, 20, '1424287112', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1023, '翟丽娟', 118, 16, '9105084375', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1024, '金慧', 115, 10, '3745297337', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1025, '李琳', 163, 16, '2318331186', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1026, '章桂兰', 185, 10, '4549065870', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1027, '黄秀荣', 237, 22, '4342376145', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1028, '何龙', 269, 16, '4805484177', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1029, '倪英', 201, 20, '4618184395', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1030, '林建华', 303, 18, '9806956991', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1031, '许刚', 311, 16, '8594826162', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1032, '刘刚', 106, 19, '0036670536', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1033, '费瑜', 139, 23, '9186386709', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1034, '罗洋', 123, 19, '5292218408', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1035, '王云', 23, 18, '0411543863', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1036, '陈刚', 190, 18, '3433237855', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1037, '韦俊', 75, 12, '8670749051', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1038, '王燕', 270, 20, '7318475772', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1039, '段桂珍', 117, 23, '9166913110', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1040, '柳凤英', 98, 20, '7788424972', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1041, '周云', 67, 10, '5946618756', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1042, '牟芳', 142, 10, '3059703072', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1043, '李晶', 213, 16, '4531454429', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1044, '李璐', 68, 11, '6149392706', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1045, '王燕', 84, 23, '4941340969', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1046, '黄宇', 375, 11, '1625465470', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1047, '张红', 105, 16, '2761589064', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1048, '朱平', 37, 19, '6132478396', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1049, '奚桂兰', 181, 18, '7050805555', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1050, '杨秀梅', 279, 20, '3709842236', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1051, '康军', 145, 16, '0016213232', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1052, '周桂香', 222, 11, '8860315683', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1053, '郭想', 262, 19, '3480365363', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1054, '孙玉', 239, 12, '2374487504', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1055, '叶鑫', 304, 22, '7416383728', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1056, '刘冬梅', 163, 22, '5218927680', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1057, '赖秀梅', 266, 23, '0914660584', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1058, '刘文', 360, 10, '0269225613', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1059, '黄晨', 52, 23, '5303229347', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1060, '李建', 85, 11, '6492241020', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1061, '何敏', 284, 15, '2010448320', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1062, '张玉梅', 175, 15, '8689117492', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1063, '赵飞', 211, 16, '7320273258', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1064, '严霞', 304, 22, '4170733511', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1065, '苗彬', 49, 10, '2483198385', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1066, '李成', 283, 16, '7009757797', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1067, '姚鹏', 208, 16, '0010776805', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1068, '樊佳', 319, 12, '0496439859', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1069, '张丽丽', 150, 18, '8478593495', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1070, '吴雷', 364, 15, '5903034147', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1071, '杨云', 379, 15, '3274835822', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1072, '景云', 256, 12, '9301236366', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1073, '张燕', 217, 18, '3766206561', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1074, '邹帅', 329, 16, '1229886215', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1075, '丁坤', 376, 16, '6039730153', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1076, '路瑜', 263, 15, '8329407187', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1077, '王晶', 229, 23, '8001863899', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1078, '王峰', 28, 23, '2850249382', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1079, '王东', 20, 18, '5589434023', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1080, '武霞', 346, 19, '3260395505', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1081, '朱丹', 194, 16, '6878641499', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1082, '兰秀芳', 332, 10, '4440464807', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1083, '陆峰', 38, 22, '2968314602', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1084, '姜帅', 226, 20, '2399219660', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1085, '黄丽娟', 8, 18, '6584772694', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1086, '李瑞', 182, 20, '6123693943', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1087, '周玉梅', 368, 18, '9012800229', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1088, '李萍', 249, 19, '5326221308', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1089, '靳华', 358, 10, '6191079605', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1090, '杨勇', 160, 16, '2149691113', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1091, '孙兰英', 189, 12, '8455263737', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1092, '王磊', 145, 16, '7098427570', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1093, '祁桂花', 214, 22, '4331810969', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1094, '陶海燕', 250, 10, '5363496088', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1095, '王成', 25, 23, '8611824208', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1096, '刘宁', 124, 20, '9181098162', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1097, '王桂荣', 342, 23, '9468763822', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1098, '张秀云', 151, 16, '8786069082', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1099, '陈春梅', 128, 12, '5795867155', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1100, '傅桂兰', 167, 19, '0608378750', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1101, '刘佳', 133, 16, '6604982535', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1102, '牛楠', 269, 22, '9316967650', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1103, '戴帅', 167, 15, '0108917629', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1104, '陈刚', 150, 23, '2474236715', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1105, '陈萍', 94, 16, '5594761635', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1106, '汪玉英', 230, 15, '7062300410', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1107, '冯秀荣', 88, 16, '5753306048', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1108, '莫晨', 390, 12, '3880485248', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1109, '杨红', 186, 19, '0058222944', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1110, '汪红霞', 86, 20, '3275251116', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1111, '彭帆', 50, 23, '3414686403', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1112, '郭玉华', 210, 19, '5514994170', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1113, '刘柳', 312, 20, '3145101345', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1114, '赵玉', 30, 12, '3195468907', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1115, '李柳', 272, 16, '3833219790', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1116, '张桂荣', 153, 23, '7575429018', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1117, '徐英', 93, 15, '7980527966', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1118, '黄建国', 286, 23, '5853013649', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1119, '张华', 390, 20, '6376596511', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1120, '马萍', 244, 11, '7610837242', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1121, '刘超', 376, 12, '6444075141', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1122, '舒峰', 189, 19, '8332579096', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1123, '曾华', 126, 23, '3015001027', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1124, '庞婷婷', 244, 11, '9359877909', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1125, '施玲', 88, 10, '3143670321', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1126, '苟明', 100, 22, '8883542697', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1127, '孟瑜', 321, 18, '5990983198', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1128, '庞雪梅', 15, 19, '9367975240', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1129, '蒋萍', 229, 11, '1251663394', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1130, '陈丽丽', 167, 22, '2156897206', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1131, '李杰', 374, 10, '0381936959', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1132, '彭桂香', 285, 18, '7461669309', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1133, '高秀云', 61, 15, '2965686344', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1134, '罗博', 134, 18, '6606519306', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1135, '王淑珍', 82, 12, '5211632668', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1136, '杨亮', 237, 12, '6794381791', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1137, '萧颖', 238, 12, '5902679775', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1138, '徐丹丹', 164, 16, '8512517418', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1139, '韩桂珍', 165, 12, '5355991251', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1140, '杨莹', 90, 23, '9190796983', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1141, '张慧', 68, 16, '2579036358', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1142, '周欢', 210, 11, '7327154932', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1143, '李宁', 126, 10, '0368197031', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1144, '黄瑞', 58, 10, '9600660050', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1145, '吕红霞', 93, 23, '1653708580', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1146, '毛桂珍', 186, 10, '7514338427', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1147, '李建国', 8, 12, '5203742238', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1148, '李霞', 110, 20, '5366782715', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1149, '苏玉兰', 127, 22, '7501831577', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1150, '韦娟', 218, 18, '0496070066', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1151, '翁博', 60, 18, '2227949170', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1152, '朱畅', 8, 15, '5922467066', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1153, '杨秀芳', 205, 11, '3230112058', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1154, '张丽', 78, 15, '3742120907', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1155, '王佳', 193, 20, '6385158443', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1156, '吴志强', 107, 23, '5637031598', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1157, '杨淑英', 26, 19, '0936466514', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1158, '任芳', 268, 18, '6946910765', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1159, '程兰英', 71, 12, '0543056110', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1160, '陈刚', 70, 16, '9992999452', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1161, '孙帆', 222, 22, '1350738660', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1162, '陈龙', 287, 10, '7726775557', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1163, '王丽丽', 308, 19, '2939866102', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1164, '刘超', 109, 16, '1542401462', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1165, '赵秀梅', 9, 16, '2935367029', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1166, '陈建军', 298, 20, '5528644793', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1167, '叶红', 395, 16, '4298236449', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1168, '周桂珍', 117, 23, '5664008122', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1169, '冯晶', 232, 23, '3300955145', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1170, '邓桂兰', 301, 18, '0751764338', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1171, '白林', 246, 22, '2681761436', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1172, '李娟', 181, 23, '8184412867', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1173, '李艳', 352, 23, '6472239278', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1174, '钟桂花', 160, 18, '8660864595', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1175, '陈倩', 100, 20, '4703786603', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1176, '朱丹丹', 195, 22, '3769846064', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1177, '孙淑华', 192, 11, '3054836380', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1178, '黄宁', 42, 11, '1793958120', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1179, '萧秀荣', 39, 22, '2658723295', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1180, '潘洁', 313, 15, '0743519234', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1181, '刘岩', 171, 10, '7670044403', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1182, '尹凯', 43, 11, '3231460810', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1183, '陈娜', 83, 19, '9928426111', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1184, '王海燕', 225, 11, '6437405451', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1185, '苏旭', 131, 20, '7033563067', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1186, '董瑞', 341, 11, '8254079801', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1187, '张秀梅', 147, 12, '6335820770', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1188, '赵琴', 226, 20, '5337253384', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1189, '魏洋', 108, 10, '4411945873', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1190, '朱莹', 347, 23, '1041373132', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1191, '尹洁', 135, 18, '5449008206', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1192, '梅平', 303, 20, '0604875868', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1193, '唐玉', 223, 20, '0880707396', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1194, '张磊', 388, 20, '6024292442', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1195, '何燕', 276, 12, '8039483884', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1196, '游桂芝', 382, 15, '8647483694', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1197, '张秀华', 130, 19, '1911220721', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1198, '陈静', 14, 10, '1183655917', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1199, '杨萍', 371, 10, '9438088906', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1200, '王辉', 56, 19, '6877535823', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1201, '孟丽丽', 335, 16, '4113870485', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1202, '石冬梅', 109, 16, '3052968028', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1203, '王淑兰', 258, 19, '7696508034', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1204, '杨琴', 294, 11, '1106487574', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1205, '杜云', 249, 10, '3454883076', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1206, '滕鑫', 91, 12, '9882141354', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1207, '陈秀梅', 260, 19, '6038089333', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1208, '孙涛', 247, 19, '0421208095', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1209, '王佳', 399, 20, '8073164690', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1210, '李刚', 87, 16, '4852536265', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1211, '王杰', 14, 16, '8935362003', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1212, '李云', 171, 10, '8751118140', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1213, '郑瑞', 331, 23, '1731046203', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1214, '叶超', 240, 11, '6842843386', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1215, '邓金凤', 272, 16, '9704133437', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1216, '萧飞', 173, 12, '2669260171', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1217, '张雪', 239, 22, '7325953479', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1218, '蒋桂香', 394, 12, '1335522888', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1219, '黄红霞', 305, 20, '7975866323', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1220, '冯兰英', 268, 11, '0125438269', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1221, '安凯', 194, 18, '6956301033', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1222, '曹浩', 173, 19, '4699013446', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1223, '刘瑜', 376, 23, '3077606736', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1224, '李明', 16, 16, '6132971435', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1225, '海鹏', 8, 11, '2348835185', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1226, '张勇', 296, 16, '4794386297', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1227, '徐文', 311, 15, '7657245900', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1228, '龙洋', 155, 19, '9181926537', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1229, '田桂花', 198, 15, '4842553655', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1230, '李宇', 282, 20, '8936609125', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1231, '苗彬', 140, 16, '7086620100', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1232, '李欣', 216, 23, '7658059908', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1233, '符秀英', 212, 23, '4003393141', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1234, '赵华', 129, 10, '0439715577', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1235, '李丽华', 20, 10, '0476326602', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1236, '张玉华', 201, 19, '6359961087', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1237, '夏志强', 201, 18, '6285829624', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1238, '傅玉兰', 230, 12, '6943460866', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1239, '张建国', 272, 16, '6912804382', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1240, '黄淑英', 294, 23, '4170494498', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1241, '周云', 187, 18, '5337126036', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1242, '王秀英', 15, 23, '8810556111', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1243, '朱林', 235, 10, '0994969757', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1244, '廖冬梅', 193, 23, '8624814186', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1245, '刘强', 80, 23, '9494188966', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1246, '张宁', 157, 22, '3792565334', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1247, '李淑英', 273, 23, '9799610801', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1248, '张桂兰', 231, 22, '9941077876', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1249, '温志强', 73, 23, '4682615391', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1250, '黄秀荣', 124, 19, '5665561595', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1251, '裴丹丹', 306, 20, '1913051173', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1252, '李旭', 236, 18, '9423571777', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1253, '邹帅', 362, 22, '1630265754', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1254, '李静', 159, 15, '3596117566', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1255, '郭峰', 308, 15, '7349157271', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1256, '童军', 157, 22, '7988880797', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1257, '李超', 234, 16, '0985494203', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1258, '杨楠', 2, 15, '6724632197', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1259, '段荣', 199, 23, '4291980556', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1260, '张华', 276, 10, '4641445732', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1261, '王涛', 359, 15, '8110522527', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1262, '陆杨', 285, 18, '1952069932', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1263, '夏超', 55, 23, '7629520620', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1264, '陈洋', 65, 20, '6769117203', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1265, '张飞', 290, 18, '8941440158', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1266, '彭亮', 123, 20, '3303762166', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1267, '杨楠', 259, 22, '8880053468', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1268, '曾雪梅', 168, 18, '1990787328', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1269, '李秀珍', 260, 19, '6417607369', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1270, '孙博', 330, 11, '3456767522', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1271, '陈秀梅', 15, 20, '7219985642', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1272, '陈玉兰', 203, 16, '2910689831', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1273, '王丽丽', 123, 22, '3454195999', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1274, '杨畅', 105, 19, '8020566168', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1275, '王荣', 55, 18, '0035786460', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1276, '胡淑珍', 394, 11, '7032578576', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1277, '陈瑜', 149, 15, '9644134008', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1278, '范琳', 299, 15, '7307429296', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1279, '路丽华', 146, 10, '8944954705', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1280, '王春梅', 318, 19, '5791398319', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1281, '闻娟', 9, 15, '7916817032', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1282, '戴宇', 253, 12, '7588052364', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1283, '杨柳', 274, 16, '3564979741', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1284, '张云', 290, 11, '1424928539', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1285, '张秀荣', 266, 12, '8407955877', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1286, '薛龙', 265, 10, '5846359855', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1287, '白淑英', 229, 23, '7498253952', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1288, '张峰', 354, 11, '4780445567', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1289, '张金凤', 336, 19, '7954987291', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1290, '胡建', 168, 16, '9174357528', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1291, '白玉华', 240, 15, '5080217858', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1292, '苗桂兰', 345, 18, '9301275734', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1293, '齐桂芳', 341, 11, '1452735505', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1294, '刘辉', 206, 23, '3857251828', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1295, '曾龙', 295, 18, '9665082553', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1296, '刘小红', 121, 11, '3237748363', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1297, '林秀兰', 115, 12, '3983629125', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1298, '刘萍', 159, 23, '8517054695', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1299, '黄瑜', 235, 22, '7926655936', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1300, '柳秀荣', 174, 10, '1020421010', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1301, '余佳', 64, 20, '7069050930', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1302, '杨玉', 207, 19, '0163453721', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1303, '温兵', 225, 11, '6297190813', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1304, '段桂珍', 381, 18, '7849550170', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1305, '胡帅', 71, 23, '0469330714', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1306, '周兰英', 42, 19, '9955203713', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1307, '刘倩', 335, 23, '9872834424', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1308, '李雪', 398, 23, '4876723797', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1309, '傅秀兰', 226, 20, '2842396568', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1310, '龙亮', 193, 22, '9335139673', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1311, '叶霞', 127, 12, '4432381205', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1312, '张畅', 144, 10, '7783471102', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1313, '林博', 77, 10, '5595405548', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1314, '陈峰', 246, 15, '0789911165', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1315, '彭辉', 327, 22, '9247360836', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1316, '朱晶', 251, 15, '3803077877', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1317, '顾玉梅', 267, 22, '1381604027', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1318, '毛莹', 46, 19, '2880259196', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1319, '黄英', 134, 16, '2104576114', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1320, '钟阳', 182, 16, '6804179797', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1321, '卢娜', 214, 18, '4574606082', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1322, '张岩', 280, 10, '9883242426', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1323, '朱丹丹', 244, 16, '2584275317', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1324, '孔帆', 145, 10, '0788138923', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1325, '沈建军', 329, 19, '4968246638', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1326, '李婷', 360, 23, '0389249003', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1327, '宋建国', 127, 19, '9421190180', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1328, '吴秀珍', 327, 11, '7338200781', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1329, '陈英', 247, 23, '2645776951', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1330, '邹帅', 61, 16, '2104059100', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1331, '易荣', 185, 11, '9903467578', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1332, '雷宇', 124, 22, '0404722289', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1333, '钟桂花', 200, 20, '0918116467', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1334, '李玉', 234, 15, '5490676953', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1335, '陈静', 199, 19, '3965222171', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1336, '陈华', 177, 19, '0458900960', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1337, '尹桂芝', 222, 20, '2483656298', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1338, '焦桂芳', 370, 15, '3339618342', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1339, '王云', 63, 22, '5025730853', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1340, '陈洋', 205, 11, '6213186433', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1341, '王玲', 5, 18, '5685210097', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1342, '王刚', 250, 19, '0398031021', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1343, '陈红梅', 261, 10, '8482854548', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1344, '尹洁', 317, 15, '9298758870', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1345, '康帅', 121, 18, '2482069181', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1346, '郭桂英', 394, 19, '0919719860', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1347, '邹桂珍', 13, 12, '8351907517', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1348, '蔡莉', 138, 15, '6349470136', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1349, '房秀珍', 6, 19, '5042964500', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1350, '顾健', 211, 12, '4361068822', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1351, '李建华', 140, 12, '5448804855', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1352, '王艳', 157, 10, '2741477237', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1353, '龙淑英', 184, 22, '9289701437', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1354, '张彬', 108, 12, '1190203285', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1355, '韦娟', 307, 23, '4541904360', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1356, '施玲', 317, 18, '7669404865', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1357, '张斌', 69, 22, '6261489870', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1358, '齐敏', 49, 11, '5453414998', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1359, '黄秀荣', 345, 23, '9791232686', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1360, '孙艳', 305, 11, '9465058535', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1361, '王刚', 236, 23, '2949769962', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1362, '萧利', 160, 11, '9986253478', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1363, '覃秀华', 101, 11, '5364245231', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1364, '郭成', 252, 10, '9872351977', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1365, '李军', 301, 16, '1801471571', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1366, '谢春梅', 138, 10, '4393660628', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1367, '钱伟', 41, 11, '2976375537', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1368, '李玲', 394, 15, '7747565464', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1369, '张阳', 182, 15, '4650407620', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1370, '叶成', 5, 16, '4493182480', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1371, '陈波', 202, 18, '7748831316', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1372, '熊静', 168, 20, '4557608349', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1373, '李淑英', 171, 15, '1072594264', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1374, '马芳', 156, 16, '6988489712', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1375, '熊秀英', 185, 16, '1774265175', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1376, '赵娟', 235, 15, '2843711429', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1377, '叶飞', 84, 18, '2504543127', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1378, '叶佳', 351, 18, '7301125062', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1379, '钱伟', 64, 19, '0977643853', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1380, '张坤', 31, 11, '3843976298', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1381, '郑红梅', 106, 15, '7513313638', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1382, '张亮', 131, 22, '5774286560', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1383, '林桂香', 76, 11, '3931726449', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1384, '夏宇', 65, 12, '4473060359', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1385, '兰丽华', 272, 10, '2241113670', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1386, '赵娟', 295, 12, '4672009548', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1387, '林婷', 87, 15, '7095385751', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1388, '刘莹', 271, 10, '0744828364', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1389, '汪杨', 342, 10, '8063479421', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1390, '张芳', 396, 16, '7377777573', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1391, '张春梅', 42, 23, '6460818075', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1392, '刘岩', 352, 19, '4719833804', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1393, '徐瑞', 292, 19, '5340648796', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1394, '冯欣', 201, 10, '7340878155', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1395, '魏丹', 235, 18, '5798721016', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1396, '刘波', 236, 11, '9498734632', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1397, '罗波', 177, 10, '7704339175', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1398, '杨强', 99, 19, '2298248425', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1399, '范亮', 382, 19, '2700980312', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1400, '刘丹', 209, 22, '1167968448', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1401, '熊磊', 131, 12, '8826653527', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1402, '刘凤英', 87, 18, '1190601290', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1403, '杨红霞', 345, 12, '5089427183', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1404, '黄桂香', 73, 20, '1336736739', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1405, '刘鹏', 85, 19, '0029619227', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1406, '黄坤', 50, 11, '0345411618', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1407, '童建国', 209, 12, '9426723303', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1408, '侯秀英', 193, 19, '0449234262', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1409, '吴云', 204, 18, '8007614344', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1410, '马桂芝', 79, 12, '3196683480', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1411, '吴彬', 68, 10, '2203980623', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1412, '王飞', 74, 23, '9990999832', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1413, '祖丹丹', 274, 22, '5345980596', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1414, '刘玉珍', 124, 18, '2138448063', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1415, '申英', 53, 19, '3212938516', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1416, '祖丹丹', 296, 22, '2286414954', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1417, '莫晨', 4, 23, '9378518391', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1418, '陆成', 37, 16, '2013021796', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1419, '林宁', 388, 12, '5401578350', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1420, '郭玉华', 32, 18, '6276137124', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1421, '周桂珍', 269, 19, '3157339703', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1422, '赵荣', 26, 12, '4331073022', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1423, '叶红霞', 240, 11, '1809273056', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1424, '任云', 369, 11, '6875337461', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1425, '卜洋', 119, 22, '3394442291', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1426, '刘娟', 247, 19, '5825644916', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1427, '张宁', 174, 15, '3779134681', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1428, '杨亮', 223, 11, '1531152126', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1429, '田桂花', 262, 22, '1614638971', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1430, '周秀梅', 254, 23, '4831405045', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1431, '李文', 187, 18, '0236012893', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1432, '邵磊', 144, 19, '6281459957', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1433, '任倩', 187, 15, '9570989470', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1434, '黄娜', 247, 12, '2143259831', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1435, '何莉', 164, 23, '1999864208', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1436, '李梅', 255, 20, '7779698442', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1437, '董兵', 120, 16, '3364922284', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1438, '宋丽华', 122, 12, '6938082212', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1439, '杜柳', 27, 22, '0906268780', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1440, '高丽娟', 98, 15, '7042840313', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1441, '吴桂珍', 114, 23, '4778195610', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1442, '李秀珍', 190, 18, '4784781548', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1443, '王淑兰', 138, 20, '1990783066', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1444, '史玉华', 119, 15, '1699835272', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1445, '尹桂芝', 369, 20, '8297310780', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1446, '蔡兰英', 183, 20, '1482114267', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1447, '李秀兰', 199, 22, '0500711648', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1448, '张桂兰', 191, 12, '2276386807', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1449, '李琳', 177, 19, '2050784576', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1450, '邹鹏', 242, 22, '3760394032', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1451, '尹志强', 101, 20, '3893104482', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1452, '冯建平', 191, 12, '4640948688', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1453, '赵鑫', 212, 20, '1332596796', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1454, '张秀梅', 392, 12, '5646667531', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1455, '张明', 251, 12, '2536423455', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1456, '陈秀云', 20, 18, '8660837640', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1457, '刘雷', 310, 12, '8132627241', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1458, '韦洋', 223, 18, '4289158708', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1459, '侯玲', 215, 10, '9806583200', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1460, '周楠', 147, 18, '1204887358', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1461, '沈秀云', 39, 18, '3579170061', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1462, '任洁', 135, 19, '8955693229', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1463, '钱小红', 244, 10, '7927786030', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1464, '李春梅', 181, 12, '2635389175', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1465, '刘娜', 70, 18, '9305884941', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1466, '杨洋', 19, 11, '8497008617', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1467, '赖伟', 195, 20, '1514258837', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1468, '余俊', 146, 16, '3473029615', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1469, '郑俊', 4, 22, '5205940124', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1470, '白林', 337, 16, '7153937978', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1471, '吴萍', 234, 22, '2922147230', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1472, '温志强', 57, 20, '6084178070', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1473, '陈琴', 91, 20, '5590795952', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1474, '郭冬梅', 144, 15, '0644319954', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1475, '张秀芳', 103, 16, '8427312981', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1476, '余俊', 288, 20, '5311684117', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1477, '陈宇', 65, 23, '6697445963', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1478, '张岩', 79, 16, '1419340748', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1479, '翟玉', 240, 16, '2346868047', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1480, '马辉', 72, 12, '0382083609', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1481, '郭淑兰', 219, 10, '6909057608', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1482, '王琴', 159, 19, '8292689339', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1483, '李桂兰', 119, 23, '8013449022', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1484, '鲍建平', 134, 15, '5354962553', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1485, '杨桂芝', 96, 15, '3915860096', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1486, '黄宁', 62, 12, '5808513364', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1487, '刘璐', 136, 11, '5363525470', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1488, '舒兵', 194, 18, '7700248864', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1489, '李娟', 262, 23, '0253336962', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1490, '郭艳', 243, 11, '0429621387', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1491, '张莉', 336, 23, '8841788651', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1492, '王兰英', 335, 11, '6001250863', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1493, '吕金凤', 101, 20, '9075135452', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1494, '宁丽娟', 196, 10, '8621306105', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1495, '荣桂花', 212, 15, '0548826594', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1496, '谢伟', 238, 15, '0162501878', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1497, '黄鹏', 112, 23, '0132742911', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1498, '景云', 277, 10, '2455614110', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1499, '叶秀云', 374, 15, '7271842583', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1500, '刘云', 276, 20, '4594248612', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1501, '杨华', 69, 12, '0732793613', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1502, '刘萍', 187, 16, '5469481505', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1503, '王玉', 46, 11, '4663420954', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1504, '鞠龙', 62, 12, '9903269556', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1505, '刘鑫', 194, 11, '6635851737', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1506, '袁平', 19, 11, '7441415201', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1507, '赵浩', 74, 16, '7709014326', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1508, '郭阳', 170, 15, '0033626279', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1509, '罗帆', 157, 12, '8777875222', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1510, '陈兵', 193, 20, '7504392921', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1511, '李凤兰', 286, 19, '0851762505', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1512, '姚鹏', 128, 20, '4117872944', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1513, '裴浩', 81, 12, '8510191866', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1514, '杨玉英', 206, 12, '0275380012', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1515, '武静', 191, 23, '3745534522', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1516, '王宇', 221, 10, '3429480842', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1517, '张旭', 306, 11, '6121251988', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1518, '勾瑞', 157, 11, '4531254652', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1519, '汪丹', 282, 19, '0788458018', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1520, '玉兰英', 55, 20, '7375356848', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1521, '吴佳', 348, 10, '7836323873', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1522, '王磊', 343, 12, '9745909646', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1523, '左志强', 12, 16, '4025970048', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1524, '李秀梅', 158, 19, '1798942504', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1525, '晏桂兰', 87, 11, '5447788825', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1526, '黎晨', 169, 19, '8144167510', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1527, '田丹', 196, 19, '2003884775', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1528, '李鑫', 259, 23, '6391499346', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1529, '柯丽', 298, 22, '2353535241', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1530, '黄健', 224, 15, '6731664928', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1531, '刘婷', 124, 18, '3291281340', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1532, '杨慧', 202, 18, '6947355482', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1533, '谢岩', 373, 18, '5784230803', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1534, '鞠龙', 179, 22, '5686143819', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1535, '陈荣', 245, 20, '5755248361', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1536, '李秀云', 70, 15, '0372833218', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1537, '李燕', 152, 11, '1309888217', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1538, '熊慧', 231, 22, '5164523522', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1539, '沈鑫', 170, 15, '7338164526', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1540, '王建', 45, 11, '8534381795', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1541, '徐金凤', 134, 16, '6224710709', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1542, '解玉梅', 221, 19, '4322889620', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1543, '马宇', 261, 15, '4918744621', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1544, '杨桂芳', 171, 20, '7806877728', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1545, '郭帅', 69, 19, '4520406578', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1546, '陈杰', 65, 19, '0640134176', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1547, '王丹', 9, 15, '3756566798', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1548, '余秀珍', 130, 15, '2288852617', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1549, '杨桂英', 155, 11, '5038980471', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1550, '莫晨', 32, 11, '5316811447', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1551, '王峰', 184, 22, '1686295346', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1552, '葛建华', 105, 15, '5676899153', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1553, '尹桂芝', 287, 10, '3349164721', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1554, '邢琳', 62, 11, '9470183290', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1555, '樊桂芝', 174, 15, '0014905345', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1556, '罗洋', 67, 12, '3940224313', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1557, '余俊', 204, 11, '8243285714', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1558, '朱洁', 265, 22, '4579684602', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1559, '丁鑫', 279, 12, '0236165724', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1560, '陆平', 237, 11, '7087389254', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1561, '路彬', 233, 19, '0578314046', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1562, '向秀珍', 220, 11, '8184394560', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1563, '燕波', 377, 22, '9902454431', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1564, '危勇', 254, 11, '5111598899', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1565, '李慧', 334, 23, '8095208969', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1566, '邵玉英', 106, 15, '5149254702', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1567, '任倩', 106, 16, '3003231853', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1568, '郭瑜', 282, 22, '4064049036', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1569, '刘秀兰', 313, 20, '5415642185', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1570, '张凤兰', 24, 20, '5086469998', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1571, '林淑华', 169, 23, '7320302728', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1572, '刘芳', 254, 19, '2806210021', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1573, '简凤兰', 217, 11, '5966544150', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1574, '黄婷婷', 379, 18, '4441523385', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1575, '孙荣', 267, 16, '0512770620', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1576, '李杨', 117, 10, '3681014405', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1577, '杨明', 190, 16, '4038496532', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1578, '祝柳', 300, 16, '2304917114', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1579, '颜帅', 230, 11, '3023793835', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1580, '李璐', 6, 11, '3646172955', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1581, '朱春梅', 262, 23, '8315941994', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1582, '杨霞', 228, 12, '4933585257', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1583, '李阳', 240, 20, '1530034345', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1584, '张丽丽', 265, 22, '4664902003', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1585, '李欣', 98, 18, '2778797811', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1586, '漆兵', 332, 20, '5103647185', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1587, '胡东', 173, 11, '3523136323', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1588, '冯坤', 224, 11, '3443023425', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1589, '刘丹', 373, 12, '2260984108', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1590, '陈秀云', 287, 23, '7836295421', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1591, '李小红', 183, 12, '9672914150', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1592, '张荣', 144, 16, '2564668683', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1593, '郭秀英', 4, 18, '0526935761', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1594, '潘淑兰', 101, 23, '0389220677', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1595, '杨宁', 279, 15, '5073714530', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1596, '杨玉兰', 69, 10, '3248599024', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1597, '王磊', 238, 10, '5715598365', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1598, '王涛', 54, 18, '1199644748', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1599, '万秀梅', 194, 10, '1126542983', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1600, '鲍欢', 112, 15, '5700991864', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1601, '李玉兰', 215, 22, '6153114072', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1602, '杜婷', 352, 19, '9388881770', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1603, '张健', 268, 20, '9667719196', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1604, '张凤英', 143, 11, '8057797232', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1605, '李兵', 72, 12, '3135864990', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1606, '王磊', 182, 18, '0810363838', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1607, '刘文', 246, 18, '3359641772', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1608, '夏想', 185, 22, '1724803499', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1609, '柏涛', 400, 23, '1742197273', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1610, '刘桂香', 368, 20, '8605902592', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1611, '颜桂兰', 109, 10, '4087962972', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1612, '温莉', 53, 12, '9743276514', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1613, '苟明', 233, 23, '4525895782', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1614, '李春梅', 362, 15, '6883433522', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1615, '杨秀梅', 10, 19, '7908206904', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1616, '王刚', 384, 10, '3424254601', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1617, '郑建军', 381, 12, '0979621736', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1618, '李涛', 178, 16, '4719105751', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1619, '毛利', 175, 16, '2694747929', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1620, '陶秀云', 292, 19, '7333220369', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1621, '杨桂花', 259, 16, '2381971297', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1622, '李桂珍', 101, 19, '2380151103', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1623, '郭冬梅', 211, 19, '6094684533', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1624, '邓秀珍', 256, 12, '2008652503', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1625, '李秀兰', 370, 16, '7251544803', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1626, '王静', 234, 23, '9291467009', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1627, '陈鹏', 160, 22, '0768862583', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1628, '郭红', 163, 20, '4747218002', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1629, '邵秀华', 211, 10, '1748166356', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1630, '刘洁', 255, 19, '5312482575', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1631, '黄敏', 61, 20, '5664097116', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1632, '刘刚', 206, 19, '8744042178', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1633, '王明', 330, 11, '6470399448', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1634, '梁倩', 129, 15, '3862910378', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1635, '邓倩', 335, 19, '0182970616', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1636, '朱刚', 194, 10, '4389551812', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1637, '胡杨', 198, 18, '3436919298', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1638, '郑明', 102, 15, '5192223405', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1639, '武静', 30, 20, '7590000426', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1640, '沈秀兰', 93, 11, '6626428686', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1641, '周兰英', 255, 16, '1398321070', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1642, '申英', 219, 22, '5192134416', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1643, '徐洋', 172, 20, '4823009398', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1644, '孙俊', 74, 11, '5507161801', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1645, '韦娟', 278, 12, '3851646739', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1646, '程小红', 292, 11, '2613839598', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1647, '赵莹', 269, 23, '7500387644', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1648, '王琳', 190, 20, '8288242819', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1649, '焦丹', 336, 22, '7774162510', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1650, '赵倩', 90, 20, '2618690186', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1651, '王秀芳', 44, 23, '6405127448', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1652, '赵秀芳', 400, 19, '4373303720', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1653, '白玉华', 104, 19, '8479645836', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1654, '杨健', 310, 15, '1200608139', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1655, '马峰', 326, 12, '5220652314', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1656, '单玉珍', 391, 23, '2692334686', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1657, '张欢', 60, 11, '2294258731', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1658, '鲍欢', 125, 23, '9433752565', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1659, '牛倩', 163, 19, '2979317602', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1660, '莫晨', 287, 23, '9935788625', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1661, '韩秀梅', 181, 10, '3428036633', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1662, '杨平', 384, 10, '9140645859', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1663, '李兵', 275, 15, '5669051226', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1664, '毛斌', 231, 10, '3122843590', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1665, '夏志强', 71, 16, '7185080954', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1666, '李晶', 89, 15, '9516834743', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1667, '邓金凤', 214, 16, '6074062926', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1668, '陈雪', 125, 16, '9188482875', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1669, '方斌', 210, 22, '4084562756', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1670, '朱平', 129, 12, '0317961942', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1671, '冯想', 357, 10, '3353325415', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1672, '王丽华', 179, 20, '2293433651', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1673, '蒋萍', 89, 16, '5322056559', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1674, '支辉', 203, 18, '6536430093', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1675, '屈凤英', 152, 22, '2704716223', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1676, '张建军', 204, 12, '6563601444', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1677, '张帆', 136, 18, '8495219312', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1678, '阮秀华', 373, 22, '8495615611', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1679, '陈雪梅', 61, 10, '9285874957', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1680, '陶洋', 180, 23, '5971729615', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1681, '冯欣', 172, 19, '4450250901', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1682, '田桂花', 261, 23, '9501200886', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1683, '李秀兰', 104, 23, '9480745589', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1684, '徐金凤', 397, 18, '0734466109', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1685, '马宇', 233, 20, '5217941136', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1686, '叶建华', 59, 23, '8912997277', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1687, '李玉珍', 400, 18, '7605550291', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1688, '冯荣', 369, 23, '5439707796', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1689, '张婷婷', 286, 20, '4635983673', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1690, '夏宇', 231, 11, '9272200094', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1691, '张涛', 233, 15, '8339732131', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1692, '陈峰', 174, 23, '4302855398', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1693, '岳成', 64, 19, '4608522192', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1694, '冯霞', 243, 12, '0889485852', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1695, '宋婷', 212, 23, '8304029053', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1696, '杨坤', 197, 15, '9871161258', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1697, '舒兵', 121, 10, '9265410923', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1698, '李琳', 180, 12, '8637931583', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1699, '俞琳', 337, 16, '1749743494', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1700, '李军', 245, 12, '8504837045', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1701, '贾宇', 152, 11, '9659909905', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1702, '殷林', 220, 23, '5553723559', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1703, '郭玉华', 121, 20, '7281214499', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1704, '李坤', 151, 22, '3156945973', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1705, '汤燕', 132, 11, '9686231555', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1706, '向岩', 149, 15, '4061527594', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1707, '李秀珍', 165, 22, '5091474808', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1708, '高磊', 98, 20, '7087923146', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1709, '王燕', 90, 16, '5202929907', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1710, '刘雷', 151, 16, '8630114032', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1711, '彭杨', 385, 20, '8497874433', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1712, '舒斌', 197, 11, '2278833035', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1713, '隋红梅', 87, 12, '0985637606', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1714, '杨红', 284, 19, '0241794344', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1715, '李强', 76, 11, '4090170462', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1716, '姚鹏', 128, 19, '7150439169', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1717, '徐萍', 197, 12, '2481313590', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1718, '王强', 86, 16, '5058926598', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1719, '潘欣', 249, 20, '6212370083', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1720, '韦婷', 174, 16, '2911801746', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1721, '罗林', 186, 23, '9535351488', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1722, '王晶', 128, 10, '0721254321', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1723, '常健', 77, 16, '0663284481', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1724, '曲莉', 116, 16, '6383397754', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1725, '陈红', 35, 10, '2807256243', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1726, '夏红', 44, 15, '1256054854', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1727, '陆英', 35, 15, '4972643069', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1728, '陈娟', 158, 20, '9656318496', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1729, '萧秀云', 149, 19, '2421598300', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1730, '黄瑜', 343, 19, '4565236325', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1731, '郑瑞', 96, 19, '5988965110', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1732, '李成', 268, 10, '1628623267', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1733, '徐倩', 59, 15, '9987261035', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1734, '李秀兰', 391, 19, '8609490994', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1735, '黄婷婷', 280, 16, '0763680405', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1736, '徐晶', 361, 15, '3833939335', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1737, '孙俊', 224, 23, '2792615567', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1738, '刘华', 103, 12, '2931313289', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1739, '曹云', 179, 18, '8036725888', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1740, '石超', 64, 22, '1675839589', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1741, '王桂芳', 215, 19, '5274712221', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1742, '任芳', 224, 20, '7173553555', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1743, '刘丽丽', 280, 11, '7762941280', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1744, '陈英', 185, 16, '0492540848', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1745, '李丽', 250, 11, '7512803172', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1746, '王琳', 158, 23, '4101654595', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1747, '王欢', 31, 11, '5393621468', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1748, '屈勇', 241, 16, '8645612978', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1749, '韩博', 154, 15, '9734005454', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1750, '郭秀云', 127, 11, '4333067787', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1751, '杨明', 24, 11, '5352925363', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1752, '江雷', 156, 15, '9334863209', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1753, '张晶', 84, 19, '4914823023', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1754, '相东', 276, 19, '8677908011', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1755, '陆婷', 197, 16, '4601528209', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1756, '廖波', 286, 23, '5950886551', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1757, '杨春梅', 198, 11, '9288067431', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1758, '李建国', 377, 12, '1061267612', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1759, '张桂花', 360, 10, '5750093017', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1760, '秦强', 154, 12, '4880176718', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1761, '李桂荣', 228, 10, '6584320908', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1762, '王玲', 287, 23, '4150867939', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1763, '李华', 102, 23, '4920564008', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1764, '杨秀芳', 43, 22, '2706590894', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1765, '张琴', 288, 18, '2907016867', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1766, '薛婷婷', 248, 11, '9234077410', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1767, '李旭', 201, 20, '9315959562', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1768, '郑莹', 169, 10, '0421130714', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1769, '郭俊', 327, 10, '2500637316', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1770, '刘洁', 165, 16, '5073034780', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1771, '许龙', 121, 15, '0745356580', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1772, '张玉兰', 312, 20, '0476817941', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1773, '缪凤英', 206, 11, '8600667260', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1774, '萧佳', 300, 10, '0739647825', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1775, '杨娜', 174, 12, '7792011465', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1776, '黄燕', 2, 23, '8999095910', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1777, '王玉兰', 217, 23, '1115186029', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1778, '彭春梅', 152, 23, '2051652726', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1779, '周玉梅', 59, 22, '3806107264', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1780, '门欢', 300, 16, '6601145142', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1781, '文文', 186, 16, '0948744548', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1782, '赵玉梅', 195, 10, '0706710082', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1783, '杜丹丹', 377, 23, '2587547094', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1784, '张海燕', 65, 23, '5317967100', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1785, '萧利', 43, 20, '7877059004', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1786, '蔡建华', 203, 16, '4685038419', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1787, '舒梅', 328, 15, '9432087981', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1788, '张俊', 175, 16, '5128825566', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1789, '李桂珍', 122, 20, '6844212140', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1790, '朱倩', 207, 23, '7828325807', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1791, '袁平', 152, 10, '0125763639', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1792, '燕春梅', 253, 16, '2014316760', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1793, '丁秀梅', 258, 11, '1447421048', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1794, '赵超', 172, 23, '4971169226', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1795, '梁慧', 207, 23, '1957380043', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1796, '白林', 308, 19, '2248831460', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1797, '宋秀珍', 287, 20, '5677374274', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1798, '戴帅', 216, 11, '8208850802', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1799, '黄桂英', 200, 22, '5003503542', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1800, '张波', 241, 23, '6022887767', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1801, '廖佳', 272, 18, '0483153243', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1802, '吕海燕', 300, 11, '9978973937', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1803, '王艳', 215, 18, '9260523614', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1804, '董旭', 135, 11, '9294543121', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1805, '张华', 219, 12, '9747413684', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1806, '易红梅', 278, 23, '8833992912', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1807, '雷玉英', 116, 11, '3615649793', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1808, '阳倩', 365, 20, '8401231961', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1809, '葛璐', 213, 11, '9077057243', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1810, '孙艳', 97, 20, '7872954155', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1811, '张凯', 284, 23, '4097884255', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1812, '姚芳', 248, 20, '4076784527', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1813, '刘波', 165, 18, '4379730597', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1814, '何萍', 317, 10, '6854178056', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1815, '鹿玲', 252, 20, '8017990629', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1816, '张莉', 248, 23, '5463481439', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1817, '张霞', 351, 19, '7519446159', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1818, '李桂芳', 119, 19, '8262574542', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1819, '杜佳', 285, 20, '9477752319', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1820, '张晶', 84, 20, '1075043946', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1821, '周云', 310, 19, '3852661142', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1822, '冯秀兰', 385, 23, '3236390521', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1823, '陶秀云', 179, 19, '7012749021', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1824, '陈芳', 131, 23, '3592844402', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1825, '王琴', 207, 12, '7231614752', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1826, '唐玉珍', 248, 18, '1511672522', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1827, '余秀华', 365, 16, '3259963637', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1828, '喻鑫', 64, 18, '0967434304', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1829, '张亮', 249, 10, '7635058452', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1830, '余龙', 24, 16, '2701129058', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1831, '刘帅', 181, 20, '5191696693', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1832, '何璐', 125, 15, '5347108421', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1833, '乔飞', 43, 11, '8204630335', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1834, '李慧', 57, 18, '1876487501', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1835, '林想', 399, 19, '3168667132', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1836, '何璐', 97, 15, '0494203897', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1837, '罗帆', 285, 16, '0995825255', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1838, '赵秀荣', 249, 10, '2500803639', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1839, '谭林', 261, 23, '3861555333', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1840, '罗林', 122, 19, '4294117497', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1841, '潘淑兰', 164, 11, '2786545696', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1842, '傅玉兰', 299, 11, '6557751181', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1843, '刘平', 126, 12, '5293390119', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1844, '谢婷', 288, 12, '8983217738', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1845, '杨桂芳', 62, 10, '0327662376', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1846, '罗林', 291, 23, '6338352593', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1847, '叶秀云', 281, 12, '9728072773', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1848, '张璐', 382, 22, '1780693555', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1849, '高玉珍', 79, 22, '4136286858', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1850, '屈凤英', 204, 19, '4483519566', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1851, '刘兰英', 156, 16, '8751013674', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1852, '刘鑫', 78, 20, '2291372003', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1853, '李莉', 97, 20, '1908195945', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1854, '颜晶', 273, 19, '7912235837', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1855, '欧莉', 326, 10, '0765992110', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1856, '范华', 132, 23, '3027512666', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1857, '张建', 267, 12, '9736380531', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1858, '刘杰', 182, 22, '1981150124', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1859, '符秀英', 177, 18, '1376726957', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1860, '雷红梅', 331, 12, '2604907898', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1861, '张伟', 275, 22, '8692603394', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1862, '刘红霞', 293, 18, '2533966475', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1863, '张淑华', 127, 16, '3561806014', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1864, '白玉华', 281, 16, '1391588944', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1865, '丁超', 275, 16, '0932445932', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1866, '杨平', 88, 10, '2991798408', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1867, '韩桂珍', 122, 23, '3275056737', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1868, '费瑜', 3, 16, '6954585961', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1869, '李桂荣', 295, 19, '2949820044', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1870, '梅刚', 291, 11, '8402797895', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1871, '马荣', 71, 18, '7519314603', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1872, '张超', 397, 10, '6834925010', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1873, '曹兵', 326, 23, '8298249948', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1874, '李莉', 221, 23, '9597813905', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1875, '张洁', 81, 20, '8988395331', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1876, '温林', 190, 16, '5676666216', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1877, '陈想', 76, 11, '3075095711', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1878, '郭刚', 299, 19, '6061020346', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1879, '王强', 132, 16, '4062968136', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1880, '柏桂芝', 237, 19, '3226082263', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1881, '陈建', 163, 10, '6695244787', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1882, '桂欣', 91, 19, '4477151635', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1883, '郭莉', 261, 11, '6692552487', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1884, '王鹏', 246, 15, '9207531963', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1885, '马峰', 132, 22, '9441138714', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1886, '廖倩', 293, 10, '1340260690', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1887, '刘丹', 312, 18, '3014628986', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1888, '郑磊', 204, 15, '6766843032', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1889, '周峰', 227, 23, '0629568853', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1890, '李帆', 76, 15, '8883185351', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1891, '董旭', 299, 18, '5894467476', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1892, '李强', 202, 18, '3904218637', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1893, '罗刚', 72, 15, '4150150189', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1894, '文文', 291, 23, '3756396926', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1895, '凌莉', 320, 22, '5196876430', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1896, '贾欢', 256, 19, '6219316836', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1897, '吴秀珍', 175, 16, '5392694358', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1898, '祝辉', 278, 22, '8208642806', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1899, '林博', 31, 12, '0642226074', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1900, '胡淑英', 112, 11, '6538433456', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1901, '吴彬', 258, 22, '8094130833', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1902, '刘洁', 382, 12, '1211624243', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1903, '裴浩', 320, 10, '7676548646', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1904, '韩玉华', 155, 23, '4514791972', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1905, '王婷婷', 178, 10, '2041306082', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1906, '秦鹏', 188, 20, '1871495538', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1907, '段博', 275, 16, '4683887268', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1908, '冯坤', 189, 22, '5951491890', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1909, '夏想', 154, 20, '2661016185', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1910, '尹红梅', 216, 22, '6215908183', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1911, '李玉兰', 280, 22, '0764937048', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1912, '刘杨', 252, 19, '4749912746', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1913, '白淑英', 258, 12, '6465024135', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1914, '朱林', 116, 12, '9786693840', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1915, '邱兵', 232, 10, '8062789318', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1916, '张婷婷', 284, 18, '3866059537', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1917, '杨平', 114, 20, '9787145117', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1918, '陈艳', 86, 12, '6904046961', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1919, '邱婷婷', 309, 12, '5489297160', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1920, '陈玉华', 361, 18, '8137562809', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1921, '梁丽丽', 227, 11, '5307101584', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1922, '刘刚', 10, 11, '9314115365', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1923, '毛涛', 88, 15, '8344860704', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1924, '李静', 85, 20, '7395799322', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1925, '杨桂芝', 76, 15, '3108423493', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1926, '杨宁', 275, 10, '6351772641', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1927, '陈杨', 218, 22, '0472495329', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1928, '李桂珍', 246, 19, '2675069917', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1929, '刘军', 169, 19, '4685648075', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1930, '李成', 189, 18, '4932411768', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1931, '赵玉兰', 200, 16, '4589256476', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1932, '吴柳', 361, 10, '8618286977', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1933, '黄军', 206, 18, '9437787868', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1934, '金玉华', 3, 18, '0088800223', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1935, '赵俊', 177, 10, '2597596485', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1936, '邹兰英', 232, 23, '5967709585', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1937, '马辉', 175, 16, '6799806933', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1938, '张岩', 81, 18, '6483917191', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1939, '张华', 299, 18, '2853883309', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1940, '曹娟', 242, 22, '3633831352', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1941, '马宇', 148, 19, '6107018858', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1942, '朱坤', 105, 20, '2049018931', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1943, '王晶', 124, 23, '0053504274', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1944, '邹桂珍', 144, 22, '0700159376', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1945, '杜婷', 114, 22, '7154534807', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1946, '海鹏', 243, 15, '5207785849', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1947, '门欢', 31, 23, '2336276339', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1948, '董慧', 67, 16, '7523952040', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1949, '胡超', 17, 11, '9981923072', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1950, '敖杨', 279, 19, '7113136389', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1951, '孙玉珍', 334, 10, '3936357597', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1952, '程兰英', 189, 18, '0179648701', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1953, '王桂芝', 183, 19, '3929450726', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1954, '周桂珍', 204, 16, '3484927648', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1955, '章梅', 252, 18, '5094446446', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1956, '陈鹏', 148, 11, '7658446181', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1957, '裴彬', 224, 16, '0446564081', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1958, '马建平', 104, 18, '0326709288', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1959, '黄斌', 116, 19, '7574035503', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1960, '顾敏', 70, 16, '1123368947', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1961, '徐晶', 158, 20, '3945201575', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1962, '樊佳', 180, 20, '0581533960', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1963, '李刚', 155, 16, '4330734303', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1964, '周桂珍', 220, 15, '9837395006', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1965, '徐伟', 78, 20, '4840059837', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1966, '周云', 145, 10, '7639232059', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1967, '郭梅', 97, 18, '7714067563', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1968, '叶鑫', 291, 15, '2305685730', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1969, '范勇', 153, 11, '4376066123', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1970, '张明', 105, 15, '4150205757', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1971, '郭雪梅', 365, 19, '2653908262', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1972, '王丽丽', 249, 23, '0975810001', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1973, '李桂珍', 153, 10, '1870234869', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1974, '陈燕', 359, 23, '2438612297', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1975, '唐帅', 84, 20, '6454814812', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1976, '雷龙', 202, 15, '7572631959', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1977, '张玉华', 132, 15, '9861628980', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1978, '孙慧', 291, 22, '5595773565', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1979, '陆婷', 104, 15, '2290148002', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1980, '杜峰', 67, 23, '0663209905', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1981, '施淑兰', 273, 12, '1308954670', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1982, '李鹏', 253, 12, '6297334394', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1983, '韩成', 280, 10, '1987632140', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1984, '李红', 288, 10, '5759080190', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1985, '谢玉华', 245, 19, '6428772765', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1986, '李琴', 261, 22, '5802583874', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1987, '王瑞', 399, 20, '6007187102', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1988, '任桂芝', 256, 22, '6589457635', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1989, '叶飞', 399, 23, '1124062303', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1990, '舒峰', 288, 19, '7113843014', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1991, '杜军', 221, 18, '8478246439', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1992, '黄红梅', 90, 12, '0426150031', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1993, '杜云', 242, 19, '1856252812', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1994, '李莉', 85, 12, '4818154778', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1995, '庄洁', 369, 20, '4101448671', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1996, '郜桂香', 248, 19, '3651645836', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1997, '郑艳', 35, 20, '2765359469', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1998, '林强', 153, 15, '9930768538', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (1999, '曹平', 71, 22, '3450854157', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2000, '祝志强', 198, 10, '5015539915', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2001, '韦洋', 209, 16, '0709433986', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2002, '张帆', 209, 15, '6114574719', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2003, '黄辉', 218, 22, '9708790950', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2004, '黄丹丹', 281, 10, '9848963206', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2005, '曾凤英', 90, 18, '0482987725', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2006, '夏林', 178, 11, '9780313315', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2007, '周小红', 207, 20, '9482710838', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2008, '滕兵', 162, 20, '5998585505', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2009, '赵玉梅', 178, 15, '3804180027', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2010, '陈凤英', 291, 12, '2942543913', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2011, '吴建军', 73, 20, '7481291710', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2012, '赖玉', 227, 20, '7416676787', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2013, '刘鑫', 116, 19, '5202996156', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2014, '张丽丽', 86, 10, '4855034627', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2015, '朱刚', 188, 23, '7833443364', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2016, '王桂荣', 379, 23, '4763467454', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2017, '曾荣', 86, 12, '4270204693', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2018, '梁建华', 148, 10, '3489053286', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2019, '王阳', 220, 10, '6024377165', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2020, '张磊', 340, 23, '1334423374', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2021, '马琳', 256, 16, '0961277371', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2022, '黄燕', 243, 22, '0578424131', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2023, '吕秀梅', 281, 18, '2215756150', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2024, '贾秀梅', 218, 16, '7367629575', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2025, '曲莉', 85, 19, '7867689107', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2026, '廖娟', 153, 20, '8256413072', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2027, '雷英', 132, 20, '0606304614', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2028, '林娟', 351, 22, '5561015148', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2029, '李坤', 334, 11, '0984408670', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2030, '朱坤', 215, 19, '8454661413', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2031, '李瑜', 116, 19, '8398201384', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2032, '蔡小红', 103, 20, '9395099382', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2033, '江勇', 379, 11, '4991001446', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2034, '张丽丽', 178, 11, '8654882641', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2035, '黄晨', 251, 16, '7008392483', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2036, '王燕', 133, 10, '9652100204', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2037, '吴淑英', 178, 15, '7029294734', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2038, '朱鑫', 145, 18, '0127299231', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2039, '明利', 102, 11, '4304002868', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2040, '程想', 281, 16, '0606046241', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2041, '孙涛', 188, 12, '8131025066', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2042, '唐海燕', 81, 15, '3223071226', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2043, '杨峰', 103, 19, '7201857643', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2044, '孔建军', 198, 18, '8888611515', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2045, '苟涛', 145, 20, '5001242082', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2046, '陈丽娟', 253, 15, '0902173743', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2047, '邢军', NULL, 10, '8993439975', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2048, '鹿玲', 245, 23, '4178109491', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2049, '黄瑞', 253, 22, '9709052402', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2050, '李婷', 133, 20, '2482131094', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2051, '洪佳', 227, 20, '6832205206', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2052, '牛楠', 188, 16, '1951085681', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2053, '金玉华', NULL, 20, '5869957656', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2054, '金涛', 102, 18, '3178036294', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2055, '高梅', 273, 20, '9049805378', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2056, '仝英', 188, 20, '1382433919', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2057, '陶成', 293, 19, '1450242556', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2058, '刁云', 103, 10, '6438434711', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2059, '刘雪', 267, 16, '8687097931', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2060, '张鑫', 267, 10, '3421263338', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2061, '吴淑兰', 227, 22, '5497843483', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2062, '李凤兰', 91, 16, '5759294871', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2063, '吴志强', 103, 23, '4971400661', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2064, '罗帅', 225, 18, '9713608844', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2065, '罗霞', 188, 12, '5933298708', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2066, '武红', 200, 19, '5806921133', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2067, '徐莉', 225, 18, '0105194079', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2068, '敖杨', 256, 20, '3133357428', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2069, '姚宁', 309, 16, '1465558844', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2070, '黎欣', 91, 10, '6222351277', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2071, '孙帆', 225, 26, '4701128967', '2021-02-03', '13477777777', NULL, 0, 0);
-INSERT INTO `student` VALUES (2072, '罗帆', NULL, 23, '5466619733', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2073, '王桂芳', NULL, 18, '5984995065', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2074, '杨玉梅', NULL, 12, '4875029081', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2075, '李雷', NULL, 12, '3803656848', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2076, '谢龙', NULL, 11, '4095674252', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2077, '宋颖', NULL, 19, '4006157913', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2078, '姬云', NULL, 11, '8281557634', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2079, '李建华', NULL, 11, '2084844905', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2080, '裴浩', NULL, 22, '3332816567', '2021-02-03', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2082, '叶良辰', NULL, 10, '1811101041', '2021-02-09', '13477777777', NULL, 0, 1);
-INSERT INTO `student` VALUES (2083, '马超', 401, 26, '7999582', '2021-03-17', '13477777777', NULL, 0, 0);
+CREATE TABLE IF NOT EXISTS `notice` (
+  `id` bigint NOT NULL,
+  `msg` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `user_id` bigint DEFAULT NULL,
+  `time` datetime DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
--- ----------------------------
--- Table structure for system_function
--- ----------------------------
-DROP TABLE IF EXISTS `system_function`;
-CREATE TABLE `system_function`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
+--
+-- 转存表中的数据 `notice`
+--
+
+INSERT INTO `notice` (`id`, `msg`, `user_id`, `time`) VALUES
+(28, '今年放假时间：2021-02-06', 1, '2021-02-06 16:33:47'),
+(48, '今年开学时间：2021年3月1日', 1, '2021-02-07 18:32:24'),
+(49, '5月1日至5日放假调休，4月27日正常上课。', 1, '2025-04-27 20:32:37');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `notice_user`
+--
+
+CREATE TABLE IF NOT EXISTS `notice_user` (
+  `user_id` bigint NOT NULL,
+  `notice_id` bigint NOT NULL,
+  `is_read` tinyint(1) DEFAULT NULL,
+  `is_delete` tinyint(1) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `notice_user`
+--
+
+INSERT INTO `notice_user` (`user_id`, `notice_id`, `is_read`, `is_delete`) VALUES
+(1, 28, 1, 0),
+(23, 28, 1, 0),
+(24, 28, 1, 0),
+(25, 28, 0, 0),
+(26, 28, 1, 0),
+(27, 28, 1, 0),
+(28, 28, 0, 0),
+(29, 28, 0, 0),
+(30, 28, 0, 0),
+(31, 28, 0, 0),
+(32, 28, 0, 0),
+(33, 28, 0, 0),
+(34, 28, 0, 0),
+(35, 28, 0, 0),
+(36, 28, 0, 0),
+(37, 28, 1, 0),
+(38, 28, 0, 0),
+(39, 28, 0, 0),
+(40, 28, 0, 0),
+(41, 28, 0, 0),
+(42, 28, 0, 0),
+(43, 28, 1, 0),
+(1, 48, 1, 1),
+(23, 48, 1, 0),
+(24, 48, 1, 0),
+(25, 48, 0, 0),
+(26, 48, 0, 0),
+(27, 48, 0, 0),
+(28, 48, 0, 0),
+(29, 48, 0, 0),
+(30, 48, 0, 0),
+(31, 48, 0, 0),
+(32, 48, 0, 0),
+(33, 48, 0, 0),
+(34, 48, 0, 0),
+(35, 48, 0, 0),
+(36, 48, 0, 0),
+(37, 48, 1, 0),
+(38, 48, 0, 0),
+(39, 48, 0, 0),
+(40, 48, 0, 0),
+(41, 48, 0, 0),
+(42, 48, 0, 0),
+(43, 48, 1, 0),
+(1, 49, 1, 0),
+(23, 49, 0, 0),
+(24, 49, 0, 0),
+(25, 49, 0, 0),
+(26, 49, 0, 0),
+(27, 49, 0, 0),
+(28, 49, 0, 0),
+(29, 49, 0, 0),
+(30, 49, 0, 0),
+(31, 49, 0, 0),
+(32, 49, 0, 0),
+(33, 49, 0, 0),
+(34, 49, 0, 0),
+(35, 49, 0, 0),
+(36, 49, 0, 0),
+(37, 49, 0, 0),
+(38, 49, 0, 0),
+(39, 49, 0, 0),
+(40, 49, 0, 0),
+(41, 49, 0, 0),
+(42, 49, 0, 0),
+(43, 49, 0, 0),
+(45, 49, 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `repair`
+--
+
+CREATE TABLE IF NOT EXISTS `repair` (
+  `id` bigint NOT NULL,
+  `room_id` bigint NOT NULL,
+  `describe` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `create_date` date DEFAULT NULL,
+  `finish_date` date DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC COMMENT='报修记录';
+
+--
+-- 转存表中的数据 `repair`
+--
+
+INSERT INTO `repair` (`id`, `room_id`, `describe`, `status`, `create_date`, `finish_date`) VALUES
+(4, 1, '天花板塌了。。', 1, '2021-04-13', '2021-04-13'),
+(5, 262, '卫生间漏水', 1, '2021-04-13', '2025-04-15'),
+(7, 4, '水龙头漏水', 0, '2025-04-27', NULL),
+(8, 24, '宿舍停电了', 1, '2025-04-27', '2025-04-27'),
+(9, 37, '门坏了', 0, '2025-04-27', NULL),
+(10, 161, '灯不亮', 0, '2025-04-27', NULL),
+(11, 4, '水龙头坏了', 1, '2025-04-27', '2025-04-27'),
+(12, 5, '水龙头坏了', 0, '2025-04-27', NULL),
+(13, 66, '水龙头坏了', 1, '2025-04-27', '2025-04-27'),
+(14, 8, '水龙头坏了', 0, '2025-04-27', NULL),
+(15, 121, '水龙头漏水', 1, '2025-04-27', '2025-04-27'),
+(16, 5, '水龙头坏了', 1, '2025-04-27', '2025-04-27'),
+(17, 5, '水龙头坏了', 1, '2025-04-27', '2025-04-27'),
+(18, 4, '水龙头坏了', 0, '2025-04-27', NULL),
+(19, 69, '水龙头坏了', 1, '2025-04-28', '2025-04-28');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `repair_picture`
+--
+
+CREATE TABLE IF NOT EXISTS `repair_picture` (
+  `picture` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `repair_id` bigint DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `repair_picture`
+--
+
+INSERT INTO `repair_picture` (`picture`, `repair_id`) VALUES
+('18358239-196d-4901-b2bd-3e849dc5227c.png', 4),
+('8c9b05b5-6820-4a6a-82f7-eb39ee2f5ffe.png', 4),
+('c15e2f61-19ba-4a71-95e7-36168aab0360.png', 7),
+('c15e2f61-19ba-4a71-95e7-36168aab0360.png', 11),
+('c15e2f61-19ba-4a71-95e7-36168aab0360.png', 12),
+('c15e2f61-19ba-4a71-95e7-36168aab0360.png', 13),
+('c15e2f61-19ba-4a71-95e7-36168aab0360.png', 14),
+('c15e2f61-19ba-4a71-95e7-36168aab0360.png', 15),
+('c15e2f61-19ba-4a71-95e7-36168aab0360.png', 17),
+('c15e2f61-19ba-4a71-95e7-36168aab0360.png', 18),
+('c15e2f61-19ba-4a71-95e7-36168aab0360.png', 19);
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `room`
+--
+
+CREATE TABLE IF NOT EXISTS `room` (
+  `id` bigint NOT NULL,
+  `number` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `building_id` bigint DEFAULT NULL,
+  `max_capacity` int DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=402 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `room`
+--
+
+INSERT INTO `room` (`id`, `number`, `building_id`, `max_capacity`) VALUES
+(1, 'A1001', 6, 4),
+(2, 'A1002', 6, 4),
+(3, 'A1003', 6, 4),
+(4, 'A1004', 6, 4),
+(5, 'A1005', 6, 4),
+(6, 'A1006', 6, 4),
+(7, 'A1007', 6, 4),
+(8, 'A1008', 6, 4),
+(9, 'A1009', 6, 4),
+(10, 'A1010', 6, 4),
+(11, 'A2001', 6, 4),
+(12, 'A2002', 6, 4),
+(13, 'A2003', 6, 4),
+(14, 'A2004', 6, 4),
+(15, 'A2005', 6, 4),
+(16, 'A2006', 6, 4),
+(17, 'A2007', 6, 4),
+(18, 'A2008', 6, 4),
+(19, 'A2009', 6, 4),
+(20, 'A2010', 6, 4),
+(21, 'A3001', 6, 4),
+(22, 'A3002', 6, 4),
+(23, 'A3003', 6, 4),
+(24, 'A3004', 6, 4),
+(25, 'A3005', 6, 4),
+(26, 'A3006', 6, 4),
+(27, 'A3007', 6, 4),
+(28, 'A3008', 6, 4),
+(29, 'A3009', 6, 4),
+(30, 'A3010', 6, 4),
+(31, 'A4001', 6, 4),
+(32, 'A4002', 6, 4),
+(33, 'A4003', 6, 4),
+(34, 'A4004', 6, 4),
+(35, 'A4005', 6, 4),
+(36, 'A4006', 6, 4),
+(37, 'A4007', 6, 4),
+(38, 'A4008', 6, 4),
+(39, 'A4009', 6, 4),
+(40, 'A4010', 6, 4),
+(41, 'A5001', 6, 4),
+(42, 'A5002', 6, 4),
+(43, 'A5003', 6, 4),
+(44, 'A5004', 6, 4),
+(45, 'A5005', 6, 4),
+(46, 'A5006', 6, 4),
+(47, 'A5007', 6, 4),
+(48, 'A5008', 6, 4),
+(49, 'A5009', 6, 4),
+(50, 'A5010', 6, 4),
+(51, 'A6001', 6, 4),
+(52, 'A6002', 6, 4),
+(53, 'A6003', 6, 4),
+(54, 'A6004', 6, 4),
+(55, 'A6005', 6, 4),
+(56, 'A6006', 6, 4),
+(57, 'A6007', 6, 4),
+(58, 'A6008', 6, 4),
+(59, 'A6009', 6, 4),
+(60, 'A6010', 6, 4),
+(61, 'A1011', 13, 6),
+(62, 'A1012', 13, 6),
+(63, 'A1013', 13, 6),
+(64, 'A1014', 13, 6),
+(65, 'A1015', 13, 6),
+(66, 'A1016', 13, 6),
+(67, 'A1017', 13, 6),
+(68, 'A1018', 13, 6),
+(69, 'A1019', 13, 6),
+(70, 'A1020', 13, 6),
+(71, 'A2011', 13, 6),
+(72, 'A2012', 13, 6),
+(73, 'A2013', 13, 6),
+(74, 'A2014', 13, 6),
+(75, 'A2015', 13, 6),
+(76, 'A2016', 13, 6),
+(77, 'A2017', 13, 6),
+(78, 'A2018', 13, 6),
+(79, 'A2019', 13, 6),
+(80, 'A2020', 13, 6),
+(81, 'A3011', 13, 6),
+(82, 'A3012', 13, 6),
+(83, 'A3013', 13, 6),
+(84, 'A3014', 13, 6),
+(85, 'A3015', 13, 6),
+(86, 'A3016', 13, 6),
+(87, 'A3017', 13, 6),
+(88, 'A3018', 13, 6),
+(89, 'A3019', 13, 6),
+(90, 'A3020', 13, 6),
+(91, 'A4011', 13, 6),
+(92, 'A4012', 13, 6),
+(93, 'A4013', 13, 6),
+(94, 'A4014', 13, 6),
+(95, 'A4015', 13, 6),
+(96, 'A4016', 13, 6),
+(97, 'A4017', 13, 6),
+(98, 'A4018', 13, 6),
+(99, 'A4019', 13, 6),
+(100, 'A4020', 13, 6),
+(101, 'A5011', 13, 6),
+(102, 'A5012', 13, 6),
+(103, 'A5013', 13, 6),
+(104, 'A5014', 13, 6),
+(105, 'A5015', 13, 6),
+(106, 'A5016', 13, 6),
+(107, 'A5017', 13, 6),
+(108, 'A5018', 13, 6),
+(109, 'A5019', 13, 6),
+(110, 'A5020', 13, 6),
+(111, 'A6011', 13, 6),
+(112, 'A6012', 13, 6),
+(113, 'A6013', 13, 6),
+(114, 'A6014', 13, 6),
+(115, 'A6015', 13, 6),
+(116, 'A6016', 13, 6),
+(117, 'A6017', 13, 6),
+(118, 'A6018', 13, 6),
+(119, 'A6019', 13, 6),
+(120, 'A6020', 13, 6),
+(121, 'A1021', 14, 6),
+(122, 'A1022', 14, 6),
+(123, 'A1023', 14, 6),
+(124, 'A1024', 14, 6),
+(125, 'A1025', 14, 6),
+(126, 'A1026', 14, 6),
+(127, 'A1027', 14, 6),
+(128, 'A1028', 14, 6),
+(129, 'A1029', 14, 6),
+(130, 'A1030', 14, 6),
+(131, 'A2021', 14, 6),
+(132, 'A2022', 14, 6),
+(133, 'A2023', 14, 6),
+(134, 'A2024', 14, 6),
+(135, 'A2025', 14, 6),
+(136, 'A2026', 14, 6),
+(137, 'A2027', 14, 6),
+(138, 'A2028', 14, 6),
+(139, 'A2029', 14, 6),
+(140, 'A2030', 14, 6),
+(141, 'A3021', 14, 6),
+(142, 'A3022', 14, 6),
+(143, 'A3023', 14, 6),
+(144, 'A3024', 14, 6),
+(145, 'A3025', 14, 6),
+(146, 'A3026', 14, 6),
+(147, 'A3027', 14, 6),
+(148, 'A3028', 14, 6),
+(149, 'A3029', 14, 6),
+(150, 'A3030', 14, 6),
+(151, 'A4021', 14, 6),
+(152, 'A4022', 14, 6),
+(153, 'A4023', 14, 6),
+(154, 'A4024', 14, 6),
+(155, 'A4025', 14, 6),
+(156, 'A4026', 14, 6),
+(157, 'A4027', 14, 6),
+(158, 'A4028', 14, 6),
+(159, 'A4029', 14, 6),
+(160, 'A4030', 14, 6),
+(161, 'A5021', 14, 6),
+(162, 'A5022', 14, 6),
+(163, 'A5023', 14, 6),
+(164, 'A5024', 14, 6),
+(165, 'A5025', 14, 6),
+(166, 'A5026', 14, 6),
+(167, 'A5027', 14, 6),
+(168, 'A5028', 14, 6),
+(169, 'A5029', 14, 6),
+(170, 'A5030', 14, 6),
+(171, 'A6021', 14, 6),
+(172, 'A6022', 14, 6),
+(173, 'A6023', 14, 6),
+(174, 'A6024', 14, 6),
+(175, 'A6025', 14, 6),
+(176, 'A6026', 14, 6),
+(177, 'A6027', 14, 6),
+(178, 'A6028', 14, 6),
+(179, 'A6029', 14, 6),
+(180, 'A6030', 14, 6),
+(181, 'B1001', 15, 6),
+(182, 'B1002', 15, 6),
+(183, 'B1003', 15, 6),
+(184, 'B1004', 15, 6),
+(185, 'B1005', 15, 6),
+(186, 'B1006', 15, 6),
+(187, 'B1007', 15, 6),
+(188, 'B1008', 15, 6),
+(189, 'B1009', 15, 6),
+(190, 'B1010', 15, 6),
+(191, 'B1011', 16, 6),
+(192, 'B1012', 16, 6),
+(193, 'B1013', 16, 6),
+(194, 'B1014', 16, 6),
+(195, 'B1015', 16, 6),
+(196, 'B1016', 16, 6),
+(197, 'B1017', 16, 6),
+(198, 'B1018', 16, 6),
+(199, 'B1019', 16, 6),
+(200, 'B1020', 16, 6),
+(201, 'B1021', 17, 6),
+(202, 'B1022', 17, 6),
+(203, 'B1023', 17, 6),
+(204, 'B1024', 17, 6),
+(205, 'B1025', 17, 6),
+(206, 'B1026', 17, 6),
+(207, 'B1027', 17, 6),
+(208, 'B1028', 17, 6),
+(209, 'B1029', 17, 6),
+(210, 'B1030', 17, 6),
+(211, 'B2001', 15, 6),
+(212, 'B2002', 15, 6),
+(213, 'B2003', 15, 6),
+(214, 'B2004', 15, 6),
+(215, 'B2005', 15, 6),
+(216, 'B2006', 15, 6),
+(217, 'B2007', 15, 6),
+(218, 'B2008', 15, 6),
+(219, 'B2009', 15, 6),
+(220, 'B2010', 15, 6),
+(221, 'B2011', 16, 6),
+(222, 'B2012', 16, 6),
+(223, 'B2013', 16, 6),
+(224, 'B2014', 16, 6),
+(225, 'B2015', 16, 6),
+(226, 'B2016', 16, 6),
+(227, 'B2017', 16, 6),
+(228, 'B2018', 16, 6),
+(229, 'B2019', 16, 6),
+(230, 'B2020', 16, 6),
+(231, 'B2021', 17, 6),
+(232, 'B2022', 17, 6),
+(233, 'B2023', 17, 6),
+(234, 'B2024', 17, 6),
+(235, 'B2025', 17, 6),
+(236, 'B2026', 17, 6),
+(237, 'B2027', 17, 6),
+(238, 'B2028', 17, 6),
+(239, 'B2029', 17, 6),
+(240, 'B2030', 17, 6),
+(241, 'B3001', 15, 6),
+(242, 'B3002', 15, 6),
+(243, 'B3003', 15, 6),
+(244, 'B3004', 15, 6),
+(245, 'B3005', 15, 6),
+(246, 'B3006', 15, 6),
+(247, 'B3007', 15, 6),
+(248, 'B3008', 15, 6),
+(249, 'B3009', 15, 6),
+(250, 'B3010', 15, 6),
+(251, 'B3011', 16, 6),
+(252, 'B3012', 16, 6),
+(253, 'B3013', 16, 6),
+(254, 'B3014', 16, 6),
+(255, 'B3015', 16, 6),
+(256, 'B3016', 16, 6),
+(257, 'B3017', 16, 6),
+(258, 'B3018', 16, 6),
+(259, 'B3019', 16, 6),
+(260, 'B3020', 16, 6),
+(261, 'B3021', 17, 6),
+(262, 'B3022', 17, 6),
+(263, 'B3023', 17, 6),
+(264, 'B3024', 17, 6),
+(265, 'B3025', 17, 6),
+(266, 'B3026', 17, 6),
+(267, 'B3027', 17, 6),
+(268, 'B3028', 17, 6),
+(269, 'B3029', 17, 6),
+(270, 'B3030', 17, 6),
+(271, 'B4001', 15, 6),
+(272, 'B4002', 15, 6),
+(273, 'B4003', 15, 6),
+(274, 'B4004', 15, 6),
+(275, 'B4005', 15, 6),
+(276, 'B4006', 15, 6),
+(277, 'B4007', 15, 6),
+(278, 'B4008', 15, 6),
+(279, 'B4009', 15, 6),
+(280, 'B4010', 15, 6),
+(281, 'B4011', 16, 6),
+(282, 'B4012', 16, 6),
+(283, 'B4013', 16, 6),
+(284, 'B4014', 16, 6),
+(285, 'B4015', 16, 6),
+(286, 'B4016', 16, 6),
+(287, 'B4017', 16, 6),
+(288, 'B4018', 16, 6),
+(289, 'B4019', 16, 6),
+(290, 'B4020', 16, 6),
+(291, 'B4021', 17, 6),
+(292, 'B4022', 17, 6),
+(293, 'B4023', 17, 6),
+(294, 'B4024', 17, 6),
+(295, 'B4025', 17, 6),
+(296, 'B4026', 17, 6),
+(297, 'B4027', 17, 6),
+(298, 'B4028', 17, 6),
+(299, 'B4029', 17, 6),
+(300, 'B4030', 17, 6),
+(301, 'C1001', 18, 4),
+(302, 'C1002', 18, 4),
+(303, 'C1003', 18, 4),
+(304, 'C1004', 18, 4),
+(305, 'C1005', 18, 4),
+(306, 'C1006', 18, 4),
+(307, 'C1007', 18, 4),
+(308, 'C1008', 18, 4),
+(309, 'C1009', 18, 4),
+(310, 'C1010', 18, 4),
+(311, 'C1011', 19, 4),
+(312, 'C1012', 19, 4),
+(313, 'C1013', 19, 4),
+(314, 'C1014', 19, 4),
+(315, 'C1015', 19, 4),
+(316, 'C1016', 19, 4),
+(317, 'C1017', 19, 4),
+(318, 'C1018', 19, 4),
+(319, 'C1019', 19, 4),
+(320, 'C1020', 19, 4),
+(321, 'C2001', 18, 4),
+(322, 'C2002', 18, 4),
+(323, 'C2003', 18, 4),
+(324, 'C2004', 18, 4),
+(325, 'C2005', 18, 4),
+(326, 'C2006', 18, 4),
+(327, 'C2007', 18, 4),
+(328, 'C2008', 18, 4),
+(329, 'C2009', 18, 4),
+(330, 'C2010', 18, 4),
+(331, 'C2011', 19, 4),
+(332, 'C2012', 19, 4),
+(333, 'C2013', 19, 4),
+(334, 'C2014', 19, 4),
+(335, 'C2015', 19, 4),
+(336, 'C2016', 19, 4),
+(337, 'C2017', 19, 4),
+(338, 'C2018', 19, 4),
+(339, 'C2019', 19, 4),
+(340, 'C2020', 19, 4),
+(341, 'C3001', 18, 4),
+(342, 'C3002', 18, 4),
+(343, 'C3003', 18, 4),
+(344, 'C3004', 18, 4),
+(345, 'C3005', 18, 4),
+(346, 'C3006', 18, 4),
+(347, 'C3007', 18, 4),
+(348, 'C3008', 18, 4),
+(349, 'C3009', 18, 4),
+(350, 'C3010', 18, 4),
+(351, 'C3011', 19, 4),
+(352, 'C3012', 19, 4),
+(353, 'C3013', 19, 4),
+(354, 'C3014', 19, 4),
+(355, 'C3015', 19, 4),
+(356, 'C3016', 19, 4),
+(357, 'C3017', 19, 4),
+(358, 'C3018', 19, 4),
+(359, 'C3019', 19, 4),
+(360, 'C3020', 19, 4),
+(361, 'C4001', 18, 4),
+(362, 'C4002', 18, 4),
+(363, 'C4003', 18, 4),
+(364, 'C4004', 18, 4),
+(365, 'C4005', 18, 4),
+(366, 'C4006', 18, 4),
+(367, 'C4007', 18, 4),
+(368, 'C4008', 18, 4),
+(369, 'C4009', 18, 4),
+(370, 'C4010', 18, 4),
+(371, 'C4011', 19, 4),
+(372, 'C4012', 19, 4),
+(373, 'C4013', 19, 4),
+(374, 'C4014', 19, 4),
+(375, 'C4015', 19, 4),
+(376, 'C4016', 19, 4),
+(377, 'C4017', 19, 4),
+(378, 'C4018', 19, 4),
+(379, 'C4019', 19, 4),
+(380, 'C4020', 19, 4),
+(381, 'C5001', 18, 4),
+(382, 'C5002', 18, 4),
+(383, 'C5003', 18, 4),
+(384, 'C5004', 18, 4),
+(385, 'C5005', 18, 4),
+(386, 'C5006', 18, 4),
+(387, 'C5007', 18, 4),
+(388, 'C5008', 18, 4),
+(389, 'C5009', 18, 4),
+(390, 'C5010', 18, 4),
+(391, 'C5011', 19, 4),
+(392, 'C5012', 19, 4),
+(393, 'C5013', 19, 4),
+(394, 'C5014', 19, 4),
+(395, 'C5015', 19, 4),
+(396, 'C5016', 19, 4),
+(397, 'C5017', 19, 4),
+(398, 'C5018', 19, 4),
+(399, 'C5019', 19, 4),
+(400, 'C5020', 19, 4);
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `score`
+--
+
+CREATE TABLE IF NOT EXISTS `score` (
+  `id` bigint NOT NULL,
+  `room_id` bigint NOT NULL,
+  `global_score` decimal(5,2) DEFAULT NULL,
+  `building_score` decimal(5,2) DEFAULT NULL,
+  `bed_score` decimal(5,2) DEFAULT NULL,
+  `indoor_score` decimal(5,2) DEFAULT NULL,
+  `rater_id` int DEFAULT NULL,
+  `rated_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `score`
+--
+
+INSERT INTO `score` (`id`, `room_id`, `global_score`, `building_score`, `bed_score`, `indoor_score`, `rater_id`, `rated_at`) VALUES
+(1, 1, '4.00', '7.00', '7.00', '6.00', NULL, '2025-05-31 12:53:32'),
+(2, 13, '9.00', '9.00', '8.00', '8.00', NULL, '2025-04-15 10:51:20'),
+(3, 61, '5.00', '5.00', '5.00', '5.00', NULL, '2025-04-02 22:16:06'),
+(4, 2, '5.00', '5.00', '5.00', '6.00', NULL, '2025-04-02 12:08:12'),
+(5, 46, '1.00', '9.00', '8.00', '6.00', NULL, '2025-04-10 20:30:10'),
+(6, 191, '4.00', '4.00', '5.00', '4.00', NULL, '2025-04-03 08:44:45'),
+(7, 28, '5.00', '4.00', '2.00', '3.00', NULL, '2025-04-02 16:09:11'),
+(8, 6, '10.00', '10.00', '10.00', '10.00', NULL, '2025-04-28 19:20:19'),
+(9, 121, '5.00', '5.00', '4.00', '3.00', NULL, '2025-04-02 22:24:46'),
+(10, 60, '1.00', '1.00', '1.00', '1.00', NULL, '2025-04-03 08:55:50'),
+(11, 76, '8.00', '8.00', '7.00', '6.00', NULL, '2025-04-03 09:49:21'),
+(12, 301, '3.00', '3.00', '3.00', '2.00', NULL, '2025-04-03 09:50:12'),
+(14, 3, '10.00', '10.00', '10.00', '10.00', NULL, '2025-04-27 21:23:50'),
+(15, 63, '10.00', '10.00', '10.00', '10.00', NULL, '2025-04-27 21:22:54'),
+(16, 4, '10.00', '10.00', '10.00', '10.00', NULL, '2025-04-28 19:19:07');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `score_image`
+--
+
+CREATE TABLE IF NOT EXISTS `score_image` (
+  `id` bigint NOT NULL,
+  `score_id` bigint NOT NULL COMMENT '关联评分ID',
+  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '存储文件名',
+  `original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '原始文件名',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `md5` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `score_image`
+--
+
+INSERT INTO `score_image` (`id`, `score_id`, `file_name`, `original_name`, `create_time`, `md5`) VALUES
+(15, 15, '67fc8eae-abbe-40cf-ad3c-d276ed8a30b3_宿舍.jpg', '宿舍.jpg', '2025-04-27 21:21:56', '53A7E2C48DD7F378C042385B5FDA2D5E'),
+(16, 14, '70c3d87c-454e-4a21-a0ef-cbca3d7364af_宿舍2.jpg', '宿舍2.jpg', '2025-04-27 21:23:50', '4DD0F286AEB9DC4D311E657C90BE7D51'),
+(17, 8, '416cc0b2-e822-44db-bcbb-d62f7594e09f_宿舍3.jpg', '宿舍3.jpg', '2025-04-28 19:20:19', '9ABBA4A0336AD036A7263BCF19A8AD80');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `student`
+--
+
+CREATE TABLE IF NOT EXISTS `student` (
+  `id` bigint NOT NULL,
+  `name` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `room_id` bigint DEFAULT NULL,
+  `faculty_id` bigint DEFAULT NULL,
+  `number` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `registration_date` date DEFAULT NULL,
+  `phone` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `photo` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `is_leave` tinyint(1) DEFAULT '0',
+  `is_delete` tinyint(1) DEFAULT '0'
+) ENGINE=InnoDB AUTO_INCREMENT=4286 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `student`
+--
+
+INSERT INTO `student` (`id`, `name`, `room_id`, `faculty_id`, `number`, `registration_date`, `phone`, `photo`, `is_leave`, `is_delete`) VALUES
+(3286, '李雅琳', 1, 10, '22159649273', '2024-09-01', '18093795224', NULL, 0, 0),
+(3287, '孙鹏', 1, 39, '24879642940', '2023-09-01', '18068638599', NULL, 0, 0),
+(3288, '周浩', 1, 16, '22972701928', '2023-09-01', '18045947218', NULL, 0, 0),
+(3289, '华萌', 1, 15, '24427959377', '2024-09-01', '18041261673', NULL, 0, 0),
+(3290, '陈哲', 2, 40, '24088398193', '2023-09-01', '18024690707', NULL, 0, 0),
+(3291, '尤强', 2, 31, '24985073862', '2024-09-01', '18069847414', NULL, 0, 0),
+(3292, '施欣', 2, 20, '22858394964', '2024-09-01', '18087144251', NULL, 0, 0),
+(3293, '姜鹏', 2, 34, '23759517451', '2024-09-01', '18062224322', NULL, 0, 0),
+(3294, '吴涛文', 3, 11, '23567462761', '2024-09-01', '18088968839', NULL, 0, 0),
+(3295, '秦宁', 3, 35, '24869574101', '2024-09-01', '18099892425', NULL, 0, 0),
+(3296, '孔文杰', 3, 39, '24150249011', '2024-09-01', '18090447796', NULL, 0, 0),
+(3297, '陈倩', 3, 20, '22836689784', '2023-09-01', '18042259972', NULL, 0, 0),
+(3298, '姜磊', 4, 10, '23030090975', '2024-09-01', '18044785039', NULL, 0, 0),
+(3299, '陈萌', 4, 18, '22513878738', '2023-09-01', '18033726645', NULL, 0, 0),
+(3300, '施杰', 4, 40, '22153913755', '2022-09-01', '18086562128', NULL, 0, 0),
+(3301, '郑翔', 4, 36, '23984090455', '2023-09-01', '18075440811', NULL, 0, 0),
+(3302, '秦昊琳', 5, 36, '24654891912', '2024-09-01', '18035019528', NULL, 0, 0),
+(3303, '尤琦', 5, 39, '22406834456', '2023-09-01', '18077997831', NULL, 0, 0),
+(3304, '沈超', 5, 23, '23867491560', '2024-09-01', '18013025404', NULL, 0, 0),
+(3305, '沈强', 5, 18, '22513092941', '2023-09-01', '18027819112', NULL, 0, 0),
+(3306, '吕睿雅', 6, 12, '22909296468', '2023-09-01', '18028344973', NULL, 0, 0),
+(3307, '冯磊超', 6, 36, '24315597239', '2024-09-01', '18015652875', NULL, 0, 0),
+(3308, '吕欣萌', 6, 40, '23317218005', '2024-09-01', '18061381775', NULL, 0, 0),
+(3309, '杨磊', 6, 15, '24321270817', '2022-09-01', '18028858591', NULL, 0, 0),
+(3310, '何伟', 7, 20, '23677462406', '2022-09-01', '18045146286', NULL, 0, 0),
+(3311, '王旭', 7, 41, '24167185092', '2023-09-01', '18043920613', NULL, 0, 0),
+(3312, '蒋宁', 7, 36, '24465926287', '2023-09-01', '18081076931', NULL, 0, 0),
+(3313, '陈俊', 7, 23, '22667794762', '2022-09-01', '18003974611', NULL, 0, 0),
+(3314, '孙睿', 8, 34, '22724113556', '2022-09-01', '18062377279', NULL, 0, 0),
+(3315, '严杰', 8, 35, '24112505369', '2022-09-01', '18091431661', NULL, 0, 0),
+(3316, '华刚', 8, 36, '23560912168', '2024-09-01', '18091595107', NULL, 0, 0),
+(3317, '施翔', 8, 23, '24066919266', '2022-09-01', '18064898495', NULL, 0, 0),
+(3318, '吕雅', 9, 10, '24737848905', '2024-09-01', '18077607609', NULL, 0, 0),
+(3319, '李倩', 9, 16, '23147936931', '2023-09-01', '18083895680', NULL, 0, 0),
+(3320, '李文博', 9, 34, '24984696081', '2024-09-01', '18076456378', NULL, 0, 0),
+(3321, '孔睿涛', 9, 16, '24158906194', '2023-09-01', '18073647798', NULL, 0, 0),
+(3322, '孔倩俊', 10, 34, '24416070930', '2023-09-01', '18090900007', NULL, 0, 0),
+(3323, '施琦', 10, 36, '23652877445', '2023-09-01', '18070033920', NULL, 0, 0),
+(3324, '卫涛伟', 10, 20, '24267375337', '2022-09-01', '18062182158', NULL, 0, 0),
+(3325, '许旭杰', 10, 20, '24307835378', '2024-09-01', '18027299784', NULL, 0, 0),
+(3326, '韩琳', 11, 36, '22300046832', '2022-09-01', '18001840050', NULL, 0, 0),
+(3327, '孔翔磊', 11, 36, '23974928641', '2024-09-01', '18052222102', NULL, 0, 0),
+(3328, '孔琳鹏', 11, 16, '24674381379', '2024-09-01', '18086253736', NULL, 0, 0),
+(3329, '华翔', 11, 22, '22125194211', '2022-09-01', '18026828355', NULL, 0, 0),
+(3330, '李宁', 12, 22, '23940268876', '2022-09-01', '18067138662', NULL, 0, 0),
+(3331, '秦昊', 12, 36, '23509298847', '2024-09-01', '18082620842', NULL, 0, 0),
+(3332, '孙文', 12, 40, '23423249041', '2022-09-01', '18092099928', NULL, 0, 0),
+(3333, '陶强', 12, 23, '23704674673', '2023-09-01', '18074485209', NULL, 0, 0),
+(3334, '赵磊涛', 13, 12, '24645756055', '2024-09-01', '18015023347', NULL, 0, 0),
+(3335, '卫萌', 13, 34, '23120440945', '2024-09-01', '18052703504', NULL, 0, 0),
+(3336, '朱伟', 13, 23, '23179906179', '2024-09-01', '18075633558', NULL, 0, 0),
+(3337, '卫涛杰', 13, 36, '24675394456', '2024-09-01', '18080252913', NULL, 0, 0),
+(3338, '金洋雅', 14, 39, '24542528911', '2022-09-01', '18065221744', NULL, 0, 0),
+(3339, '陶哲', 14, 23, '22979590614', '2022-09-01', '18016178127', NULL, 0, 0),
+(3340, '张欣博', 14, 35, '22225955326', '2022-09-01', '18083385560', NULL, 0, 0),
+(3341, '何涛', 14, 39, '24311590412', '2023-09-01', '18007873837', NULL, 0, 0),
+(3342, '吴琳', 15, 19, '24411712994', '2022-09-01', '18091437664', NULL, 0, 0),
+(3343, '孔萌', 15, 16, '24775462235', '2022-09-01', '18040260066', NULL, 0, 0),
+(3344, '许涛', 15, 10, '24823429731', '2022-09-01', '18056085215', NULL, 0, 0),
+(3345, '褚俊雅', 15, 22, '23999132979', '2023-09-01', '18072762152', NULL, 0, 0),
+(3346, '赵杰', 16, 34, '23150127682', '2024-09-01', '18086305723', NULL, 0, 0),
+(3347, '钱宁', 16, 31, '22380463943', '2022-09-01', '18007151150', NULL, 0, 0),
+(3348, '郑翔博', 16, 35, '23840918396', '2022-09-01', '18079440990', NULL, 0, 0),
+(3349, '杨萌', 16, 22, '24752814919', '2022-09-01', '18009382860', NULL, 0, 0),
+(3350, '钱杰', 17, 34, '24752279837', '2023-09-01', '18053314644', NULL, 0, 0),
+(3351, '李俊', 17, 23, '24915929588', '2023-09-01', '18099101021', NULL, 0, 0),
+(3352, '曹浩琦', 17, 15, '23181612223', '2022-09-01', '18091462522', NULL, 0, 0),
+(3353, '王刚旭', 17, 31, '23113228692', '2023-09-01', '18096767996', NULL, 0, 0),
+(3354, '褚俊', 18, 15, '23262468103', '2022-09-01', '18041214309', NULL, 0, 0),
+(3355, '沈欣', 18, 20, '23714389433', '2023-09-01', '18001081984', NULL, 0, 0),
+(3356, '施哲磊', 18, 32, '24190269690', '2023-09-01', '18014346492', NULL, 0, 0),
+(3357, '钱哲', 18, 22, '22759682692', '2024-09-01', '18054904383', NULL, 0, 0),
+(3358, '沈博', 19, 38, '23553698408', '2024-09-01', '18025552412', NULL, 0, 0),
+(3359, '秦萌', 19, 20, '22625434929', '2023-09-01', '18012088546', NULL, 0, 0),
+(3360, '尤伟', 19, 11, '22425013463', '2024-09-01', '18059258117', NULL, 0, 0),
+(3361, '沈磊', 19, 12, '23381106357', '2024-09-01', '18014082000', NULL, 0, 0),
+(3362, '张昊', 20, 40, '23273382253', '2023-09-01', '18007316959', NULL, 0, 0),
+(3363, '李磊', 20, 22, '24426688085', '2022-09-01', '18017839858', NULL, 0, 0),
+(3364, '赵宁琦', 20, 10, '23754532121', '2022-09-01', '18012088450', NULL, 0, 0),
+(3365, '姜睿', 20, 35, '24757984684', '2024-09-01', '18082654939', NULL, 0, 0),
+(3366, '韩伟', 21, 39, '22634085933', '2023-09-01', '18031169665', NULL, 0, 0),
+(3367, '孔倩', 21, 38, '24576691570', '2023-09-01', '18082590477', NULL, 0, 0),
+(3368, '陈倩强', 21, 12, '22180851440', '2023-09-01', '18048502549', NULL, 0, 0),
+(3369, '尤伟宁', 21, 40, '24743327535', '2022-09-01', '18077650285', NULL, 0, 0),
+(3370, '杨文', 22, 35, '22736723142', '2022-09-01', '18037240766', NULL, 0, 0),
+(3371, '蒋琳', 22, 12, '24105641955', '2024-09-01', '18076359771', NULL, 0, 0),
+(3372, '许磊', 22, 35, '24016288313', '2023-09-01', '18090399346', NULL, 0, 0),
+(3373, '陈杰', 22, 31, '23711400547', '2023-09-01', '18074840975', NULL, 0, 0),
+(3374, '赵涛强', 23, 20, '23016545803', '2022-09-01', '18076894693', NULL, 0, 0),
+(3375, '金文', 23, 34, '23875665718', '2022-09-01', '18085664509', NULL, 0, 0),
+(3376, '严文', 23, 18, '24021153779', '2024-09-01', '18078322248', NULL, 0, 0),
+(3377, '曹俊涛', 23, 31, '22903711816', '2022-09-01', '18024372665', NULL, 0, 0),
+(3378, '陶哲雅', 24, 39, '22322684817', '2022-09-01', '18023316106', NULL, 0, 0),
+(3379, '朱伟', 24, 20, '22206735915', '2024-09-01', '18044452687', NULL, 0, 0),
+(3380, '杨倩琳', 24, 39, '22857217233', '2023-09-01', '18041494526', NULL, 0, 0),
+(3381, '许倩文', 24, 23, '22102495072', '2022-09-01', '18025421021', NULL, 0, 0),
+(3382, '张旭', 25, 40, '23938049288', '2022-09-01', '18032066759', NULL, 0, 0),
+(3383, '何旭', 25, 35, '23468879912', '2024-09-01', '18033117639', NULL, 0, 0),
+(3384, '孔文', 25, 15, '22595578722', '2022-09-01', '18042636893', NULL, 0, 0),
+(3385, '王萌文', 25, 23, '22757236851', '2024-09-01', '18066987257', NULL, 0, 0),
+(3386, '华强萌', 26, 34, '22765182132', '2023-09-01', '18040813230', NULL, 0, 0),
+(3387, '华浩浩', 26, 10, '22557954345', '2023-09-01', '18059178518', NULL, 0, 0),
+(3388, '尤文', 26, 38, '23835587832', '2024-09-01', '18064023531', NULL, 0, 0),
+(3389, '褚昊鹏', 26, 40, '23188893375', '2024-09-01', '18027806998', NULL, 0, 0),
+(3390, '金萌', 27, 40, '24442182291', '2024-09-01', '18007589285', NULL, 0, 0),
+(3391, '吕磊', 27, 18, '24648965747', '2022-09-01', '18081270619', NULL, 0, 0),
+(3392, '孔萌', 27, 11, '22399992208', '2023-09-01', '18090011046', NULL, 0, 0),
+(3393, '曹博', 27, 12, '24499107955', '2023-09-01', '18041647495', NULL, 0, 0),
+(3394, '褚倩', 28, 16, '24944651319', '2024-09-01', '18003753181', NULL, 0, 0),
+(3395, '陶超', 28, 22, '24318802581', '2023-09-01', '18099601754', NULL, 0, 0),
+(3396, '钱昊', 28, 12, '23938955757', '2023-09-01', '18088217254', NULL, 0, 0),
+(3397, '曹浩昊', 28, 18, '23540767412', '2022-09-01', '18058634084', NULL, 0, 0),
+(3398, '施磊', 29, 38, '23418383530', '2023-09-01', '18073482863', NULL, 0, 0),
+(3399, '杨俊', 29, 38, '24760274318', '2022-09-01', '18094754152', NULL, 0, 0),
+(3400, '赵旭', 29, 15, '23282534153', '2022-09-01', '18048534796', NULL, 0, 0),
+(3401, '孔倩', 29, 10, '23843654440', '2022-09-01', '18076289254', NULL, 0, 0),
+(3402, '吕萌', 30, 11, '22851039754', '2023-09-01', '18067604958', NULL, 0, 0),
+(3403, '魏文', 30, 11, '22896515700', '2024-09-01', '18028416496', NULL, 0, 0),
+(3404, '赵杰', 30, 23, '22084445876', '2022-09-01', '18014459904', NULL, 0, 0),
+(3405, '尤雅', 30, 31, '24857878035', '2023-09-01', '18042912961', NULL, 0, 0),
+(3406, '魏磊杰', 31, 23, '24423190340', '2022-09-01', '18034630566', NULL, 0, 0),
+(3407, '金浩', 31, 10, '23436163634', '2023-09-01', '18084720092', NULL, 0, 0),
+(3408, '魏萌昊', 31, 34, '23700154307', '2024-09-01', '18061670597', NULL, 0, 0),
+(3409, '吕强', 31, 34, '24930544392', '2024-09-01', '18098808565', NULL, 0, 0),
+(3410, '魏超', 32, 15, '22772402691', '2024-09-01', '18002067318', NULL, 0, 0),
+(3411, '冯旭欣', 32, 40, '23687959769', '2024-09-01', '18066731787', NULL, 0, 0),
+(3412, '韩欣倩', 32, 19, '23809949728', '2024-09-01', '18009997126', NULL, 0, 0),
+(3413, '朱旭昊', 32, 39, '23492576994', '2023-09-01', '18066506868', NULL, 0, 0),
+(3414, '郑旭鹏', 33, 15, '23151255780', '2022-09-01', '18026675735', NULL, 0, 0),
+(3415, '王刚', 33, 11, '24600868851', '2024-09-01', '18086921463', NULL, 0, 0),
+(3416, '蒋刚', 33, 23, '24457308435', '2024-09-01', '18012797200', NULL, 0, 0),
+(3417, '卫翔昊', 33, 32, '24076852073', '2022-09-01', '18082284844', NULL, 0, 0),
+(3418, '陈浩', 34, 31, '23427047575', '2022-09-01', '18027156050', NULL, 0, 0),
+(3419, '张睿', 34, 16, '22997607548', '2023-09-01', '18077680479', NULL, 0, 0),
+(3420, '吕涛', 34, 39, '23274353556', '2022-09-01', '18024301822', NULL, 0, 0),
+(3421, '孙涛', 34, 10, '22226400036', '2024-09-01', '18010773777', NULL, 0, 0),
+(3422, '钱涛', 35, 32, '23442807179', '2024-09-01', '18092686430', NULL, 0, 0),
+(3423, '陈超', 35, 32, '24825063741', '2024-09-01', '18014853529', NULL, 0, 0),
+(3424, '朱倩', 35, 15, '22023044108', '2022-09-01', '18073439870', NULL, 0, 0),
+(3425, '吴刚', 35, 40, '24613221171', '2022-09-01', '18041173218', NULL, 0, 0),
+(3426, '郑翔', 36, 12, '23757952112', '2023-09-01', '18098257002', NULL, 0, 0),
+(3427, '张涛', 36, 39, '22015566480', '2022-09-01', '18036810615', NULL, 0, 0),
+(3428, '施旭', 36, 34, '22419592023', '2024-09-01', '18007157898', NULL, 0, 0),
+(3429, '秦涛雅', 36, 34, '22384312031', '2022-09-01', '18030096547', NULL, 0, 0),
+(3430, '冯超', 37, 39, '23929202459', '2022-09-01', '18065275715', NULL, 0, 0),
+(3431, '冯杰', 37, 36, '22347981786', '2022-09-01', '18052320102', NULL, 0, 0),
+(3432, '华超', 37, 36, '23555842744', '2022-09-01', '18055574131', NULL, 0, 0),
+(3433, '朱杰', 37, 15, '22436928229', '2023-09-01', '18045210426', NULL, 0, 0),
+(3434, '孔倩杰', 38, 20, '22018641346', '2023-09-01', '18079038862', NULL, 0, 0),
+(3435, '沈杰倩', 38, 39, '24905370301', '2024-09-01', '18045313428', NULL, 0, 0),
+(3436, '孙哲', 38, 41, '24967243676', '2024-09-01', '18065018067', NULL, 0, 0),
+(3437, '姜博刚', 38, 10, '23561803627', '2022-09-01', '18048502780', NULL, 0, 0),
+(3438, '孔翔', 39, 20, '24900458103', '2022-09-01', '18063102884', NULL, 0, 0),
+(3439, '卫睿俊', 39, 31, '23768085120', '2023-09-01', '18038977870', NULL, 0, 0),
+(3440, '韩杰博', 39, 40, '22885750680', '2022-09-01', '18045653226', NULL, 0, 0),
+(3441, '陶宁', 39, 10, '22620661376', '2024-09-01', '18061407128', NULL, 0, 0),
+(3442, '郑俊', 40, 12, '22115866351', '2023-09-01', '18090012234', NULL, 0, 0),
+(3443, '李博', 40, 35, '23389318250', '2023-09-01', '18000599430', NULL, 0, 0),
+(3444, '何刚', 40, 10, '23779000680', '2022-09-01', '18032848067', NULL, 0, 0),
+(3445, '张超', 40, 18, '24664217693', '2023-09-01', '18094638281', NULL, 0, 0),
+(3446, '钱超文', 41, 16, '24755266141', '2022-09-01', '18003012881', NULL, 0, 0),
+(3447, '沈欣文', 41, 15, '24343430272', '2024-09-01', '18076013739', NULL, 0, 0),
+(3448, '秦俊', 41, 31, '24814828161', '2023-09-01', '18053602362', NULL, 0, 0),
+(3449, '秦翔', 41, 40, '23219817778', '2024-09-01', '18082539397', NULL, 0, 0),
+(3450, '吕浩琳', 42, 22, '22430796366', '2024-09-01', '18029307446', NULL, 0, 0),
+(3451, '秦睿', 42, 22, '24589655348', '2023-09-01', '18028826785', NULL, 0, 0),
+(3452, '孙文', 42, 23, '22654155042', '2023-09-01', '18087478449', NULL, 0, 0),
+(3453, '李萌', 42, 18, '22353601324', '2023-09-01', '18090539813', NULL, 0, 0),
+(3454, '钱琳', 43, 34, '22513091266', '2024-09-01', '18003593442', NULL, 0, 0),
+(3455, '赵洋', 43, 10, '24000382166', '2023-09-01', '18070860952', NULL, 0, 0),
+(3456, '韩强', 43, 35, '23289043103', '2022-09-01', '18017107640', NULL, 0, 0),
+(3457, '褚洋翔', 43, 39, '22832805225', '2022-09-01', '18082295871', NULL, 0, 0),
+(3458, '陶哲', 44, 36, '23447378191', '2023-09-01', '18071074014', NULL, 0, 0),
+(3459, '许文', 44, 11, '22190394221', '2022-09-01', '18074659770', NULL, 0, 0),
+(3460, '张洋', 44, 41, '23881851209', '2023-09-01', '18013568248', NULL, 0, 0),
+(3461, '姜萌', 44, 12, '22912546092', '2024-09-01', '18028078645', NULL, 1, 0),
+(3462, '韩伟', 45, 32, '24235882842', '2022-09-01', '18024973262', NULL, 0, 0),
+(3463, '严磊', 45, 22, '23855313267', '2023-09-01', '18019110424', NULL, 0, 0),
+(3464, '李萌', 45, 41, '23171435930', '2024-09-01', '18027679536', NULL, 0, 0),
+(3465, '金博琳', 45, 23, '23897724144', '2022-09-01', '18038597293', NULL, 0, 0),
+(3466, '许磊博', 46, 38, '22914646126', '2024-09-01', '18019048507', NULL, 0, 0),
+(3467, '冯琳欣', 46, 10, '23473253688', '2024-09-01', '18054704385', NULL, 0, 0),
+(3468, '尤萌磊', 46, 34, '22165863951', '2022-09-01', '18017453888', NULL, 0, 0),
+(3469, '吴洋', 46, 23, '24821230370', '2022-09-01', '18099273322', NULL, 0, 0),
+(3470, '施浩睿', 47, 23, '24468214087', '2024-09-01', '18034685517', NULL, 0, 0),
+(3471, '陈倩', 47, 18, '23451520922', '2022-09-01', '18001778847', NULL, 0, 0),
+(3472, '何昊', 47, 18, '22328667762', '2024-09-01', '18078249311', NULL, 0, 0),
+(3473, '赵琦', 47, 40, '24735664849', '2024-09-01', '18073649718', NULL, 0, 0),
+(3474, '陶俊浩', 48, 11, '24714885759', '2022-09-01', '18007973292', NULL, 0, 0),
+(3475, '蒋浩', 48, 32, '23980546117', '2022-09-01', '18011692606', NULL, 0, 0),
+(3476, '华琳浩', 48, 41, '24095198759', '2022-09-01', '18084876839', NULL, 0, 0),
+(3477, '华旭', 48, 40, '22010520203', '2023-09-01', '18002410092', NULL, 0, 0),
+(3478, '郑旭博', 49, 40, '23248596077', '2024-09-01', '18024672489', NULL, 0, 0),
+(3479, '魏浩', 49, 32, '23692874791', '2022-09-01', '18093208878', NULL, 0, 0),
+(3480, '魏哲昊', 49, 10, '22120136304', '2024-09-01', '18008601340', NULL, 0, 0),
+(3481, '蒋宁翔', 49, 20, '22108648294', '2023-09-01', '18068708298', NULL, 0, 0),
+(3482, '华强', 50, 34, '22921943318', '2022-09-01', '18071065056', NULL, 0, 0),
+(3483, '蒋睿琦', 50, 32, '23336563698', '2023-09-01', '18081354858', NULL, 0, 0),
+(3484, '曹磊博', 50, 16, '23700809074', '2022-09-01', '18025746719', NULL, 0, 0),
+(3485, '赵哲杰', 50, 11, '24207469498', '2023-09-01', '18008308530', NULL, 0, 0),
+(3486, '冯伟翔', 51, 12, '23027318803', '2024-09-01', '18043396330', NULL, 0, 0),
+(3487, '严涛', 51, 10, '22415994772', '2022-09-01', '18089059123', NULL, 0, 0),
+(3488, '周杰', 51, 12, '24201514130', '2022-09-01', '18069278591', NULL, 0, 0),
+(3489, '孔磊杰', 51, 20, '23480272735', '2024-09-01', '18035505007', NULL, 0, 0),
+(3490, '严博', 52, 41, '24084927165', '2022-09-01', '18088585992', NULL, 0, 0),
+(3491, '蒋涛', 52, 31, '24541463789', '2022-09-01', '18052714593', NULL, 0, 0),
+(3492, '吴超磊', 52, 11, '23059056527', '2024-09-01', '18024003652', NULL, 0, 0),
+(3493, '卫强旭', 52, 31, '22778081521', '2023-09-01', '18093181619', NULL, 0, 0),
+(3494, '金伟俊', 53, 11, '24330714152', '2023-09-01', '18075822439', NULL, 0, 0),
+(3495, '沈睿', 53, 19, '23221615327', '2024-09-01', '18011309880', NULL, 0, 0),
+(3496, '郑伟', 53, 18, '24497317612', '2024-09-01', '18002779433', NULL, 0, 0),
+(3497, '蒋欣', 53, 10, '24436316218', '2022-09-01', '18084635359', NULL, 0, 0),
+(3498, '何哲涛', 54, 36, '22279517858', '2022-09-01', '18058727644', NULL, 0, 0),
+(3499, '华雅', 54, 20, '24485669323', '2023-09-01', '18069600723', NULL, 0, 0),
+(3500, '韩强', 54, 22, '24953667893', '2024-09-01', '18096906661', NULL, 0, 0),
+(3501, '孔睿涛', 54, 38, '22636988871', '2023-09-01', '18065503837', NULL, 0, 0),
+(3502, '吕洋博', 55, 41, '22487699246', '2023-09-01', '18060734774', NULL, 0, 0),
+(3503, '华涛', 55, 18, '24894781753', '2022-09-01', '18033208787', NULL, 0, 0),
+(3504, '张磊鹏', 55, 18, '24999727338', '2022-09-01', '18017055853', NULL, 0, 0),
+(3505, '韩倩', 55, 38, '24554560933', '2023-09-01', '18020346186', NULL, 0, 0),
+(3506, '王超宁', 56, 36, '24538365219', '2023-09-01', '18027663191', NULL, 0, 0),
+(3507, '陶浩', 56, 40, '23434429618', '2022-09-01', '18074777800', NULL, 0, 0),
+(3508, '魏刚', 56, 40, '23996634099', '2024-09-01', '18056214997', NULL, 0, 0),
+(3509, '冯文雅', 56, 36, '22874608970', '2023-09-01', '18058479529', NULL, 0, 0),
+(3510, '王文', 57, 34, '23998290663', '2024-09-01', '18002567865', NULL, 0, 0),
+(3511, '华洋', 57, 12, '22635050598', '2023-09-01', '18008896803', NULL, 0, 0),
+(3512, '孔宁', 57, 31, '23127900518', '2023-09-01', '18023775987', NULL, 0, 0),
+(3513, '郑萌琳', 57, 15, '24391585855', '2024-09-01', '18076472380', NULL, 0, 0),
+(3514, '钱睿', 58, 19, '23798286167', '2022-09-01', '18026514900', NULL, 0, 0),
+(3515, '吴雅', 58, 11, '22330458353', '2024-09-01', '18053149275', NULL, 0, 0),
+(3516, '韩涛', 58, 19, '24690038808', '2023-09-01', '18001239388', NULL, 0, 0),
+(3517, '钱文', 58, 19, '23868261076', '2023-09-01', '18023572696', NULL, 0, 0),
+(3518, '孔杰琳', 59, 23, '22153486848', '2023-09-01', '18021218181', NULL, 0, 0),
+(3519, '赵洋昊', 59, 34, '24781186437', '2022-09-01', '18079622518', NULL, 0, 0),
+(3520, '严伟翔', 59, 10, '24814522666', '2022-09-01', '18007248441', NULL, 0, 0),
+(3521, '陈雅', 59, 19, '23925077339', '2024-09-01', '18060478793', NULL, 0, 0),
+(3522, '张昊', 60, 15, '22967947252', '2024-09-01', '18078878698', NULL, 0, 0),
+(3523, '陈博', 60, 22, '22314489673', '2022-09-01', '18074490362', NULL, 0, 0),
+(3524, '陈哲', 60, 38, '23572134346', '2023-09-01', '18031139822', NULL, 0, 0),
+(3525, '周博', 60, 16, '24950809111', '2023-09-01', '18082615286', NULL, 0, 0),
+(3526, '杨倩俊', 61, 39, '22884338255', '2023-09-01', '18087578760', NULL, 0, 0),
+(3527, '曹倩', 61, 41, '23487473645', '2022-09-01', '18065146030', NULL, 0, 0),
+(3528, '华萌', 61, 40, '24344642103', '2022-09-01', '18007059009', NULL, 0, 0),
+(3529, '沈涛', 61, 31, '23036126591', '2023-09-01', '18050378000', NULL, 0, 0),
+(3530, '许睿文', 62, 38, '24133129736', '2023-09-01', '18096086047', NULL, 0, 0),
+(3531, '孔鹏', 62, 35, '24722703445', '2022-09-01', '18036020502', NULL, 0, 0),
+(3532, '杨琦', 62, 32, '22262913390', '2024-09-01', '18069662880', NULL, 0, 0),
+(3533, '朱伟', 62, 36, '24033968990', '2023-09-01', '18056489522', NULL, 0, 0),
+(3534, '许涛', 63, 15, '22467718564', '2022-09-01', '18012946177', NULL, 0, 0),
+(3535, '施博', 63, 10, '24347760497', '2022-09-01', '18052349881', NULL, 0, 0),
+(3536, '张昊洋', 63, 36, '23523962335', '2023-09-01', '18010630976', NULL, 0, 0),
+(3537, '何杰', 63, 38, '24468484645', '2022-09-01', '18061588358', NULL, 0, 0),
+(3538, '金哲', 64, 36, '23972737318', '2023-09-01', '18073282999', NULL, 0, 0),
+(3539, '杨浩', 64, 18, '22454498216', '2023-09-01', '18097213160', NULL, 0, 0),
+(3540, '施超', 64, 18, '23469662036', '2024-09-01', '18027654244', NULL, 0, 0),
+(3541, '何睿', 64, 22, '23677680494', '2023-09-01', '18001991768', NULL, 0, 0),
+(3542, '韩琦', 65, 39, '24702587305', '2024-09-01', '18070762029', NULL, 0, 0),
+(3543, '严旭', 65, 32, '22041924043', '2024-09-01', '18022748250', NULL, 0, 0),
+(3544, '韩睿', 65, 16, '23136775069', '2023-09-01', '18054727307', NULL, 0, 0),
+(3545, '尤洋', 65, 15, '24666111431', '2024-09-01', '18007825637', NULL, 0, 0),
+(3546, '姜文旭', 66, 19, '24545577216', '2024-09-01', '18029833886', NULL, 0, 0),
+(3547, '周鹏', 66, 36, '23336339710', '2022-09-01', '18071116379', NULL, 0, 0),
+(3548, '孙强琳', 66, 12, '23444449120', '2023-09-01', '18009332118', NULL, 0, 0),
+(3549, '蒋旭', 66, 12, '24222493028', '2022-09-01', '18093024975', NULL, 0, 0),
+(3550, '褚洋', 67, 32, '23916179262', '2024-09-01', '18089923754', NULL, 0, 0),
+(3551, '韩哲', 67, 19, '24802773685', '2022-09-01', '18036310175', NULL, 0, 0),
+(3552, '严磊昊', 67, 19, '23230272650', '2022-09-01', '18047204321', NULL, 0, 0),
+(3553, '朱涛', 67, 38, '22644076390', '2022-09-01', '18084583469', NULL, 0, 0),
+(3554, '金刚', 68, 18, '24446174315', '2024-09-01', '18004167858', NULL, 0, 0),
+(3555, '金哲', 68, 18, '23927658010', '2023-09-01', '18017166360', NULL, 0, 0),
+(3556, '曹文强', 68, 34, '22714318256', '2022-09-01', '18053153144', NULL, 0, 0),
+(3557, '吕睿', 68, 15, '22001625060', '2022-09-01', '18034550329', NULL, 0, 0),
+(3558, '严睿', 69, 34, '22764257685', '2023-09-01', '18044860701', NULL, 0, 0),
+(3559, '魏昊', 69, 16, '24676238774', '2023-09-01', '18078596622', NULL, 0, 0),
+(3560, '金萌旭', 69, 35, '22616942802', '2023-09-01', '18031880949', NULL, 0, 0),
+(3561, '陈磊', 69, 36, '24490224965', '2023-09-01', '18049540156', NULL, 0, 0),
+(3562, '钱洋', 70, 40, '23072920271', '2023-09-01', '18097664175', NULL, 0, 0),
+(3563, '韩欣俊', 70, 32, '24199818144', '2023-09-01', '18012281250', NULL, 0, 0),
+(3564, '褚涛', 70, 40, '24817133882', '2023-09-01', '18039891043', NULL, 0, 0),
+(3565, '周琳', 70, 35, '24082373021', '2024-09-01', '18023253721', NULL, 0, 0),
+(3566, '魏睿欣', 71, 35, '24785045265', '2023-09-01', '18042151221', NULL, 0, 0),
+(3567, '蒋洋', 71, 23, '22068054905', '2023-09-01', '18069513355', NULL, 0, 0),
+(3568, '李刚', 71, 38, '22915010328', '2024-09-01', '18006690863', NULL, 0, 0),
+(3569, '钱哲鹏', 71, 40, '24922314444', '2024-09-01', '18019477968', NULL, 0, 0),
+(3570, '何刚翔', 72, 34, '22877646284', '2024-09-01', '18094412955', NULL, 0, 0),
+(3571, '严昊鹏', 72, 11, '24424140194', '2024-09-01', '18040467678', NULL, 0, 0),
+(3572, '卫博', 72, 11, '22717366436', '2022-09-01', '18001778510', NULL, 0, 0),
+(3573, '蒋刚', 72, 41, '22171273606', '2022-09-01', '18068604187', NULL, 0, 0),
+(3574, '卫宁', 73, 10, '22941178363', '2022-09-01', '18077191132', NULL, 0, 0),
+(3575, '王旭', 73, 12, '22153744499', '2024-09-01', '18073208535', NULL, 0, 0),
+(3576, '张旭', 73, 32, '24241486414', '2024-09-01', '18098732492', NULL, 0, 0),
+(3577, '杨倩', 73, 10, '24844276511', '2024-09-01', '18073589044', NULL, 0, 0),
+(3578, '姜杰', 74, 16, '24270967378', '2022-09-01', '18023303966', NULL, 0, 0),
+(3579, '陈浩', 74, 15, '24850638594', '2022-09-01', '18041251509', NULL, 0, 0),
+(3580, '卫强', 74, 12, '24570301636', '2024-09-01', '18057712470', NULL, 1, 0),
+(3581, '何哲', 74, 36, '24097232651', '2023-09-01', '18097458699', NULL, 0, 0),
+(3582, '朱强琳', 75, 11, '24228599982', '2023-09-01', '18083911788', NULL, 0, 0),
+(3583, '金超昊', 75, 38, '24144540549', '2024-09-01', '18047771446', NULL, 0, 0),
+(3584, '严洋', 75, 10, '23255309145', '2024-09-01', '18057648510', NULL, 0, 0),
+(3585, '蒋萌', 75, 10, '22755888219', '2022-09-01', '18092543673', NULL, 0, 0),
+(3586, '许雅', 76, 22, '22173294150', '2024-09-01', '18021162360', NULL, 0, 0),
+(3587, '卫磊', 76, 10, '24335352672', '2023-09-01', '18001554771', NULL, 0, 0),
+(3588, '郑超', 76, 39, '22621666308', '2023-09-01', '18098367592', NULL, 0, 0),
+(3589, '朱欣哲', 76, 32, '23153397071', '2022-09-01', '18064228584', NULL, 0, 0),
+(3590, '施哲', 77, 11, '23860413217', '2023-09-01', '18076479013', NULL, 0, 0),
+(3591, '杨翔', 77, 19, '23744852716', '2022-09-01', '18014996995', NULL, 0, 0),
+(3592, '魏睿洋', 77, 23, '22826795291', '2024-09-01', '18018195715', NULL, 0, 0),
+(3593, '钱萌睿', 77, 32, '22540333005', '2023-09-01', '18079815482', NULL, 0, 0),
+(3594, '朱洋刚', 78, 31, '24274613732', '2023-09-01', '18042768291', NULL, 0, 0),
+(3595, '秦刚旭', 78, 34, '23201596660', '2024-09-01', '18005411095', NULL, 0, 0),
+(3596, '赵哲', 78, 40, '23279468101', '2023-09-01', '18090797128', NULL, 0, 0),
+(3597, '许强', 78, 40, '24455581235', '2024-09-01', '18037481855', NULL, 0, 0),
+(3598, '钱伟', 79, 40, '23236207347', '2024-09-01', '18027055564', NULL, 0, 0),
+(3599, '许洋昊', 79, 16, '23263241575', '2023-09-01', '18096276177', NULL, 0, 0),
+(3600, '周杰昊', 79, 15, '23777460036', '2023-09-01', '18015071051', NULL, 0, 0),
+(3601, '陈琳', 79, 12, '23679217637', '2022-09-01', '18079216975', NULL, 0, 0),
+(3602, '秦琦', 80, 40, '23225714545', '2022-09-01', '18087216278', NULL, 0, 0),
+(3603, '魏琦', 80, 22, '23679627093', '2023-09-01', '18089834814', NULL, 0, 0),
+(3604, '李俊', 80, 36, '23939125214', '2023-09-01', '18008951244', NULL, 0, 0),
+(3605, '魏琳', 80, 18, '22660911552', '2023-09-01', '18015816384', NULL, 0, 0),
+(3606, '朱俊', 81, 19, '22578136778', '2024-09-01', '18012195562', NULL, 0, 0),
+(3607, '许萌俊', 81, 31, '22943840621', '2023-09-01', '18001911716', NULL, 0, 0),
+(3608, '朱昊', 81, 32, '23756015810', '2022-09-01', '18008673776', NULL, 0, 0),
+(3609, '金旭欣', 81, 23, '23772917172', '2023-09-01', '18040357165', NULL, 0, 0),
+(3610, '王磊哲', 82, 16, '22482655704', '2024-09-01', '18022389932', NULL, 0, 0),
+(3611, '吴洋', 82, 40, '23625501412', '2022-09-01', '18077309816', NULL, 0, 0),
+(3612, '沈旭', 82, 40, '22656232421', '2023-09-01', '18010852345', NULL, 0, 0),
+(3613, '陶欣', 82, 40, '24120605689', '2023-09-01', '18084212192', NULL, 0, 0),
+(3614, '褚俊', 83, 36, '23795784312', '2022-09-01', '18027242806', NULL, 0, 0),
+(3615, '杨琦文', 83, 36, '24458988755', '2023-09-01', '18099805555', NULL, 0, 0),
+(3616, '郑博', 83, 19, '22395561249', '2022-09-01', '18025055723', NULL, 0, 0),
+(3617, '张伟', 83, 11, '24724493191', '2023-09-01', '18002238177', NULL, 0, 0),
+(3618, '冯磊', 84, 15, '22622336749', '2022-09-01', '18015502335', NULL, 0, 0),
+(3619, '韩博博', 84, 15, '24028607068', '2022-09-01', '18005722993', NULL, 0, 0),
+(3620, '曹俊刚', 84, 10, '22405579090', '2022-09-01', '18031425072', NULL, 0, 0),
+(3621, '金俊杰', 84, 19, '22637817361', '2024-09-01', '18090134563', NULL, 0, 0),
+(3622, '陈俊', 85, 40, '24659225255', '2024-09-01', '18046346127', NULL, 0, 0),
+(3623, '许超涛', 85, 35, '22660478476', '2024-09-01', '18015943395', NULL, 0, 0),
+(3624, '陈倩', 85, 18, '23345737347', '2023-09-01', '18094477153', NULL, 0, 0),
+(3625, '曹强刚', 85, 16, '22572450704', '2022-09-01', '18081294576', NULL, 0, 0),
+(3626, '韩雅杰', 86, 41, '24254278437', '2024-09-01', '18088472374', NULL, 0, 0),
+(3627, '周琳', 86, 23, '24411078333', '2024-09-01', '18044950075', NULL, 0, 0),
+(3628, '严洋', 86, 12, '23699716107', '2022-09-01', '18099668410', NULL, 0, 0),
+(3629, '蒋杰', 86, 23, '24476492524', '2023-09-01', '18076270631', NULL, 0, 0),
+(3630, '吴翔', 87, 34, '24201941875', '2023-09-01', '18085970185', NULL, 0, 0),
+(3631, '周琳', 87, 32, '24944214808', '2024-09-01', '18053341886', NULL, 0, 0),
+(3632, '吴旭', 87, 41, '23047177493', '2023-09-01', '18003056095', NULL, 0, 0),
+(3633, '姜涛', 87, 23, '22057835202', '2024-09-01', '18061747751', NULL, 0, 0),
+(3634, '冯旭涛', 88, 39, '22058660225', '2024-09-01', '18024647840', NULL, 0, 0),
+(3635, '孙昊', 88, 18, '23910504393', '2024-09-01', '18067627108', NULL, 0, 0),
+(3636, '孙宁', 88, 38, '23754539539', '2023-09-01', '18006205709', NULL, 0, 0),
+(3637, '吴文鹏', 88, 36, '22767769921', '2024-09-01', '18084838497', NULL, 0, 0),
+(3638, '吕宁', 89, 10, '22209074607', '2022-09-01', '18093847282', NULL, 0, 0),
+(3639, '沈雅琳', 89, 23, '22214928310', '2023-09-01', '18037810529', NULL, 0, 0),
+(3640, '孙伟', 89, 39, '22090886111', '2024-09-01', '18072556721', NULL, 0, 0),
+(3641, '魏睿', 89, 36, '23186356129', '2023-09-01', '18080608077', NULL, 0, 0),
+(3642, '卫昊超', 90, 34, '22746025594', '2022-09-01', '18024297995', NULL, 0, 0),
+(3643, '孔昊', 90, 41, '24587264387', '2022-09-01', '18043719378', NULL, 0, 0),
+(3644, '郑浩', 90, 12, '22136242440', '2023-09-01', '18048964245', NULL, 0, 0),
+(3645, '曹翔', 90, 22, '24223700183', '2024-09-01', '18002926589', NULL, 0, 0),
+(3646, '周萌', 91, 40, '23242970143', '2024-09-01', '18022119223', NULL, 0, 0),
+(3647, '钱倩鹏', 91, 35, '24491524585', '2022-09-01', '18075196992', NULL, 0, 0),
+(3648, '张浩', 91, 32, '24059991170', '2023-09-01', '18063233489', NULL, 0, 0),
+(3649, '赵旭俊', 91, 41, '23119043606', '2024-09-01', '18042041956', NULL, 0, 0),
+(3650, '杨涛', 92, 23, '24278676288', '2023-09-01', '18064681625', NULL, 0, 0),
+(3651, '李鹏睿', 92, 11, '24222096405', '2022-09-01', '18043901528', NULL, 0, 0),
+(3652, '孔倩鹏', 92, 15, '24335949338', '2024-09-01', '18092644857', NULL, 0, 0),
+(3653, '杨哲', 92, 34, '22282539425', '2022-09-01', '18054730571', NULL, 0, 0),
+(3654, '张超', 93, 12, '24644713338', '2024-09-01', '18026486424', NULL, 0, 0),
+(3655, '张翔', 93, 38, '23385819920', '2022-09-01', '18086981556', NULL, 0, 0),
+(3656, '朱琦', 93, 36, '23839189526', '2023-09-01', '18025260526', NULL, 0, 0),
+(3657, '孔俊倩', 93, 40, '22634787052', '2024-09-01', '18085089452', NULL, 0, 0),
+(3658, '张萌', 94, 20, '23371920177', '2022-09-01', '18032283070', NULL, 0, 0),
+(3659, '华强旭', 94, 32, '23171138819', '2022-09-01', '18077707939', NULL, 0, 0),
+(3660, '冯鹏', 94, 11, '23517648748', '2023-09-01', '18002045431', NULL, 0, 0),
+(3661, '姜杰', 94, 19, '23162511158', '2023-09-01', '18002592741', NULL, 0, 0),
+(3662, '钱睿', 95, 16, '22513458325', '2024-09-01', '18040273070', NULL, 0, 0),
+(3663, '沈伟刚', 95, 40, '24026695810', '2022-09-01', '18024420504', NULL, 0, 0),
+(3664, '秦博磊', 95, 36, '23995709154', '2022-09-01', '18012239669', NULL, 0, 0),
+(3665, '褚翔', 95, 18, '24689411154', '2024-09-01', '18073022280', NULL, 0, 0),
+(3666, '王浩', 96, 36, '24254974277', '2023-09-01', '18012101639', NULL, 0, 0),
+(3667, '钱琳', 96, 32, '24066479275', '2024-09-01', '18065474400', NULL, 0, 0),
+(3668, '卫强', 96, 18, '22343778639', '2022-09-01', '18005434767', NULL, 0, 0),
+(3669, '朱文欣', 96, 35, '24883142759', '2024-09-01', '18022822846', NULL, 0, 0),
+(3670, '韩鹏', 97, 31, '22415867769', '2022-09-01', '18008434553', NULL, 0, 0),
+(3671, '姜磊磊', 97, 35, '24939402406', '2022-09-01', '18041626321', NULL, 0, 0),
+(3672, '陶琳翔', 97, 32, '23135271960', '2023-09-01', '18014533457', NULL, 0, 0),
+(3673, '李杰', 97, 35, '22737380097', '2022-09-01', '18058900964', NULL, 0, 0),
+(3674, '吕伟', 98, 15, '22999038557', '2024-09-01', '18034484061', NULL, 0, 0),
+(3675, '杨磊伟', 98, 22, '23398466226', '2022-09-01', '18043916866', NULL, 0, 0),
+(3676, '陈杰', 98, 40, '23201929479', '2022-09-01', '18051544266', NULL, 0, 0),
+(3677, '周哲', 98, 20, '24676020159', '2023-09-01', '18050239309', NULL, 0, 0),
+(3678, '吕涛', 99, 40, '23823241405', '2023-09-01', '18041648566', NULL, 0, 0),
+(3679, '何昊', 99, 34, '23910576395', '2023-09-01', '18015678358', NULL, 0, 0),
+(3680, '沈琦', 99, 20, '24720969051', '2022-09-01', '18096579096', NULL, 0, 0),
+(3681, '严萌', 99, 38, '24373689102', '2023-09-01', '18095254331', NULL, 0, 0),
+(3682, '卫磊', 100, 40, '24064411005', '2023-09-01', '18015546309', NULL, 0, 0),
+(3683, '魏浩', 100, 12, '24420101418', '2024-09-01', '18081977658', NULL, 0, 0),
+(3684, '孙雅', 100, 16, '23142973845', '2022-09-01', '18066258651', NULL, 0, 0),
+(3685, '姜俊', 100, 18, '22258691268', '2023-09-01', '18053346228', NULL, 0, 0),
+(3686, '蒋睿', 101, 15, '24034758949', '2022-09-01', '18002939603', NULL, 0, 0),
+(3687, '曹涛', 101, 35, '22144042708', '2024-09-01', '18047831463', NULL, 0, 0),
+(3688, '金杰', 101, 35, '24489654273', '2024-09-01', '18013173008', NULL, 0, 0),
+(3689, '孔萌', 101, 40, '24961423275', '2022-09-01', '18012581255', NULL, 0, 0),
+(3690, '金浩', 102, 22, '24129927774', '2023-09-01', '18053603779', NULL, 0, 0),
+(3691, '钱浩', 102, 32, '24833409510', '2024-09-01', '18042213392', NULL, 0, 0),
+(3692, '郑伟', 102, 34, '22724377921', '2023-09-01', '18004404951', NULL, 0, 0),
+(3693, '周超', 102, 32, '22120355164', '2022-09-01', '18076153731', NULL, 0, 0),
+(3694, '施博', 103, 23, '22828893758', '2024-09-01', '18004255735', NULL, 0, 0),
+(3695, '吕萌欣', 103, 31, '24104685396', '2023-09-01', '18080487052', NULL, 0, 0),
+(3696, '陈宁', 103, 39, '23251533642', '2022-09-01', '18081426819', NULL, 0, 0),
+(3697, '曹雅宁', 103, 39, '24774582547', '2022-09-01', '18078846892', NULL, 0, 0),
+(3698, '钱博', 104, 20, '22731224762', '2022-09-01', '18026849107', NULL, 0, 0),
+(3699, '沈宁旭', 104, 22, '24396981520', '2024-09-01', '18063785877', NULL, 0, 0),
+(3700, '华涛洋', 104, 11, '24627802337', '2022-09-01', '18028334193', NULL, 0, 0),
+(3701, '魏琳', 104, 35, '22590796479', '2023-09-01', '18092660618', NULL, 0, 0),
+(3702, '赵涛', 105, 35, '22728714718', '2022-09-01', '18057622313', NULL, 0, 0),
+(3703, '陈欣', 105, 12, '24638771107', '2024-09-01', '18074299694', NULL, 0, 0),
+(3704, '施刚', 105, 40, '24627936179', '2022-09-01', '18065934059', NULL, 0, 0),
+(3705, '褚伟刚', 105, 11, '22851513966', '2023-09-01', '18025652794', NULL, 0, 0),
+(3706, '郑琳', 106, 15, '22589852316', '2024-09-01', '18041477368', NULL, 0, 0),
+(3707, '施哲', 106, 32, '23985694775', '2022-09-01', '18011263767', NULL, 0, 0),
+(3708, '孔文磊', 106, 16, '23951429102', '2024-09-01', '18079080818', NULL, 0, 0),
+(3709, '吕昊', 106, 41, '24122583409', '2022-09-01', '18065658853', NULL, 0, 0),
+(3710, '朱浩', 107, 15, '24375021739', '2023-09-01', '18033592949', NULL, 0, 0),
+(3711, '钱伟', 107, 16, '24431659149', '2024-09-01', '18022638995', NULL, 0, 0),
+(3712, '赵磊', 107, 22, '22140528224', '2023-09-01', '18085454469', NULL, 0, 0),
+(3713, '郑超', 107, 10, '23010613739', '2024-09-01', '18085473936', NULL, 0, 0),
+(3714, '王洋', 108, 35, '24539839585', '2023-09-01', '18071089676', NULL, 0, 0),
+(3715, '孔刚', 108, 11, '22090477300', '2022-09-01', '18010864287', NULL, 0, 0),
+(3716, '许昊', 108, 20, '24419071163', '2024-09-01', '18030258924', NULL, 0, 0),
+(3717, '张欣俊', 108, 38, '22801426403', '2024-09-01', '18089701351', NULL, 0, 0),
+(3718, '王文', 109, 11, '24167664528', '2022-09-01', '18063244009', NULL, 0, 0),
+(3719, '吕伟', 109, 20, '22120140359', '2024-09-01', '18068952054', NULL, 0, 0),
+(3720, '吴宁', 109, 16, '22939109156', '2023-09-01', '18089489430', NULL, 0, 0),
+(3721, '冯倩', 109, 22, '22877577201', '2024-09-01', '18085735018', NULL, 0, 0),
+(3722, '王倩昊', 110, 15, '23386161883', '2022-09-01', '18056592633', NULL, 0, 0),
+(3723, '施伟', 110, 32, '24452797730', '2024-09-01', '18035077976', NULL, 0, 0),
+(3724, '吕超昊', 110, 32, '23176146436', '2023-09-01', '18068846304', NULL, 0, 0),
+(3725, '魏磊萌', 110, 23, '23550604289', '2023-09-01', '18012810633', NULL, 0, 0),
+(3726, '王雅博', 111, 38, '24184831773', '2024-09-01', '18027667162', NULL, 0, 0),
+(3727, '卫超', 111, 12, '24441286056', '2022-09-01', '18002167002', NULL, 0, 0),
+(3728, '韩洋博', 111, 18, '24274222547', '2024-09-01', '18059927835', NULL, 0, 0),
+(3729, '严刚', 111, 40, '24051645024', '2023-09-01', '18056985511', NULL, 0, 0),
+(3730, '严超文', 112, 23, '24386542407', '2022-09-01', '18097078194', NULL, 0, 0),
+(3731, '张博萌', 112, 31, '24198950410', '2023-09-01', '18065827100', NULL, 0, 0),
+(3732, '张昊琳', 112, 41, '23900105311', '2023-09-01', '18042008181', NULL, 0, 0),
+(3733, '卫洋', 112, 11, '23268230500', '2024-09-01', '18052886837', NULL, 0, 0),
+(3734, '杨旭', 113, 35, '22120055997', '2023-09-01', '18082285669', NULL, 0, 0),
+(3735, '施旭', 113, 16, '24768046941', '2024-09-01', '18023257234', NULL, 0, 0),
+(3736, '卫俊睿', 113, 18, '23865312909', '2022-09-01', '18074754071', NULL, 0, 0),
+(3737, '郑俊', 113, 35, '22449071212', '2022-09-01', '18004146202', NULL, 0, 0),
+(3738, '姜洋伟', 114, 20, '24150101876', '2022-09-01', '18020871056', NULL, 0, 0),
+(3739, '魏伟', 114, 18, '24795128141', '2024-09-01', '18070099748', NULL, 0, 0),
+(3740, '张昊强', 114, 11, '22192968503', '2024-09-01', '18086466719', NULL, 0, 0),
+(3741, '韩博', 114, 16, '22878305280', '2023-09-01', '18061868732', NULL, 0, 0),
+(3742, '郑睿', 115, 35, '24507643304', '2023-09-01', '18027965775', NULL, 0, 0),
+(3743, '吕伟', 115, 38, '22759649064', '2022-09-01', '18022294813', NULL, 0, 0),
+(3744, '蒋睿萌', 115, 16, '24887247547', '2024-09-01', '18091584528', NULL, 0, 0),
+(3745, '陶宁昊', 115, 18, '23642651266', '2024-09-01', '18040772708', NULL, 0, 0),
+(3746, '周宁涛', 116, 35, '24839864313', '2024-09-01', '18073579993', NULL, 0, 0),
+(3747, '华杰', 116, 32, '23302032361', '2022-09-01', '18022264835', NULL, 0, 0),
+(3748, '冯倩', 116, 34, '22826734095', '2024-09-01', '18094992927', NULL, 0, 0),
+(3749, '李文', 116, 39, '22366092363', '2022-09-01', '18010977229', NULL, 0, 0),
+(3750, '李琦', 117, 18, '22425450397', '2022-09-01', '18026783203', NULL, 0, 0),
+(3751, '卫琦', 117, 16, '22311869873', '2023-09-01', '18077435146', NULL, 0, 0),
+(3752, '华刚洋', 117, 31, '24128491149', '2023-09-01', '18041239701', NULL, 0, 0),
+(3753, '褚翔', 117, 35, '24086803294', '2024-09-01', '18009596849', NULL, 0, 0),
+(3754, '尤刚', 118, 10, '22303720074', '2022-09-01', '18066386812', NULL, 0, 0),
+(3755, '尤倩', 118, 12, '23854369951', '2022-09-01', '18089736418', NULL, 0, 0),
+(3756, '施文', 118, 11, '22722664509', '2024-09-01', '18083134657', NULL, 0, 0),
+(3757, '姜鹏', 118, 39, '24521943143', '2022-09-01', '18000679742', NULL, 0, 0),
+(3758, '严欣', 119, 22, '22098436804', '2023-09-01', '18061619625', NULL, 0, 0),
+(3759, '朱倩', 119, 36, '22046745483', '2022-09-01', '18093070005', NULL, 0, 0),
+(3760, '韩洋', 119, 32, '22961402838', '2023-09-01', '18079547036', NULL, 0, 0),
+(3761, '张倩超', 119, 22, '24858965361', '2024-09-01', '18037429955', NULL, 0, 0),
+(3762, '沈杰俊', 120, 36, '24265082651', '2023-09-01', '18022638405', NULL, 0, 0),
+(3763, '陈文', 120, 12, '24601233013', '2023-09-01', '18028249675', NULL, 0, 0),
+(3764, '吕鹏', 120, 20, '22814214816', '2023-09-01', '18090654594', NULL, 0, 0),
+(3765, '姜洋', 120, 11, '23876880004', '2022-09-01', '18001534936', NULL, 0, 0),
+(3766, '蒋哲', 121, 23, '22051493419', '2024-09-01', '18066479527', NULL, 0, 0),
+(3767, '褚旭琦', 121, 39, '23355259441', '2024-09-01', '18078460047', NULL, 0, 0),
+(3768, '赵睿', 121, 23, '22987948494', '2023-09-01', '18028680811', NULL, 0, 0),
+(3769, '李睿', 121, 20, '22085241291', '2024-09-01', '18016342966', NULL, 0, 0),
+(3770, '吴倩', 122, 35, '23248828785', '2024-09-01', '18012869605', NULL, 0, 0),
+(3771, '许洋', 122, 15, '22777965155', '2024-09-01', '18012856292', NULL, 0, 0),
+(3772, '陶翔', 122, 31, '23349330637', '2023-09-01', '18065802904', NULL, 0, 0),
+(3773, '魏俊', 122, 22, '22747629765', '2022-09-01', '18014744827', NULL, 0, 0),
+(3774, '李雅睿', 123, 12, '24229818116', '2024-09-01', '18011405352', NULL, 0, 0),
+(3775, '姜雅', 123, 11, '23601717831', '2022-09-01', '18074084684', NULL, 0, 0),
+(3776, '吕涛', 123, 39, '23602426309', '2024-09-01', '18062166664', NULL, 0, 0),
+(3777, '朱伟', 123, 40, '22589157892', '2024-09-01', '18087884916', NULL, 0, 0),
+(3778, '吴刚', 124, 15, '22313126991', '2022-09-01', '18037518959', NULL, 0, 0),
+(3779, '张琦', 124, 19, '23168601332', '2023-09-01', '18017356548', NULL, 0, 0),
+(3780, '严宁', 124, 10, '22968159859', '2024-09-01', '18099195293', NULL, 0, 0),
+(3781, '秦浩', 124, 11, '22264422017', '2023-09-01', '18046060151', NULL, 0, 0),
+(3782, '孙睿萌', 125, 36, '24183000645', '2022-09-01', '18040226444', NULL, 0, 0),
+(3783, '韩旭旭', 125, 15, '24994428561', '2022-09-01', '18045341686', NULL, 0, 0),
+(3784, '朱洋', 125, 39, '22553940503', '2023-09-01', '18049292371', NULL, 0, 0),
+(3785, '陶倩', 125, 10, '22364373983', '2023-09-01', '18088346876', NULL, 0, 0),
+(3786, '秦杰琳', 126, 40, '22981347721', '2023-09-01', '18056169431', NULL, 0, 0),
+(3787, '吕雅旭', 126, 23, '24116327475', '2024-09-01', '18078277963', NULL, 0, 0),
+(3788, '张涛', 126, 19, '23710758661', '2023-09-01', '18058376923', NULL, 0, 0),
+(3789, '曹杰', 126, 22, '23876803561', '2023-09-01', '18048738921', NULL, 0, 0),
+(3790, '曹文文', 127, 32, '23966635469', '2022-09-01', '18003885048', NULL, 0, 0),
+(3791, '周涛', 127, 38, '23075992968', '2024-09-01', '18090175931', NULL, 0, 0),
+(3792, '吴强', 127, 11, '24631780641', '2022-09-01', '18022723261', NULL, 0, 0),
+(3793, '沈磊', 127, 36, '22340822090', '2024-09-01', '18067154697', NULL, 0, 0),
+(3794, '严超', 128, 32, '22886796869', '2024-09-01', '18022967025', NULL, 0, 0),
+(3795, '卫宁', 128, 22, '22791444890', '2022-09-01', '18001928297', NULL, 0, 0),
+(3796, '魏翔', 128, 35, '22801852717', '2023-09-01', '18076515330', NULL, 0, 0),
+(3797, '孙刚', 128, 22, '23680126853', '2023-09-01', '18000417562', NULL, 0, 0),
+(3798, '施旭', 129, 40, '22155673520', '2022-09-01', '18046112882', NULL, 0, 0),
+(3799, '吴强', 129, 39, '23315901292', '2023-09-01', '18019522275', NULL, 0, 0),
+(3800, '王超文', 129, 41, '22368770247', '2024-09-01', '18038637249', NULL, 0, 0),
+(3801, '钱超超', 129, 40, '22058547712', '2024-09-01', '18060715004', NULL, 0, 0),
+(3802, '沈磊', 130, 35, '23580904383', '2022-09-01', '18043269785', NULL, 0, 0),
+(3803, '严浩', 130, 23, '24339919862', '2023-09-01', '18081116587', NULL, 0, 0),
+(3804, '秦洋浩', 130, 18, '22780669056', '2024-09-01', '18032851174', NULL, 0, 0),
+(3805, '王磊磊', 130, 11, '22081119926', '2022-09-01', '18002482745', NULL, 0, 0),
+(3806, '杨强', 131, 32, '23927419025', '2022-09-01', '18024973761', NULL, 0, 0),
+(3807, '朱强', 131, 11, '24821583749', '2022-09-01', '18009350589', NULL, 0, 0),
+(3808, '杨浩欣', 131, 11, '24575957298', '2024-09-01', '18011804027', NULL, 0, 0),
+(3809, '卫宁', 131, 38, '22297216682', '2022-09-01', '18039989965', NULL, 0, 0),
+(3810, '金昊', 132, 10, '22032161498', '2023-09-01', '18043714888', NULL, 0, 0),
+(3811, '吴旭鹏', 132, 15, '22536973947', '2022-09-01', '18046734825', NULL, 0, 0),
+(3812, '钱强', 132, 16, '23524884260', '2022-09-01', '18094083235', NULL, 0, 0),
+(3813, '许涛', 132, 32, '23321981751', '2024-09-01', '18078097887', NULL, 0, 0),
+(3814, '朱琳', 133, 16, '22029939097', '2024-09-01', '18053066804', NULL, 0, 0),
+(3815, '许博', 133, 40, '23469635966', '2023-09-01', '18050255905', NULL, 0, 0),
+(3816, '秦萌', 133, 38, '22224862401', '2022-09-01', '18001856416', NULL, 0, 0),
+(3817, '王超', 133, 10, '22854006199', '2024-09-01', '18016109774', NULL, 0, 0),
+(3818, '孙昊', 134, 10, '22977723595', '2024-09-01', '18028462589', NULL, 0, 0),
+(3819, '曹杰', 134, 36, '22063332413', '2022-09-01', '18047876552', NULL, 0, 0),
+(3820, '施宁', 134, 22, '24519710799', '2022-09-01', '18086079213', NULL, 0, 0),
+(3821, '孙鹏', 134, 38, '22627949255', '2022-09-01', '18074349180', NULL, 0, 0),
+(3822, '曹雅', 135, 31, '23802224212', '2023-09-01', '18049767345', NULL, 0, 0),
+(3823, '李倩', 135, 39, '24788337492', '2022-09-01', '18012901085', NULL, 0, 0),
+(3824, '杨哲', 135, 40, '23856297814', '2024-09-01', '18010424554', NULL, 0, 0),
+(3825, '冯哲磊', 135, 34, '24600502161', '2024-09-01', '18051035778', NULL, 0, 0),
+(3826, '张鹏涛', 136, 34, '24825403057', '2022-09-01', '18089841896', NULL, 0, 0),
+(3827, '沈刚', 136, 35, '22921973560', '2023-09-01', '18007246520', NULL, 0, 0),
+(3828, '褚宁伟', 136, 12, '22408801010', '2023-09-01', '18064247638', NULL, 0, 0),
+(3829, '朱伟洋', 136, 22, '23124978277', '2022-09-01', '18027719551', NULL, 0, 0),
+(3830, '张倩', 137, 23, '24387696503', '2023-09-01', '18006785110', NULL, 0, 0),
+(3831, '杨昊', 137, 36, '22492044364', '2022-09-01', '18070097677', NULL, 0, 0),
+(3832, '施哲萌', 137, 39, '22256178531', '2024-09-01', '18097239556', NULL, 0, 0),
+(3833, '吕俊', 137, 41, '22598825554', '2022-09-01', '18047131495', NULL, 0, 0),
+(3834, '郑雅', 138, 32, '22012992102', '2023-09-01', '18076659304', NULL, 0, 0),
+(3835, '曹超', 138, 41, '23975500429', '2022-09-01', '18057021016', NULL, 0, 0),
+(3836, '杨磊', 138, 31, '22932245063', '2024-09-01', '18074028580', NULL, 0, 0),
+(3837, '严宁', 138, 10, '22363309163', '2023-09-01', '18061580558', NULL, 0, 0),
+(3838, '陈旭', 139, 31, '23471597549', '2023-09-01', '18015454935', NULL, 0, 0),
+(3839, '韩杰', 139, 18, '23450756687', '2022-09-01', '18002608848', NULL, 0, 0),
+(3840, '吴鹏', 139, 19, '24667170175', '2023-09-01', '18076168474', NULL, 0, 0),
+(3841, '李哲', 139, 36, '23015250775', '2022-09-01', '18040933375', NULL, 0, 0),
+(3842, '姜超', 140, 15, '22670327151', '2023-09-01', '18009850836', NULL, 0, 0),
+(3843, '李文', 140, 39, '22593012839', '2022-09-01', '18047233285', NULL, 0, 0),
+(3844, '朱磊', 140, 38, '22948206285', '2023-09-01', '18072358748', NULL, 0, 0),
+(3845, '曹倩', 140, 16, '23345266655', '2023-09-01', '18036788222', NULL, 0, 0),
+(3846, '金强哲', 141, 41, '24219641984', '2023-09-01', '18020445517', NULL, 0, 0),
+(3847, '姜翔欣', 141, 19, '22206060426', '2022-09-01', '18066104114', NULL, 0, 0),
+(3848, '华鹏', 141, 15, '23098927808', '2024-09-01', '18037660847', NULL, 0, 0),
+(3849, '张哲超', 141, 34, '24707988551', '2024-09-01', '18043546020', NULL, 0, 0),
+(3850, '许雅', 142, 34, '24512547733', '2024-09-01', '18063201973', NULL, 0, 0),
+(3851, '孙磊磊', 142, 40, '23224753420', '2024-09-01', '18005072182', NULL, 0, 0),
+(3852, '魏强昊', 142, 31, '22646617239', '2023-09-01', '18019224318', NULL, 0, 0),
+(3853, '冯昊琳', 142, 38, '24548228724', '2023-09-01', '18022793002', NULL, 0, 0),
+(3854, '赵宁萌', 143, 11, '22419309731', '2022-09-01', '18033322388', NULL, 0, 0),
+(3855, '郑博', 143, 31, '24431230128', '2024-09-01', '18005924460', NULL, 0, 0),
+(3856, '杨杰', 143, 12, '23723130914', '2024-09-01', '18051548949', NULL, 0, 0),
+(3857, '严杰倩', 143, 10, '23411766613', '2023-09-01', '18079584591', NULL, 0, 0),
+(3858, '吴鹏', 144, 22, '24575354564', '2024-09-01', '18002621901', NULL, 0, 0),
+(3859, '施超', 144, 15, '23961566069', '2022-09-01', '18071771871', NULL, 0, 0),
+(3860, '陶欣琳', 144, 39, '22544335573', '2022-09-01', '18046582727', NULL, 0, 0),
+(3861, '陶欣', 144, 20, '22843812011', '2023-09-01', '18041441468', NULL, 0, 0),
+(3862, '杨超', 145, 10, '23758274918', '2024-09-01', '18040480328', NULL, 0, 0),
+(3863, '何倩', 145, 19, '22993756062', '2023-09-01', '18092492689', NULL, 0, 0),
+(3864, '朱琦浩', 145, 19, '24919334007', '2022-09-01', '18052931699', NULL, 0, 0),
+(3865, '王强欣', 145, 15, '24957057944', '2024-09-01', '18048144696', NULL, 0, 0),
+(3866, '陶雅', 146, 23, '22610511134', '2023-09-01', '18008601004', NULL, 0, 0),
+(3867, '冯博', 146, 39, '24031792292', '2024-09-01', '18075037356', NULL, 0, 0),
+(3868, '蒋浩鹏', 146, 12, '24259177014', '2022-09-01', '18080204471', NULL, 0, 0),
+(3869, '李刚', 146, 35, '22128222972', '2024-09-01', '18022412548', NULL, 0, 0),
+(3870, '韩超', 147, 12, '23865833409', '2022-09-01', '18044205821', NULL, 0, 0),
+(3871, '施昊', 147, 15, '22224467513', '2023-09-01', '18058679787', NULL, 0, 0),
+(3872, '沈雅', 147, 11, '24757629819', '2023-09-01', '18088681502', NULL, 0, 0),
+(3873, '华雅', 147, 11, '23976015430', '2023-09-01', '18079050979', NULL, 0, 0),
+(3874, '杨欣', 148, 11, '23068371395', '2024-09-01', '18036992203', NULL, 0, 0),
+(3875, '赵浩', 148, 38, '23852610782', '2022-09-01', '18096499022', NULL, 0, 0),
+(3876, '张雅', 148, 40, '22116137984', '2022-09-01', '18083610036', NULL, 0, 0),
+(3877, '蒋博', 148, 23, '22491703206', '2024-09-01', '18006415706', NULL, 0, 0),
+(3878, '王超', 149, 18, '24108236154', '2022-09-01', '18059494306', NULL, 0, 0),
+(3879, '姜睿伟', 149, 11, '24709158380', '2022-09-01', '18097619851', NULL, 0, 0),
+(3880, '秦俊', 149, 16, '22371775505', '2022-09-01', '18006002996', NULL, 0, 0),
+(3881, '吕刚', 149, 41, '23244202325', '2023-09-01', '18095017513', NULL, 0, 0),
+(3882, '孙鹏', 150, 23, '22877291262', '2023-09-01', '18015457772', NULL, 0, 0),
+(3883, '褚文雅', 150, 31, '23425670002', '2022-09-01', '18013600330', NULL, 0, 0),
+(3884, '李萌', 150, 10, '22720604615', '2022-09-01', '18031034811', NULL, 0, 0),
+(3885, '魏伟', 150, 22, '22837227324', '2023-09-01', '18076109454', NULL, 0, 0),
+(3886, '蒋雅', 151, 12, '24864465884', '2024-09-01', '18034344091', NULL, 0, 0),
+(3887, '陶磊', 151, 19, '22808561266', '2023-09-01', '18039662592', NULL, 0, 0),
+(3888, '郑鹏', 151, 11, '24204325647', '2024-09-01', '18017139215', NULL, 0, 0),
+(3889, '王鹏', 151, 34, '22546144798', '2024-09-01', '18060372894', NULL, 0, 0),
+(3890, '陈鹏', 152, 31, '22344102717', '2022-09-01', '18058777935', NULL, 0, 0),
+(3891, '秦鹏宁', 152, 39, '22969679288', '2023-09-01', '18083658239', NULL, 0, 0),
+(3892, '张翔', 152, 22, '22675687866', '2023-09-01', '18080503749', NULL, 0, 0),
+(3893, '魏宁倩', 152, 34, '23794992775', '2022-09-01', '18096309053', NULL, 0, 0),
+(3894, '赵欣', 153, 18, '23321572203', '2024-09-01', '18043532182', NULL, 0, 0),
+(3895, '曹刚', 153, 34, '23764866170', '2024-09-01', '18041677142', NULL, 0, 0),
+(3896, '吴浩', 153, 38, '24270061644', '2023-09-01', '18095676722', NULL, 0, 0),
+(3897, '秦文鹏', 153, 32, '22481455883', '2023-09-01', '18057089227', NULL, 0, 0),
+(3898, '秦宁', 154, 41, '24175672792', '2023-09-01', '18058184692', NULL, 0, 0),
+(3899, '王杰', 154, 16, '22199580911', '2023-09-01', '18046392407', NULL, 0, 0),
+(3900, '陈旭', 154, 39, '22082834664', '2023-09-01', '18098750140', NULL, 0, 0),
+(3901, '曹雅', 154, 19, '23833478533', '2022-09-01', '18072662366', NULL, 0, 0),
+(3902, '孙刚伟', 155, 31, '24013791769', '2024-09-01', '18029717695', NULL, 0, 0),
+(3903, '吴强', 155, 12, '22866711130', '2022-09-01', '18043969215', NULL, 0, 0),
+(3904, '孙超', 155, 39, '22960704583', '2023-09-01', '18055468551', NULL, 0, 0),
+(3905, '沈欣', 155, 22, '24500243057', '2023-09-01', '18030011361', NULL, 0, 0),
+(3906, '严昊', 156, 39, '23471404875', '2022-09-01', '18022044863', NULL, 0, 0),
+(3907, '朱鹏', 156, 22, '22660038786', '2024-09-01', '18038994105', NULL, 0, 0),
+(3908, '孔雅', 156, 20, '22289458198', '2023-09-01', '18083167606', NULL, 0, 0),
+(3909, '吴强', 156, 38, '23650104974', '2024-09-01', '18088620150', NULL, 0, 0),
+(3910, '王旭磊', 157, 35, '24717537309', '2024-09-01', '18027815736', NULL, 0, 0),
+(3911, '郑旭涛', 157, 23, '23054472098', '2024-09-01', '18040936951', NULL, 0, 0),
+(3912, '陶萌', 157, 32, '23299469862', '2022-09-01', '18044356103', NULL, 0, 0),
+(3913, '王强文', 157, 36, '23784128661', '2023-09-01', '18088017209', NULL, 0, 0),
+(3914, '魏超磊', 158, 40, '24571229469', '2024-09-01', '18046614404', NULL, 0, 0),
+(3915, '施洋', 158, 11, '22864721442', '2023-09-01', '18073156689', NULL, 0, 0),
+(3916, '孔倩', 158, 22, '23474434514', '2022-09-01', '18076052675', NULL, 0, 0),
+(3917, '周倩', 158, 34, '22503857192', '2023-09-01', '18079939077', NULL, 0, 0),
+(3918, '赵洋', 159, 11, '23687177392', '2024-09-01', '18027497747', NULL, 0, 0),
+(3919, '陈哲', 159, 34, '24414853475', '2023-09-01', '18009759812', NULL, 0, 0),
+(3920, '韩超', 159, 19, '23947583854', '2024-09-01', '18096518103', NULL, 0, 0),
+(3921, '沈鹏俊', 159, 19, '22077733377', '2024-09-01', '18038151188', NULL, 0, 0),
+(3922, '冯强', 160, 36, '22657803240', '2022-09-01', '18044235583', NULL, 0, 0),
+(3923, '杨倩', 160, 40, '24625740531', '2022-09-01', '18074273184', NULL, 0, 0),
+(3924, '吴雅宁', 160, 15, '22506882546', '2023-09-01', '18098137594', NULL, 0, 0),
+(3925, '张磊琳', 160, 12, '23767909310', '2024-09-01', '18048323171', NULL, 0, 0),
+(3926, '孔昊', 161, 12, '22280523552', '2022-09-01', '18033188322', NULL, 0, 0),
+(3927, '陈萌哲', 161, 41, '23411222812', '2023-09-01', '18000456984', NULL, 0, 0),
+(3928, '郑洋', 161, 18, '24028544564', '2022-09-01', '18012324076', NULL, 0, 0),
+(3929, '朱萌', 161, 18, '23034377608', '2023-09-01', '18020505274', NULL, 0, 0),
+(3930, '孙博', 162, 20, '24858333055', '2024-09-01', '18086586788', NULL, 0, 0),
+(3931, '李萌', 162, 41, '22500279016', '2023-09-01', '18066474886', NULL, 0, 0),
+(3932, '沈宁', 162, 23, '24111368153', '2023-09-01', '18072752764', NULL, 0, 0),
+(3933, '施浩哲', 162, 23, '22659265545', '2023-09-01', '18016279884', NULL, 0, 0),
+(3934, '陶鹏', 163, 23, '24917542452', '2024-09-01', '18074096566', NULL, 0, 0),
+(3935, '赵文萌', 163, 20, '24226540316', '2023-09-01', '18058594981', NULL, 0, 0);
+INSERT INTO `student` (`id`, `name`, `room_id`, `faculty_id`, `number`, `registration_date`, `phone`, `photo`, `is_leave`, `is_delete`) VALUES
+(3936, '金文', 163, 38, '24107910534', '2023-09-01', '18077650914', NULL, 0, 0),
+(3937, '孙强', 163, 39, '22620173558', '2023-09-01', '18000668152', NULL, 0, 0),
+(3938, '沈博伟', 164, 39, '22962834125', '2024-09-01', '18035928815', NULL, 0, 0),
+(3939, '吕伟', 164, 38, '22655119730', '2022-09-01', '18031771091', NULL, 0, 0),
+(3940, '蒋哲', 164, 31, '24577008441', '2023-09-01', '18095692895', NULL, 0, 0),
+(3941, '施睿旭', 164, 40, '24097175271', '2022-09-01', '18074636791', NULL, 0, 0),
+(3942, '尤琳', 165, 41, '24828556034', '2024-09-01', '18008587868', NULL, 0, 0),
+(3943, '褚磊', 165, 19, '23114281428', '2022-09-01', '18024594931', NULL, 0, 0),
+(3944, '陈旭', 165, 18, '23559159646', '2023-09-01', '18011940711', NULL, 0, 0),
+(3945, '秦磊宁', 165, 32, '22081244230', '2024-09-01', '18030148394', NULL, 0, 0),
+(3946, '何浩', 166, 22, '22977937049', '2022-09-01', '18057988539', NULL, 0, 0),
+(3947, '吴刚俊', 166, 36, '23277586039', '2024-09-01', '18060340864', NULL, 0, 0),
+(3948, '沈浩昊', 166, 23, '23127684401', '2022-09-01', '18011245997', NULL, 0, 0),
+(3949, '褚涛', 166, 23, '22689076203', '2022-09-01', '18053418776', NULL, 0, 0),
+(3950, '王文', 167, 40, '24003256046', '2022-09-01', '18071045175', NULL, 0, 0),
+(3951, '卫欣欣', 167, 39, '22952355899', '2024-09-01', '18034594829', NULL, 0, 0),
+(3952, '钱欣', 167, 38, '24676415950', '2024-09-01', '18046552900', NULL, 0, 0),
+(3953, '张欣倩', 167, 40, '22598848745', '2022-09-01', '18098352749', NULL, 0, 0),
+(3954, '杨萌哲', 168, 32, '22626802862', '2022-09-01', '18039857005', NULL, 0, 0),
+(3955, '施雅', 168, 10, '22883594537', '2024-09-01', '18036785419', NULL, 0, 0),
+(3956, '陶琳', 168, 11, '24162395193', '2022-09-01', '18052658302', NULL, 0, 0),
+(3957, '周昊', 168, 16, '23540732805', '2023-09-01', '18010458293', NULL, 0, 0),
+(3958, '沈强睿', 169, 18, '22604698989', '2024-09-01', '18092134822', NULL, 0, 0),
+(3959, '郑倩涛', 169, 39, '22037188907', '2024-09-01', '18002743483', NULL, 0, 0),
+(3960, '严翔', 169, 11, '23886665112', '2022-09-01', '18032481878', NULL, 0, 0),
+(3961, '周琦', 169, 23, '23688453656', '2023-09-01', '18036670426', NULL, 0, 0),
+(3962, '张萌', 170, 22, '24531940136', '2022-09-01', '18096796352', NULL, 0, 0),
+(3963, '吴翔', 170, 23, '22606447177', '2023-09-01', '18019381550', NULL, 0, 0),
+(3964, '何琦', 170, 32, '22698994191', '2022-09-01', '18094997937', NULL, 0, 0),
+(3965, '周鹏', 170, 34, '23788186569', '2024-09-01', '18098460629', NULL, 0, 0),
+(3966, '何倩', 171, 10, '24869135585', '2022-09-01', '18049577963', NULL, 0, 0),
+(3967, '蒋洋雅', 171, 32, '23213718801', '2024-09-01', '18060717447', NULL, 0, 0),
+(3968, '吕伟', 171, 11, '22945319157', '2022-09-01', '18038505461', NULL, 0, 0),
+(3969, '卫昊', 171, 38, '22090827763', '2022-09-01', '18030632698', NULL, 0, 0),
+(3970, '钱鹏', 172, 35, '23101587329', '2022-09-01', '18046372647', NULL, 0, 0),
+(3971, '许涛强', 172, 23, '22209685205', '2023-09-01', '18046155333', NULL, 0, 0),
+(3972, '曹哲强', 172, 15, '22904418244', '2022-09-01', '18069253283', NULL, 0, 0),
+(3973, '钱文', 172, 41, '24952728657', '2023-09-01', '18025819416', NULL, 0, 0),
+(3974, '尤雅昊', 173, 18, '23119694124', '2024-09-01', '18066060502', NULL, 0, 0),
+(3975, '陈萌', 173, 36, '24175324473', '2024-09-01', '18056306947', NULL, 0, 0),
+(3976, '吴昊', 173, 38, '24544579593', '2022-09-01', '18090368734', NULL, 0, 0),
+(3977, '曹俊', 173, 12, '22249174455', '2024-09-01', '18076607965', NULL, 0, 0),
+(3978, '李磊', 174, 20, '23017605217', '2022-09-01', '18091900915', NULL, 0, 0),
+(3979, '吕倩哲', 174, 40, '23943709537', '2024-09-01', '18051318312', NULL, 0, 0),
+(3980, '冯鹏', 174, 40, '23788412260', '2023-09-01', '18048846871', NULL, 0, 0),
+(3981, '孔旭', 174, 40, '23246264860', '2023-09-01', '18051963577', NULL, 0, 0),
+(3982, '杨琦昊', 175, 20, '22254414769', '2023-09-01', '18018478011', NULL, 0, 0),
+(3983, '褚旭旭', 175, 15, '24878003504', '2022-09-01', '18098136990', NULL, 0, 0),
+(3984, '何磊', 175, 39, '23945917106', '2022-09-01', '18026211983', NULL, 0, 0),
+(3985, '姜杰', 175, 39, '24862157081', '2022-09-01', '18047732986', NULL, 0, 0),
+(3986, '朱旭', 176, 36, '23933781015', '2023-09-01', '18002163933', NULL, 0, 0),
+(3987, '钱宁', 176, 10, '22530025911', '2024-09-01', '18099974853', NULL, 0, 0),
+(3988, '何宁', 176, 36, '24452528210', '2023-09-01', '18090031253', NULL, 0, 0),
+(3989, '沈磊琦', 176, 36, '23548447098', '2023-09-01', '18049125831', NULL, 0, 0),
+(3990, '朱文', 177, 18, '22924594473', '2022-09-01', '18080166940', NULL, 0, 0),
+(3991, '吕磊杰', 177, 10, '23746154474', '2023-09-01', '18004753427', NULL, 0, 0),
+(3992, '王文', 177, 31, '23532515723', '2022-09-01', '18092167705', NULL, 0, 0),
+(3993, '金涛涛', 177, 22, '22562772499', '2022-09-01', '18061556783', NULL, 0, 0),
+(3994, '褚欣鹏', 178, 34, '24861433498', '2023-09-01', '18046546538', NULL, 0, 0),
+(3995, '卫文欣', 178, 40, '24160742426', '2024-09-01', '18093925883', NULL, 0, 0),
+(3996, '韩欣', 178, 16, '23212304699', '2023-09-01', '18010033609', NULL, 0, 0),
+(3997, '李旭琦', 178, 23, '22903375064', '2022-09-01', '18073018840', NULL, 0, 0),
+(3998, '冯琳洋', 179, 23, '22637653411', '2023-09-01', '18076094647', NULL, 0, 0),
+(3999, '吴哲', 179, 10, '23833205721', '2023-09-01', '18064283324', NULL, 0, 0),
+(4000, '吕洋', 179, 22, '23310160066', '2024-09-01', '18097358616', NULL, 0, 0),
+(4001, '华俊', 179, 40, '22584252149', '2024-09-01', '18076027800', NULL, 0, 0),
+(4002, '何鹏', 180, 39, '23682831937', '2022-09-01', '18096560419', NULL, 0, 0),
+(4003, '周倩', 180, 38, '22854262579', '2022-09-01', '18094148306', NULL, 0, 0),
+(4004, '卫昊', 180, 40, '24153644058', '2023-09-01', '18084721899', NULL, 0, 0),
+(4005, '孙浩', 180, 39, '23765945013', '2024-09-01', '18091182931', NULL, 0, 0),
+(4006, '赵杰', 181, 38, '23458826831', '2023-09-01', '18022203715', NULL, 0, 0),
+(4007, '褚萌', 181, 16, '23058992014', '2022-09-01', '18004641423', NULL, 0, 0),
+(4008, '陶鹏', 181, 19, '23100659861', '2023-09-01', '18074129282', NULL, 0, 0),
+(4009, '郑超', 181, 32, '23410027309', '2024-09-01', '18022323942', NULL, 0, 0),
+(4010, '赵翔', 182, 31, '23582996002', '2023-09-01', '18024816155', NULL, 0, 0),
+(4011, '孙涛', 182, 39, '22194423184', '2023-09-01', '18000846641', NULL, 0, 0),
+(4012, '王博', 182, 34, '22872820722', '2024-09-01', '18077596503', NULL, 0, 0),
+(4013, '杨翔', 182, 34, '24192142217', '2023-09-01', '18090474191', NULL, 0, 0),
+(4014, '陈文', 183, 35, '23405440478', '2023-09-01', '18045297296', NULL, 0, 0),
+(4015, '吕洋', 183, 39, '24777937035', '2022-09-01', '18097028230', NULL, 0, 0),
+(4016, '沈雅', 183, 31, '23302079341', '2022-09-01', '18069053490', NULL, 0, 0),
+(4017, '吕旭俊', 183, 23, '22477539464', '2024-09-01', '18071574768', NULL, 0, 0),
+(4018, '秦倩', 184, 32, '24054837565', '2023-09-01', '18070538990', NULL, 0, 0),
+(4019, '孔琳超', 184, 38, '22331052213', '2022-09-01', '18081651253', NULL, 0, 0),
+(4020, '蒋昊', 184, 35, '24357911827', '2024-09-01', '18046850144', NULL, 0, 0),
+(4021, '何萌哲', 184, 23, '24069441261', '2023-09-01', '18069450489', NULL, 0, 0),
+(4022, '蒋萌', 185, 12, '24420388054', '2024-09-01', '18076800013', NULL, 0, 0),
+(4023, '王洋', 185, 23, '24329202652', '2024-09-01', '18064082875', NULL, 0, 0),
+(4024, '赵翔', 185, 38, '22732103707', '2023-09-01', '18037919416', NULL, 0, 0),
+(4025, '孙杰', 185, 19, '22038288644', '2023-09-01', '18059510491', NULL, 0, 0),
+(4026, '吴宁', 186, 23, '23683185135', '2023-09-01', '18055636936', NULL, 0, 0),
+(4027, '陶浩鹏', 186, 22, '24528775500', '2022-09-01', '18095621303', NULL, 0, 0),
+(4028, '曹萌倩', 186, 41, '22588929720', '2023-09-01', '18055149067', NULL, 0, 0),
+(4029, '沈睿哲', 186, 41, '24056125177', '2024-09-01', '18012387475', NULL, 0, 0),
+(4030, '冯琦哲', 187, 22, '22637579845', '2023-09-01', '18003160138', NULL, 0, 0),
+(4031, '周鹏', 187, 41, '22696042160', '2023-09-01', '18036162441', NULL, 0, 0),
+(4032, '孙强', 187, 19, '24802076497', '2024-09-01', '18008204573', NULL, 0, 0),
+(4033, '王萌', 187, 41, '24671441123', '2023-09-01', '18083940839', NULL, 0, 0),
+(4034, '周洋', 188, 36, '24795611393', '2023-09-01', '18011947829', NULL, 0, 0),
+(4035, '李俊', 188, 31, '24036517540', '2024-09-01', '18049317916', NULL, 0, 0),
+(4036, '陶旭琳', 188, 23, '24291304547', '2023-09-01', '18008627156', NULL, 0, 0),
+(4037, '钱超欣', 188, 38, '23424208222', '2023-09-01', '18091332875', NULL, 0, 0),
+(4038, '姜宁', 189, 11, '22202716558', '2022-09-01', '18035915237', NULL, 0, 0),
+(4039, '陶倩', 189, 15, '23131746060', '2023-09-01', '18089685739', NULL, 0, 0),
+(4040, '吕洋', 189, 23, '23199242200', '2023-09-01', '18040236262', NULL, 0, 0),
+(4041, '吕涛', 189, 39, '22412718619', '2023-09-01', '18019506303', NULL, 0, 0),
+(4042, '华雅', 190, 22, '24646216357', '2022-09-01', '18044512103', NULL, 0, 0),
+(4043, '张雅宁', 190, 12, '23810786669', '2024-09-01', '18028181161', NULL, 0, 0),
+(4044, '张浩琳', 190, 22, '22104432733', '2023-09-01', '18001231320', NULL, 0, 0),
+(4045, '曹鹏', 190, 11, '24080274159', '2024-09-01', '18084491959', NULL, 0, 0),
+(4046, '吴超琳', 191, 22, '23648241666', '2023-09-01', '18031877640', NULL, 0, 0),
+(4047, '孔博', 191, 31, '22829160899', '2024-09-01', '18076898871', NULL, 0, 0),
+(4048, '沈伟强', 191, 35, '24977515464', '2023-09-01', '18037294477', NULL, 0, 0),
+(4049, '施磊', 191, 36, '23411560357', '2024-09-01', '18075380630', NULL, 0, 0),
+(4050, '褚雅', 192, 34, '24289671419', '2024-09-01', '18034949472', NULL, 0, 0),
+(4051, '钱杰', 192, 19, '24698109305', '2022-09-01', '18036581697', NULL, 0, 0),
+(4052, '韩琦', 192, 38, '23297638175', '2024-09-01', '18008143158', NULL, 0, 0),
+(4053, '周昊', 192, 11, '24690897272', '2023-09-01', '18020942411', NULL, 0, 0),
+(4054, '许睿博', 193, 36, '23933450356', '2022-09-01', '18075246619', NULL, 0, 0),
+(4055, '严旭', 193, 32, '24206180899', '2022-09-01', '18058103741', NULL, 0, 0),
+(4056, '秦昊', 193, 41, '22106394466', '2023-09-01', '18012910037', NULL, 0, 0),
+(4057, '陶萌欣', 193, 23, '23808519698', '2022-09-01', '18001680364', NULL, 0, 0),
+(4058, '周刚', 194, 18, '24790058181', '2024-09-01', '18060361467', NULL, 0, 0),
+(4059, '陶哲翔', 194, 15, '22692450717', '2022-09-01', '18035055421', NULL, 0, 0),
+(4060, '姜磊哲', 194, 34, '23893133001', '2024-09-01', '18008222500', NULL, 0, 0),
+(4061, '何宁', 194, 31, '23740427103', '2022-09-01', '18017590073', NULL, 0, 0),
+(4062, '王博', 195, 35, '24316110674', '2023-09-01', '18053568869', NULL, 0, 0),
+(4063, '蒋琦', 195, 36, '24551576513', '2023-09-01', '18070440770', NULL, 0, 0),
+(4064, '张俊', 195, 41, '24062992839', '2023-09-01', '18066114501', NULL, 0, 0),
+(4065, '秦宁欣', 195, 36, '23392091704', '2024-09-01', '18043799875', NULL, 0, 0),
+(4066, '韩杰涛', 196, 10, '24363467580', '2022-09-01', '18088871682', NULL, 0, 0),
+(4067, '华浩', 196, 22, '24438562072', '2023-09-01', '18039603781', NULL, 0, 0),
+(4068, '孙鹏', 196, 35, '24229855040', '2023-09-01', '18014548810', NULL, 0, 0),
+(4069, '赵睿超', 196, 15, '22833219811', '2024-09-01', '18033259961', NULL, 0, 0),
+(4070, '冯哲', 197, 11, '24497039534', '2023-09-01', '18072735012', NULL, 0, 0),
+(4071, '金萌', 197, 20, '23973184652', '2024-09-01', '18005457978', NULL, 0, 0),
+(4072, '郑洋', 197, 10, '22112284773', '2024-09-01', '18072484112', NULL, 0, 0),
+(4073, '褚欣', 197, 31, '24969994986', '2022-09-01', '18025340846', NULL, 0, 0),
+(4074, '韩萌', 198, 40, '24743930781', '2024-09-01', '18061332945', NULL, 0, 0),
+(4075, '褚浩', 198, 20, '23460632153', '2024-09-01', '18039160164', NULL, 0, 0),
+(4076, '施萌', 198, 10, '24381161366', '2022-09-01', '18005297927', NULL, 0, 0),
+(4077, '朱洋睿', 198, 12, '23150711205', '2022-09-01', '18051053559', NULL, 0, 0),
+(4078, '王睿睿', 199, 18, '23053221683', '2023-09-01', '18032382233', NULL, 0, 0),
+(4079, '冯磊', 199, 18, '24619198826', '2022-09-01', '18033343295', NULL, 0, 0),
+(4080, '陈涛', 199, 22, '23821474809', '2024-09-01', '18050431759', NULL, 0, 0),
+(4081, '郑昊宁', 199, 23, '24675338959', '2024-09-01', '18036750423', NULL, 0, 0),
+(4082, '沈倩', 200, 20, '24672614717', '2023-09-01', '18025814405', NULL, 0, 0),
+(4083, '吕洋', 200, 38, '23725203136', '2022-09-01', '18041091995', NULL, 0, 0),
+(4084, '魏涛旭', 200, 18, '22758799271', '2023-09-01', '18072825968', NULL, 0, 0),
+(4085, '杨超', 200, 15, '23585782358', '2022-09-01', '18066861587', NULL, 0, 0),
+(4086, '施杰', 201, 22, '22792478873', '2024-09-01', '18009565465', NULL, 0, 0),
+(4087, '施旭', 201, 38, '22468809772', '2024-09-01', '18048921281', NULL, 0, 0),
+(4088, '吴超', 201, 36, '23888267723', '2022-09-01', '18009399238', NULL, 0, 0),
+(4089, '褚哲涛', 201, 23, '23044703256', '2023-09-01', '18012614023', NULL, 0, 0),
+(4090, '吕磊', 202, 11, '23187555564', '2023-09-01', '18066809062', NULL, 0, 0),
+(4091, '赵博', 202, 36, '24889163933', '2024-09-01', '18094508373', NULL, 0, 0),
+(4092, '吕哲', 202, 41, '22520893795', '2022-09-01', '18001764624', NULL, 0, 0),
+(4093, '何昊', 202, 12, '22631801820', '2023-09-01', '18083426579', NULL, 0, 0),
+(4094, '华超', 203, 36, '24243405979', '2023-09-01', '18057152601', NULL, 0, 0),
+(4095, '金磊', 203, 23, '24092639695', '2024-09-01', '18010654883', NULL, 0, 0),
+(4096, '褚欣', 203, 34, '23208690885', '2022-09-01', '18020391789', NULL, 0, 0),
+(4097, '卫宁', 203, 41, '24434435711', '2023-09-01', '18061587111', NULL, 0, 0),
+(4098, '韩旭', 204, 18, '24013083542', '2024-09-01', '18052356348', NULL, 0, 0),
+(4099, '许俊宁', 204, 23, '22525292660', '2023-09-01', '18044611804', NULL, 0, 0),
+(4100, '沈萌', 204, 10, '22831999814', '2023-09-01', '18040969421', NULL, 0, 0),
+(4101, '周鹏', 204, 18, '24761853010', '2022-09-01', '18094195578', NULL, 0, 0),
+(4102, '周俊', 205, 41, '23627019450', '2023-09-01', '18099797754', NULL, 0, 0),
+(4103, '华琳', 205, 40, '22445207825', '2022-09-01', '18095647738', NULL, 0, 0),
+(4104, '张强刚', 205, 32, '24483729971', '2024-09-01', '18074269073', NULL, 0, 0),
+(4105, '朱哲', 205, 36, '23483471270', '2024-09-01', '18008169848', NULL, 0, 0),
+(4106, '周杰昊', 206, 31, '22544510937', '2024-09-01', '18021459951', NULL, 0, 0),
+(4107, '孔昊', 206, 38, '24077834650', '2023-09-01', '18002527024', NULL, 0, 0),
+(4108, '魏旭伟', 206, 34, '22405757165', '2022-09-01', '18092522947', NULL, 0, 0),
+(4109, '许文', 206, 22, '24170900587', '2024-09-01', '18018112909', NULL, 0, 0),
+(4110, '吴昊', 207, 11, '22419121817', '2024-09-01', '18036541547', NULL, 0, 0),
+(4111, '秦琳洋', 207, 36, '24135081464', '2023-09-01', '18058249044', NULL, 0, 0),
+(4112, '尤超哲', 207, 20, '22776438460', '2023-09-01', '18043222580', NULL, 0, 0),
+(4113, '吴超', 207, 12, '23432172505', '2023-09-01', '18004034456', NULL, 0, 0),
+(4114, '何倩', 208, 19, '23431291477', '2024-09-01', '18020962065', NULL, 0, 0),
+(4115, '李浩文', 208, 38, '22190566025', '2024-09-01', '18025202953', NULL, 0, 0),
+(4116, '沈宁杰', 208, 20, '24366182647', '2022-09-01', '18042425667', NULL, 0, 0),
+(4117, '姜欣', 208, 19, '24026939287', '2022-09-01', '18061314186', NULL, 0, 0),
+(4118, '华旭旭', 209, 18, '24885166947', '2023-09-01', '18010334140', NULL, 1, 0),
+(4119, '李超涛', 209, 22, '24651506350', '2024-09-01', '18045480304', NULL, 0, 0),
+(4120, '孙萌', 209, 23, '24130327466', '2024-09-01', '18013868415', NULL, 0, 0),
+(4121, '韩浩', 209, 39, '23579900665', '2022-09-01', '18029945893', NULL, 0, 0),
+(4122, '吕洋', 210, 16, '23960777122', '2022-09-01', '18030345131', NULL, 0, 0),
+(4123, '郑博杰', 210, 23, '24541470077', '2024-09-01', '18099850740', NULL, 0, 0),
+(4124, '何翔博', 210, 40, '22167519170', '2022-09-01', '18094601385', NULL, 0, 0),
+(4125, '姜睿', 210, 16, '24836861947', '2022-09-01', '18068416123', NULL, 0, 0),
+(4126, '王雅', 211, 40, '23530850264', '2022-09-01', '18058224589', NULL, 0, 0),
+(4127, '孔旭浩', 211, 23, '24594886378', '2023-09-01', '18087660450', NULL, 0, 0),
+(4128, '陈睿', 211, 12, '24834585254', '2023-09-01', '18052577585', NULL, 0, 0),
+(4129, '杨涛', 211, 40, '22339592140', '2023-09-01', '18013009455', NULL, 0, 0),
+(4130, '吕博', 212, 34, '24930731987', '2024-09-01', '18074749068', NULL, 0, 0),
+(4131, '姜磊文', 212, 15, '22065214678', '2024-09-01', '18074542876', NULL, 0, 0),
+(4132, '张超', 212, 36, '22153530242', '2023-09-01', '18085729932', NULL, 0, 0),
+(4133, '冯涛', 212, 23, '23563379934', '2022-09-01', '18032228457', NULL, 0, 0),
+(4134, '姜欣伟', 213, 23, '22064432965', '2022-09-01', '18082542992', NULL, 0, 0),
+(4135, '王磊伟', 213, 32, '24416467165', '2023-09-01', '18044616300', NULL, 0, 0),
+(4136, '吕博涛', 213, 20, '23240748570', '2024-09-01', '18089154806', NULL, 0, 0),
+(4137, '吕雅', 213, 23, '22788063992', '2024-09-01', '18024031049', NULL, 0, 0),
+(4138, '杨琦', 214, 11, '24355776344', '2024-09-01', '18026712591', NULL, 0, 0),
+(4139, '张翔睿', 214, 10, '23400790827', '2023-09-01', '18054116504', NULL, 0, 0),
+(4140, '张旭', 214, 23, '22493545389', '2024-09-01', '18088408367', NULL, 0, 0),
+(4141, '施鹏', 214, 23, '23678736229', '2023-09-01', '18016846152', NULL, 0, 0),
+(4142, '卫雅', 215, 32, '22813843181', '2024-09-01', '18010239586', NULL, 0, 0),
+(4143, '沈浩', 215, 15, '24371682975', '2023-09-01', '18061443516', NULL, 0, 0),
+(4144, '孔翔', 215, 36, '22232354037', '2022-09-01', '18051866915', NULL, 0, 0),
+(4145, '朱倩', 215, 40, '22544135135', '2023-09-01', '18099882790', NULL, 0, 0),
+(4146, '郑伟', 216, 10, '23438145175', '2024-09-01', '18012231979', NULL, 0, 0),
+(4147, '吕琦超', 216, 16, '22704378031', '2023-09-01', '18018890069', NULL, 0, 0),
+(4148, '魏涛', 216, 31, '22059784932', '2024-09-01', '18014842223', NULL, 0, 0),
+(4149, '严洋', 216, 12, '23002744414', '2023-09-01', '18066709234', NULL, 0, 0),
+(4150, '严超欣', 217, 19, '24482296397', '2024-09-01', '18016123505', NULL, 0, 0),
+(4151, '陶旭', 217, 31, '23164409423', '2024-09-01', '18023978315', NULL, 0, 0),
+(4152, '吕哲', 217, 32, '22322051423', '2024-09-01', '18067978772', NULL, 0, 0),
+(4153, '钱昊', 217, 41, '24036196379', '2024-09-01', '18011670755', NULL, 0, 0),
+(4154, '郑杰杰', 218, 12, '24503995483', '2022-09-01', '18062826440', NULL, 0, 0),
+(4155, '韩刚', 218, 32, '22374528181', '2024-09-01', '18084612989', NULL, 0, 0),
+(4156, '严鹏涛', 218, 35, '23775731371', '2022-09-01', '18014542443', NULL, 0, 0),
+(4157, '朱鹏', 218, 34, '22335438603', '2024-09-01', '18041809626', NULL, 0, 0),
+(4158, '陈萌', 219, 20, '22232963117', '2024-09-01', '18091720254', NULL, 0, 0),
+(4159, '李刚', 219, 11, '23605717430', '2024-09-01', '18077814369', NULL, 0, 0),
+(4160, '韩琦', 219, 39, '23666736555', '2024-09-01', '18065108467', NULL, 0, 0),
+(4161, '秦萌', 219, 11, '23795132315', '2022-09-01', '18024112358', NULL, 0, 0),
+(4162, '曹昊', 220, 12, '22056179458', '2023-09-01', '18078848115', NULL, 0, 0),
+(4163, '姜文', 220, 41, '24468158731', '2024-09-01', '18093367316', NULL, 0, 0),
+(4164, '许哲刚', 220, 31, '23335582873', '2023-09-01', '18018174740', NULL, 0, 0),
+(4165, '许琦', 220, 23, '23412861809', '2024-09-01', '18051902262', NULL, 0, 0),
+(4166, '张鹏', 221, 32, '24869386070', '2023-09-01', '18002896765', NULL, 0, 0),
+(4167, '褚文', 221, 12, '24525741637', '2022-09-01', '18082407813', NULL, 0, 0),
+(4168, '陶鹏', 221, 12, '23004960269', '2023-09-01', '18013548391', NULL, 0, 0),
+(4169, '陶欣', 221, 39, '22081743206', '2024-09-01', '18053154948', NULL, 0, 0),
+(4170, '陶雅欣', 222, 31, '23087753676', '2023-09-01', '18048418406', NULL, 0, 0),
+(4171, '张哲', 222, 41, '23469162028', '2024-09-01', '18017880111', NULL, 0, 0),
+(4172, '严宁', 222, 18, '24645833715', '2022-09-01', '18089753958', NULL, 0, 0),
+(4173, '沈旭', 222, 34, '23064655153', '2023-09-01', '18012220857', NULL, 0, 0),
+(4174, '韩浩洋', 223, 32, '23571756045', '2023-09-01', '18057895021', NULL, 0, 0),
+(4175, '孔昊', 223, 38, '23403311200', '2022-09-01', '18021145180', NULL, 0, 0),
+(4176, '卫文', 223, 10, '22347892502', '2023-09-01', '18050693777', NULL, 0, 0),
+(4177, '赵昊', 223, 36, '22198187338', '2023-09-01', '18072173026', NULL, 0, 0),
+(4178, '郑萌', 224, 10, '22336663786', '2024-09-01', '18021452108', NULL, 0, 0),
+(4179, '冯俊', 224, 41, '22929576426', '2022-09-01', '18080271825', NULL, 0, 0),
+(4180, '蒋宁', 224, 38, '24382035833', '2023-09-01', '18095591698', NULL, 0, 0),
+(4181, '尤浩洋', 224, 39, '24852612415', '2023-09-01', '18053862307', NULL, 0, 0),
+(4182, '周文', 225, 11, '22810124541', '2023-09-01', '18064995979', NULL, 0, 0),
+(4183, '赵俊', 225, 36, '22085069881', '2022-09-01', '18069078515', NULL, 0, 0),
+(4184, '王涛', 225, 39, '22558671352', '2024-09-01', '18094148719', NULL, 0, 0),
+(4185, '陶欣', 225, 34, '22947037194', '2022-09-01', '18013681076', NULL, 0, 0),
+(4186, '陶翔', 226, 11, '22314027436', '2022-09-01', '18023664528', NULL, 0, 0),
+(4187, '秦昊', 226, 22, '23907318716', '2023-09-01', '18037142273', NULL, 0, 0),
+(4188, '赵刚', 226, 19, '22893274269', '2024-09-01', '18089426087', NULL, 0, 0),
+(4189, '吴哲', 226, 39, '22400671108', '2023-09-01', '18062521408', NULL, 0, 0),
+(4190, '严文超', 227, 16, '24318523688', '2022-09-01', '18079934970', NULL, 0, 0),
+(4191, '华萌超', 227, 11, '22377305707', '2023-09-01', '18054555189', NULL, 0, 0),
+(4192, '蒋鹏', 227, 22, '23558931517', '2022-09-01', '18038725311', NULL, 0, 0),
+(4193, '陈伟', 227, 18, '23961252835', '2024-09-01', '18082757828', NULL, 0, 0),
+(4194, '尤杰', 228, 40, '24668521188', '2024-09-01', '18055313825', NULL, 0, 0),
+(4195, '蒋博浩', 228, 38, '24975510454', '2022-09-01', '18003413477', NULL, 0, 0),
+(4196, '姜倩', 228, 35, '24727494179', '2024-09-01', '18057713762', NULL, 0, 0),
+(4197, '郑鹏', 228, 23, '22118576684', '2023-09-01', '18078772625', NULL, 0, 0),
+(4198, '李刚', 229, 38, '23154969070', '2022-09-01', '18041313365', NULL, 0, 0),
+(4199, '褚哲', 229, 16, '23865094059', '2024-09-01', '18023536827', NULL, 0, 0),
+(4200, '尤洋', 229, 40, '23443759036', '2024-09-01', '18035123501', NULL, 0, 0),
+(4201, '周琳', 229, 32, '24119520620', '2023-09-01', '18087663613', NULL, 0, 0),
+(4202, '何磊', 230, 36, '24330352557', '2023-09-01', '18029033201', NULL, 0, 0),
+(4203, '赵萌', 230, 40, '23281686567', '2022-09-01', '18013824843', NULL, 0, 0),
+(4204, '魏强', 230, 15, '23259494604', '2022-09-01', '18021603868', NULL, 0, 0),
+(4205, '陶俊萌', 230, 34, '22832360789', '2024-09-01', '18092399946', NULL, 0, 0),
+(4206, '何睿', 231, 40, '24011916111', '2022-09-01', '18008955443', NULL, 0, 0),
+(4207, '秦博', 231, 12, '24598197941', '2023-09-01', '18030715380', NULL, 0, 0),
+(4208, '冯涛琳', 231, 31, '22786895427', '2022-09-01', '18019279522', NULL, 0, 0),
+(4209, '孙浩翔', 231, 39, '22409414615', '2022-09-01', '18080206432', NULL, 1, 0),
+(4210, '严刚', 232, 22, '23398972476', '2023-09-01', '18058372527', NULL, 0, 0),
+(4211, '沈琦', 232, 19, '24973645320', '2023-09-01', '18045940984', NULL, 0, 0),
+(4212, '张俊欣', 232, 41, '24465284208', '2024-09-01', '18008071439', NULL, 0, 0),
+(4213, '金伟', 232, 12, '23813793250', '2022-09-01', '18047628404', NULL, 0, 0),
+(4214, '郑文刚', 233, 22, '24197430745', '2022-09-01', '18061926098', NULL, 0, 0),
+(4215, '王萌', 233, 39, '24320138302', '2022-09-01', '18023845042', NULL, 0, 0),
+(4216, '许睿', 233, 32, '23468724386', '2024-09-01', '18051631053', NULL, 0, 0),
+(4217, '严昊', 233, 22, '23429034815', '2023-09-01', '18015889131', NULL, 0, 0),
+(4218, '韩磊', 234, 19, '22760271881', '2022-09-01', '18018430792', NULL, 0, 0),
+(4219, '严洋', 234, 31, '22178503476', '2023-09-01', '18020087659', NULL, 0, 0),
+(4220, '王刚雅', 234, 35, '24363900487', '2022-09-01', '18036547507', NULL, 0, 0),
+(4221, '孔俊', 234, 19, '24978481956', '2023-09-01', '18054699695', NULL, 0, 0),
+(4222, '王伟', 235, 11, '23833429164', '2024-09-01', '18003473045', NULL, 0, 0),
+(4223, '姜睿', 235, 35, '23239749063', '2024-09-01', '18039349482', NULL, 0, 0),
+(4224, '张琳', 235, 10, '22689987869', '2022-09-01', '18094761714', NULL, 0, 0),
+(4225, '许超', 235, 35, '24050052974', '2024-09-01', '18037084373', NULL, 0, 0),
+(4226, '朱强', 236, 36, '23483816327', '2024-09-01', '18040054498', NULL, 0, 0),
+(4227, '卫涛', 236, 35, '24246583299', '2023-09-01', '18016728016', NULL, 0, 0),
+(4228, '周文', 236, 31, '24576000490', '2022-09-01', '18086421954', NULL, 0, 0),
+(4229, '蒋欣', 236, 34, '22502162321', '2022-09-01', '18048059721', NULL, 0, 0),
+(4230, '许洋', 237, 38, '23810802568', '2022-09-01', '18003428028', NULL, 0, 0),
+(4231, '王欣', 237, 38, '23986224069', '2023-09-01', '18017999159', NULL, 0, 0),
+(4232, '陈倩欣', 237, 16, '24697812822', '2024-09-01', '18009274989', NULL, 0, 0),
+(4233, '尤伟', 237, 16, '24763946690', '2024-09-01', '18028258306', NULL, 0, 0),
+(4234, '吕哲涛', 238, 34, '24640517659', '2023-09-01', '18036295523', NULL, 0, 0),
+(4235, '陶伟雅', 238, 32, '24702093701', '2024-09-01', '18091860600', NULL, 0, 0),
+(4236, '许琦', 238, 16, '23590292048', '2023-09-01', '18021306877', NULL, 0, 0),
+(4237, '杨博', 238, 34, '22081880718', '2024-09-01', '18062191432', NULL, 0, 0),
+(4238, '孙倩睿', 239, 38, '22740364365', '2024-09-01', '18060029651', NULL, 0, 0),
+(4239, '赵博鹏', 239, 40, '23186679025', '2024-09-01', '18035183008', NULL, 0, 0),
+(4240, '钱超杰', 239, 32, '23020585143', '2023-09-01', '18091794759', NULL, 0, 0),
+(4241, '施旭睿', 239, 22, '24046395663', '2023-09-01', '18006242933', NULL, 0, 0),
+(4242, '李昊', 240, 22, '23549278130', '2023-09-01', '18054514521', NULL, 0, 0),
+(4243, '杨俊', 240, 40, '23306998119', '2024-09-01', '18047774082', NULL, 0, 0),
+(4244, '郑超睿', 240, 10, '24210120098', '2023-09-01', '18063302744', NULL, 0, 0),
+(4245, '何欣', 240, 10, '24043187810', '2024-09-01', '18074482047', NULL, 0, 0),
+(4246, '韩超', 241, 39, '23460017137', '2023-09-01', '18003281705', NULL, 0, 0),
+(4247, '曹洋', 241, 16, '23644323967', '2024-09-01', '18016891014', NULL, 0, 0),
+(4248, '卫超伟', 241, 35, '23025443664', '2022-09-01', '18000815245', NULL, 0, 0),
+(4249, '严欣', 241, 35, '23913798171', '2024-09-01', '18078754221', NULL, 0, 0),
+(4250, '许洋', 242, 20, '23814169145', '2022-09-01', '18069282507', NULL, 0, 0),
+(4251, '华强欣', 242, 16, '22532422843', '2024-09-01', '18079449300', NULL, 0, 0),
+(4252, '朱浩', 242, 40, '23517030692', '2022-09-01', '18055289870', NULL, 0, 0),
+(4253, '卫超', 242, 39, '22854235715', '2022-09-01', '18052274731', NULL, 0, 0),
+(4254, '周强', 243, 32, '22087059351', '2024-09-01', '18008008273', NULL, 0, 0),
+(4255, '卫文', 243, 31, '24781141127', '2024-09-01', '18078735594', NULL, 0, 0),
+(4256, '华雅', 243, 22, '23007628950', '2023-09-01', '18018505492', NULL, 0, 0),
+(4257, '赵雅', 243, 12, '24043912543', '2023-09-01', '18078959958', NULL, 0, 0),
+(4258, '姜磊', 244, 40, '23796004217', '2023-09-01', '18000112920', NULL, 0, 0),
+(4259, '郑萌', 244, 10, '23866802870', '2022-09-01', '18043675480', NULL, 0, 0),
+(4260, '姜睿', 244, 11, '22826758661', '2023-09-01', '18000605064', NULL, 0, 0),
+(4261, '孔倩', 244, 39, '24687032655', '2024-09-01', '18031634061', NULL, 0, 0),
+(4262, '韩雅', 245, 12, '23768782763', '2023-09-01', '18053530050', NULL, 0, 0),
+(4263, '魏俊', 245, 41, '23237368771', '2022-09-01', '18089656522', NULL, 0, 0),
+(4264, '李杰', 245, 22, '23344526221', '2022-09-01', '18034071061', NULL, 0, 0),
+(4265, '李俊', 245, 22, '24064582752', '2023-09-01', '18004619900', NULL, 0, 0),
+(4266, '沈宁雅', 246, 18, '23670998485', '2024-09-01', '18099585626', NULL, 0, 0),
+(4267, '华旭', 246, 19, '24716773557', '2023-09-01', '18066321032', NULL, 0, 0),
+(4268, '孙超', 246, 10, '24660329571', '2022-09-01', '18041445141', NULL, 0, 0),
+(4269, '张琦', 246, 31, '23332963369', '2023-09-01', '18012544940', NULL, 0, 0),
+(4270, '严琳', 247, 38, '24837955904', '2023-09-01', '18071051573', NULL, 0, 0),
+(4271, '姜哲鹏', 247, 19, '24625047467', '2024-09-01', '18082138232', NULL, 0, 0),
+(4272, '孙杰', 247, 22, '23813754590', '2024-09-01', '18024782443', NULL, 0, 0),
+(4273, '赵睿鹏', 247, 40, '23452046509', '2024-09-01', '18028197168', NULL, 0, 0),
+(4274, '华磊', 248, 34, '23566794950', '2023-09-01', '18005163499', NULL, 0, 0),
+(4275, '吕睿萌', 248, 41, '24069428933', '2024-09-01', '18032393971', NULL, 1, 0),
+(4276, '华旭', 248, 10, '22453426338', '2024-09-01', '18018520168', NULL, 0, 0),
+(4277, '曹洋强', 248, 35, '23928925452', '2023-09-01', '18030521324', NULL, 1, 0),
+(4278, '卫强', 249, 39, '22939615013', '2023-09-01', '18003413827', NULL, 0, 0),
+(4279, '姜萌', 249, 19, '23021073682', '2024-09-01', '18043656294', NULL, 0, 0),
+(4280, '蒋磊', 249, 31, '23674610306', '2024-09-01', '18086849284', NULL, 1, 0),
+(4281, '韩昊博', 249, 35, '23131623443', '2022-09-01', '18088816011', NULL, 0, 0),
+(4282, '魏翔', 250, 20, '24671872942', '2023-09-01', '18041765773', NULL, 0, 0),
+(4283, '何哲', 250, 38, '22208112953', '2022-09-01', '18063443492', NULL, 0, 0),
+(4284, '赵睿', 250, 10, '23988251205', '2022-09-01', '18044953934', NULL, 0, 0),
+(4285, '沈昊', 250, 10, '23207469491', '2022-09-01', '18092253127', NULL, 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `system_function`
+--
+
+CREATE TABLE IF NOT EXISTS `system_function` (
+  `id` bigint NOT NULL,
   `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `parent_id` bigint(0) UNSIGNED NULL DEFAULT NULL,
-  `order_num` int(0) NULL DEFAULT NULL,
-  `path` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `component` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `parent_id` bigint unsigned DEFAULT NULL,
+  `order_num` int DEFAULT NULL,
+  `path` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `component` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `menu_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '菜单类型（M目录 C菜单 F按钮）',
-  `permission` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `icon` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `create_time` datetime NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 84 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  `permission` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `icon` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
--- ----------------------------
--- Records of system_function
--- ----------------------------
-INSERT INTO `system_function` VALUES (2, '系统管理', NULL, 2, NULL, NULL, 'M', NULL, 'icon-r-setting', '2020-12-09 11:07:14');
-INSERT INTO `system_function` VALUES (3, '用户管理', 2, 1, 'system/user/index.html', 'views/system/user/index', 'C', 'system:user:list', 'icon-r-user1', '2020-12-10 09:46:31');
-INSERT INTO `system_function` VALUES (4, '角色管理', 2, 2, 'system/role/index.html', 'views/system/role/index', 'C', 'system:role:list', 'icon-r-user3', '2020-12-10 09:48:07');
-INSERT INTO `system_function` VALUES (5, '菜单管理', 2, 3, 'system/function/index', 'views/system/function/index', 'C', 'system:function:list', 'icon-r-list', '2020-12-10 09:50:13');
-INSERT INTO `system_function` VALUES (6, '用户添加', 3, 1, '', '', 'F', 'system:user:save', NULL, '2020-12-18 13:06:04');
-INSERT INTO `system_function` VALUES (7, '用户修改', 3, 2, NULL, NULL, 'F', 'system:user:update', NULL, '2020-12-18 13:06:50');
-INSERT INTO `system_function` VALUES (8, '用户删除', 3, 2, NULL, NULL, 'F', 'system:user:delete', NULL, '2020-12-18 13:07:15');
-INSERT INTO `system_function` VALUES (10, '角色添加', 4, 1, NULL, NULL, 'F', 'system:role:save', NULL, '2020-12-18 13:34:18');
-INSERT INTO `system_function` VALUES (11, '角色修改', 4, 2, NULL, NULL, 'F', 'system:role:update', NULL, '2020-12-18 13:34:32');
-INSERT INTO `system_function` VALUES (12, '角色删除', 4, 3, NULL, NULL, 'F', 'system:role:delete', NULL, '2020-12-18 13:34:45');
-INSERT INTO `system_function` VALUES (13, '角色查询', 4, 4, NULL, NULL, 'F', 'system:role:query', NULL, '2020-12-18 13:34:57');
-INSERT INTO `system_function` VALUES (14, '用户查询', 3, 4, NULL, NULL, 'F', 'system:user:query', NULL, '2020-12-18 13:34:04');
-INSERT INTO `system_function` VALUES (15, '菜单添加', 5, 1, NULL, NULL, 'F', 'system:function:save', NULL, '2020-12-18 15:14:18');
-INSERT INTO `system_function` VALUES (16, '菜单修改', 5, 2, NULL, NULL, 'F', 'system:function:update', NULL, '2020-12-18 15:14:21');
-INSERT INTO `system_function` VALUES (17, '菜单删除', 5, 3, NULL, NULL, 'F', 'system:function:delete', NULL, '2020-12-18 15:14:24');
-INSERT INTO `system_function` VALUES (18, '菜单查询', 5, 4, NULL, NULL, 'F', 'system:function:query', NULL, '2020-12-18 15:14:26');
-INSERT INTO `system_function` VALUES (38, '日志管理', 2, 4, 'system/log/index.html', 'views/system/log/index', 'C', 'system:log:list', 'icon-r-paper', '2020-12-30 13:49:37');
-INSERT INTO `system_function` VALUES (44, '日志查询', 38, 1, '', '', 'F', 'system:log:query', '', '2021-01-08 11:45:42');
-INSERT INTO `system_function` VALUES (45, '学生宿舍管理', NULL, 0, '', '', 'M', '', 'icon-r-add', '2021-01-19 13:43:28');
-INSERT INTO `system_function` VALUES (46, '宿舍楼管理', 45, 3, 'building/index.html', 'views/manage/building/index', 'C', 'manage:building:list', 'icon-r-home', '2021-01-19 13:47:12');
-INSERT INTO `system_function` VALUES (47, '新增', 46, 1, '', '', 'F', 'manage:building:save', '', '2021-01-19 13:52:59');
-INSERT INTO `system_function` VALUES (48, '更新', 46, 2, '', '', 'F', 'manage:building:update', '', '2021-01-19 13:53:35');
-INSERT INTO `system_function` VALUES (49, '删除', 46, 3, '', '', 'F', 'manage:building:delete', '', '2021-01-19 13:53:55');
-INSERT INTO `system_function` VALUES (50, '查询', 46, 4, '', '', 'F', 'manage:building:query', '', '2021-01-19 13:54:21');
-INSERT INTO `system_function` VALUES (51, '班级管理', 45, 2, 'faculty/index.html', 'views/manage/faculty/index', 'C', 'faculty:list', 'icon-r-mark1', '2021-01-19 15:22:22');
-INSERT INTO `system_function` VALUES (52, '新增学院', 51, 1, '', '', 'F', 'faculty:save', '', '2021-01-19 17:06:11');
-INSERT INTO `system_function` VALUES (53, '删除学院', 51, 2, '', '', 'F', 'faculty:delete', '', '2021-01-19 17:06:41');
-INSERT INTO `system_function` VALUES (54, '查询学院', 51, 3, '', '', 'F', 'faculty:query', '', '2021-01-19 17:07:08');
-INSERT INTO `system_function` VALUES (55, '修改学院', 51, 4, '', '', 'F', 'faculty:update', '', '2021-01-19 17:07:31');
-INSERT INTO `system_function` VALUES (56, '学生管理', 45, 1, 'student/index.html', 'views/manage/student/index', 'C', 'student:list', 'icon-r-user1', '2021-01-22 15:19:09');
-INSERT INTO `system_function` VALUES (57, '新增学生', 56, 1, '', '', 'F', 'student:save', '', '2021-01-22 15:20:07');
-INSERT INTO `system_function` VALUES (58, '更新学生', 56, 2, '', '', 'F', 'student:update', '', '2021-01-22 15:20:40');
-INSERT INTO `system_function` VALUES (59, '删除学生', 56, 3, '', '', 'F', 'student:delete', '', '2021-01-22 15:21:11');
-INSERT INTO `system_function` VALUES (60, '查询学生', 56, 4, '', '', 'F', 'student:query', '', '2021-01-22 15:22:32');
-INSERT INTO `system_function` VALUES (61, '宿舍管理', 45, 0, 'room/index.html', 'views/manage/room/index', 'C', 'room:list', 'icon-r-list', '2021-01-22 15:25:08');
-INSERT INTO `system_function` VALUES (62, '新增宿舍', 61, NULL, '', '', 'F', 'room:save', '', '2021-01-22 15:25:29');
-INSERT INTO `system_function` VALUES (63, '修改宿舍', 61, 1, '', '', 'F', 'room:update', '', '2021-01-22 15:26:59');
-INSERT INTO `system_function` VALUES (64, '删除宿舍', 61, 4, '', '', 'F', 'room:delete', '', '2021-01-22 15:27:47');
-INSERT INTO `system_function` VALUES (65, '查询宿舍', 61, NULL, '', '', 'F', 'room:query', '', '2021-01-22 15:28:48');
-INSERT INTO `system_function` VALUES (66, '发送消息', NULL, 3, '', '', 'F', 'home:send:msg', '', '2021-01-27 15:18:42');
-INSERT INTO `system_function` VALUES (67, '晚归记录', 77, 4, 'back/index.html', 'views/manage/back/index', 'C', 'back:list', 'icon-r-mark1', '2021-02-17 19:22:22');
-INSERT INTO `system_function` VALUES (68, '晚归查询', 67, 1, '', '', 'F', 'back:query', '', '2021-02-17 19:23:50');
-INSERT INTO `system_function` VALUES (69, '删除晚归记录', 67, 2, '', '', 'F', 'back:delete', '', '2021-02-17 19:24:20');
-INSERT INTO `system_function` VALUES (70, '新增', 67, 3, '', '', 'F', 'back:save', '', '2021-02-17 19:25:01');
-INSERT INTO `system_function` VALUES (71, '更新', 67, 4, '', '', 'F', 'back:update', '', '2021-02-17 19:25:24');
-INSERT INTO `system_function` VALUES (72, '请假记录', 77, 5, 'leave/index.html', 'views/manage/leave/index', 'C', 'leave:list', 'icon-r-paper', '2021-03-10 11:31:41');
-INSERT INTO `system_function` VALUES (73, '新增记录', 72, 0, '', '', 'F', 'leave:save', '', '2021-03-10 15:29:57');
-INSERT INTO `system_function` VALUES (74, '更新记录', 72, 1, '', '', 'F', 'leave:update', '', '2021-03-10 15:30:39');
-INSERT INTO `system_function` VALUES (75, '删除记录', 72, 2, '', '', 'F', 'leave:delete', '', '2021-03-10 15:31:07');
-INSERT INTO `system_function` VALUES (76, '查询记录', 72, 4, '', '', 'F', 'leave:query', '', '2021-03-10 15:31:30');
-INSERT INTO `system_function` VALUES (77, '记录', 45, 4, '', '', 'M', '', 'icon-r-paper', '2021-03-12 14:44:19');
-INSERT INTO `system_function` VALUES (78, '维修记录', 77, 1, 'repair/index.html', 'views/manage/repair/index', 'C', 'repair:list', 'icon-r-setting', '2021-04-12 15:15:45');
-INSERT INTO `system_function` VALUES (79, '查询', 78, 1, '', '', 'F', 'repair:query', '', '2021-04-13 10:13:19');
-INSERT INTO `system_function` VALUES (80, '新增', 78, 2, '', '', 'F', 'repair:save', '', '2021-04-13 11:18:23');
-INSERT INTO `system_function` VALUES (81, '更新', 78, 3, '', '', 'F', 'repair:update', '', '2021-04-13 14:07:07');
-INSERT INTO `system_function` VALUES (82, '删除', 78, 4, '', '', 'F', 'repair:delete', '', '2021-04-13 14:07:29');
+--
+-- 转存表中的数据 `system_function`
+--
 
--- ----------------------------
--- Table structure for system_log
--- ----------------------------
-DROP TABLE IF EXISTS `system_log`;
-CREATE TABLE `system_log`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `operate_time` datetime NULL DEFAULT NULL,
-  `user_id` bigint(0) NULL DEFAULT NULL,
-  `clas` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `method` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `ip` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `param` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-  `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `result` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_ul`(`user_id`) USING BTREE,
-  CONSTRAINT `fk_ul` FOREIGN KEY (`user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 718 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+INSERT INTO `system_function` (`id`, `name`, `parent_id`, `order_num`, `path`, `component`, `menu_type`, `permission`, `icon`, `create_time`) VALUES
+(2, '系统管理', NULL, 7, NULL, NULL, 'M', NULL, 'icon-r-setting', '2020-12-09 11:07:14'),
+(3, '用户管理', 2, 1, 'system/user/index.html', 'views/system/user/index', 'C', 'system:user:list', 'icon-r-user1', '2020-12-10 09:46:31'),
+(4, '角色管理', 2, 2, 'system/role/index.html', 'views/system/role/index', 'C', 'system:role:list', 'icon-r-user3', '2020-12-10 09:48:07'),
+(5, '菜单管理', 2, 3, 'system/function/index', 'views/system/function/index', 'C', 'system:function:list', 'icon-r-list', '2020-12-10 09:50:13'),
+(6, '用户添加', 3, 1, '', '', 'F', 'system:user:save', NULL, '2020-12-18 13:06:04'),
+(7, '用户修改', 3, 2, NULL, NULL, 'F', 'system:user:update', NULL, '2020-12-18 13:06:50'),
+(8, '用户删除', 3, 2, NULL, NULL, 'F', 'system:user:delete', NULL, '2020-12-18 13:07:15'),
+(10, '角色添加', 4, 1, NULL, NULL, 'F', 'system:role:save', NULL, '2020-12-18 13:34:18'),
+(11, '角色修改', 4, 2, NULL, NULL, 'F', 'system:role:update', NULL, '2020-12-18 13:34:32'),
+(12, '角色删除', 4, 3, NULL, NULL, 'F', 'system:role:delete', NULL, '2020-12-18 13:34:45'),
+(13, '角色查询', 4, 4, NULL, NULL, 'F', 'system:role:query', NULL, '2020-12-18 13:34:57'),
+(14, '用户查询', 3, 4, NULL, NULL, 'F', 'system:user:query', NULL, '2020-12-18 13:34:04'),
+(15, '菜单添加', 5, 1, NULL, NULL, 'F', 'system:function:save', NULL, '2020-12-18 15:14:18'),
+(16, '菜单修改', 5, 2, NULL, NULL, 'F', 'system:function:update', NULL, '2020-12-18 15:14:21'),
+(17, '菜单删除', 5, 3, NULL, NULL, 'F', 'system:function:delete', NULL, '2020-12-18 15:14:24'),
+(18, '菜单查询', 5, 4, NULL, NULL, 'F', 'system:function:query', NULL, '2020-12-18 15:14:26'),
+(38, '日志管理', 2, 4, 'system/log/index.html', 'views/system/log/index', 'C', 'system:log:list', 'icon-r-paper', '2020-12-30 13:49:37'),
+(44, '日志查询', 38, 1, '', '', 'F', 'system:log:query', '', '2021-01-08 11:45:42'),
+(45, '学生宿舍管理', NULL, 0, '', '', 'M', '', 'icon-r-add', '2021-01-19 13:43:28'),
+(46, '宿舍楼管理', 45, 2, 'building/index.html', 'views/manage/building/index', 'C', 'manage:building:list', 'icon-r-home', '2021-01-19 13:47:12'),
+(47, '新增', 46, 1, '', '', 'F', 'manage:building:save', '', '2021-01-19 13:52:59'),
+(48, '更新', 46, 2, '', '', 'F', 'manage:building:update', '', '2021-01-19 13:53:35'),
+(49, '删除', 46, 3, '', '', 'F', 'manage:building:delete', '', '2021-01-19 13:53:55'),
+(50, '查询', 46, 4, '', '', 'F', 'manage:building:query', '', '2021-01-19 13:54:21'),
+(51, '班级管理', 45, 1, 'faculty/index.html', 'views/manage/faculty/index', 'C', 'faculty:list', 'icon-r-mark1', '2021-01-19 15:22:22'),
+(52, '新增学院', 51, 1, '', '', 'F', 'faculty:save', '', '2021-01-19 17:06:11'),
+(53, '删除学院', 51, 2, '', '', 'F', 'faculty:delete', '', '2021-01-19 17:06:41'),
+(54, '查询学院', 51, 3, '', '', 'F', 'faculty:query', '', '2021-01-19 17:07:08'),
+(55, '修改学院', 51, 4, '', '', 'F', 'faculty:update', '', '2021-01-19 17:07:31'),
+(56, '学生管理', 98, 1, 'student/index.html', 'views/manage/student/index', 'C', 'student:list', 'icon-r-user1', '2021-01-22 15:19:09'),
+(57, '新增学生', 56, 1, '', '', 'F', 'student:save', '', '2021-01-22 15:20:07'),
+(58, '更新学生', 56, 2, '', '', 'F', 'student:update', '', '2021-01-22 15:20:40'),
+(59, '删除学生', 56, 3, '', '', 'F', 'student:delete', '', '2021-01-22 15:21:11'),
+(60, '查询学生', 56, 4, '', '', 'F', 'student:query', '', '2021-01-22 15:22:32'),
+(61, '宿舍管理', 45, 0, 'room/index.html', 'views/manage/room/index', 'C', 'room:list', 'icon-r-list', '2021-01-22 15:25:08'),
+(62, '新增宿舍', 61, NULL, '', '', 'F', 'room:save', '', '2021-01-22 15:25:29'),
+(63, '修改宿舍', 61, 1, '', '', 'F', 'room:update', '', '2021-01-22 15:26:59'),
+(64, '删除宿舍', 61, 4, '', '', 'F', 'room:delete', '', '2021-01-22 15:27:47'),
+(65, '查询宿舍', 61, NULL, '', '', 'F', 'room:query', '', '2021-01-22 15:28:48'),
+(66, '发送消息', NULL, 5, '', '', 'F', 'home:send:msg', '', '2021-01-27 15:18:42'),
+(67, '晚归记录', 77, 4, 'back/index.html', 'views/manage/back/index', 'C', 'back:list', 'icon-r-mark1', '2021-02-17 19:22:22'),
+(68, '晚归查询', 67, 1, '', '', 'F', 'back:query', '', '2021-02-17 19:23:50'),
+(69, '删除晚归记录', 67, 2, '', '', 'F', 'back:delete', '', '2021-02-17 19:24:20'),
+(70, '新增', 67, 3, '', '', 'F', 'back:save', '', '2021-02-17 19:25:01'),
+(71, '更新', 67, 4, '', '', 'F', 'back:update', '', '2021-02-17 19:25:24'),
+(72, '请假记录', 77, 5, 'leave/index.html', 'views/manage/leave/index', 'C', 'leave:list', 'icon-r-paper', '2021-03-10 11:31:41'),
+(73, '新增记录', 72, 0, '', '', 'F', 'leave:save', '', '2021-03-10 15:29:57'),
+(74, '更新记录', 72, 1, '', '', 'F', 'leave:update', '', '2021-03-10 15:30:39'),
+(75, '删除记录', 72, 2, '', '', 'F', 'leave:delete', '', '2021-03-10 15:31:07'),
+(76, '查询记录', 72, 4, '', '', 'F', 'leave:query', '', '2021-03-10 15:31:30'),
+(77, '记录', 45, 3, '', '', 'M', '', 'icon-r-paper', '2021-03-12 14:44:19'),
+(78, '维修记录', 77, 1, 'repair/index.html', 'views/manage/repair/index', 'C', 'repair:list', 'icon-r-setting', '2021-04-12 15:15:45'),
+(79, '查询', 78, 1, '', '', 'F', 'repair:query', '', '2021-04-13 10:13:19'),
+(80, '新增', 78, 2, '', '', 'F', 'repair:save', '', '2021-04-13 11:18:23'),
+(81, '更新', 78, 3, '', '', 'F', 'repair:update', '', '2021-04-13 14:07:07'),
+(82, '删除', 78, 4, '', '', 'F', 'repair:delete', '', '2021-04-13 14:07:29'),
+(84, '卫生评分', 97, 4, 'score/index.html', 'views/manage/score/index', 'C', 'score:list', 'icon-r-edit', '2025-03-27 08:58:56'),
+(85, '提交', 84, 1, '', '', 'F', 'score:saveOrUpdate', '', '2025-03-28 16:27:20'),
+(86, '卫生情况查看', 97, 5, 'check/index.html', 'views/manage/check/index', 'C', 'check:list', 'icon-r-find', '2025-04-02 15:56:15'),
+(87, '信息总览', NULL, 1, '', '', 'M', '', 'icon-r-shield', '2025-04-08 10:56:12'),
+(88, '宿舍信息大屏', 87, 0, 'screen-01/index.html', 'views/other-page/screen-01/index', 'C', '', 'icon-r-paper', '2025-04-08 10:58:06'),
+(89, '走读申请', 98, 2, 'dayApplication/index.html', 'views/manage/dayApplication/index', 'C', '', 'icon-r-right', '2025-04-10 20:42:00'),
+(90, '走读申请审批', 98, 3, 'dayApplicationApproval/index.html', 'views/manage/dayApplicationApproval/index', 'C', '', 'icon-r-yes', '2025-04-10 20:42:51'),
+(91, '病因追查', 99, 1, 'absenceRecord/index.html', 'views/manage/absenceRecord/index', 'C', '', 'icon-r-find', '2025-04-10 20:43:53'),
+(92, '病因查询', 99, 2, 'selectAbsenceRecord/index.html', 'views/manage/selectAbsenceRecord/index', 'C', '', '', '2025-04-10 20:45:02'),
+(93, '服务', NULL, 6, '', '', 'M', '', 'icon-r-team', '2025-04-16 14:22:14'),
+(94, 'Ai', 93, 1, 'service/AI/index.html', 'views/service/AI/index', 'C', '', 'icon-r-team', '2025-04-16 14:22:57'),
+(95, '网盘', 93, 2, 'service/cloud/index.html', 'views/service/cloud/index', 'C', '', 'icon-r-mark1', '2025-04-16 14:40:39'),
+(96, '学生信息大屏', 87, 1, 'screen-02/index.html', 'views/other-page/screen-02/index', 'C', '', 'icon-r-paper', '2025-04-17 08:52:25'),
+(97, '宿舍卫生', NULL, 2, '', '', 'M', '', 'icon-r-building', '2025-04-22 11:02:52'),
+(98, '学生信息', NULL, 3, '', '', 'M', '', 'icon-r-team', '2025-04-22 11:05:38'),
+(99, '病因信息', NULL, 4, '', '', 'M', '', 'icon-r-love', '2025-04-22 11:06:32'),
+(100, '问卷调查', 93, 3, 'service/questionnaire/index.html', 'views/service/questionnaire/index', 'C', '', '', '2025-04-24 14:20:16');
 
--- ----------------------------
--- Records of system_log
--- ----------------------------
-INSERT INTO `system_log` VALUES (695, '2023-08-14 20:16:01', 1, 'LeaveController', 'update', '0:0:0:0:0:0:0:1', '{\"long\":1}', '/leave/update/1', '', '{\"statusCode\":200,\"msg\":\"更新成功\"}');
-INSERT INTO `system_log` VALUES (696, '2023-08-14 20:16:07', 1, 'LeaveController', 'update', '0:0:0:0:0:0:0:1', '{\"long\":1}', '/leave/update/1', '', '{\"statusCode\":200,\"msg\":\"更新成功\"}');
-INSERT INTO `system_log` VALUES (697, '2023-08-14 20:16:34', 1, 'LeaveController', 'update', '0:0:0:0:0:0:0:1', '{\"long\":1}', '/leave/update/1', '', '{\"statusCode\":200,\"msg\":\"更新成功\"}');
-INSERT INTO `system_log` VALUES (698, '2023-08-14 20:16:52', 1, 'LeaveController', 'update', '0:0:0:0:0:0:0:1', '{\"long\":1}', '/leave/update/1', '', '{\"statusCode\":200,\"msg\":\"更新成功\"}');
-INSERT INTO `system_log` VALUES (699, '2023-08-14 20:20:13', 1, 'LeaveController', 'update', '0:0:0:0:0:0:0:1', '{\"long\":1}', '/leave/update/1', '', '{\"statusCode\":200,\"msg\":\"更新成功\"}');
-INSERT INTO `system_log` VALUES (700, '2023-08-14 20:25:18', 1, 'LeaveController', 'update', '0:0:0:0:0:0:0:1', '{\"long\":1}', '/leave/update/1', '', '{\"statusCode\":200,\"msg\":\"更新成功\"}');
-INSERT INTO `system_log` VALUES (701, '2023-08-14 20:29:31', 1, 'LeaveController', 'update', '0:0:0:0:0:0:0:1', '{\"long\":1}', '/leave/update/1', '', '{\"statusCode\":200,\"msg\":\"更新成功\"}');
-INSERT INTO `system_log` VALUES (702, '2023-08-14 20:29:50', 1, 'LeaveController', 'update', '0:0:0:0:0:0:0:1', '{\"long\":1}', '/leave/update/1', '', '{\"statusCode\":200,\"msg\":\"更新成功\"}');
-INSERT INTO `system_log` VALUES (703, '2023-08-17 19:16:06', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":45,\"name\":\"学生宿舍管理\",\"orderNum\":0,\"menuType\":\"M\",\"icon\":\"iconr-home\",\"createTime\":[2021,1,19,13,43,28]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (704, '2023-08-17 19:17:37', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":45,\"name\":\"学生宿舍管理\",\"orderNum\":0,\"menuType\":\"M\",\"icon\":\"icon-r-home\",\"createTime\":[2021,1,19,13,43,28]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (705, '2023-08-17 19:17:57', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":61,\"name\":\"宿舍管理\",\"parentId\":45,\"orderNum\":0,\"path\":\"room/index.html\",\"component\":\"views/manage/room/index\",\"menuType\":\"C\",\"permission\":\"room:list\",\"icon\":\"icon-r-home\",\"createTime\":[2021,1,22,15,25,8]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (706, '2023-08-17 19:18:10', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":56,\"name\":\"学生管理\",\"parentId\":45,\"orderNum\":1,\"path\":\"student/index.html\",\"component\":\"views/manage/student/index\",\"menuType\":\"C\",\"permission\":\"student:list\",\"icon\":\"icon-r-user1\",\"createTime\":[2021,1,22,15,19,9]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (707, '2023-08-17 19:18:26', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":51,\"name\":\"班级管理\",\"parentId\":45,\"orderNum\":2,\"path\":\"faculty/index.html\",\"component\":\"views/manage/faculty/index\",\"menuType\":\"C\",\"permission\":\"faculty:list\",\"icon\":\"icon-r-mark1\",\"createTime\":[2021,1,19,15,22,22]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (708, '2023-08-17 19:18:42', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":46,\"name\":\"宿舍楼管理\",\"parentId\":45,\"orderNum\":3,\"path\":\"building/index.html\",\"component\":\"views/manage/building/index\",\"menuType\":\"C\",\"permission\":\"manage:building:list\",\"icon\":\"icon-r-home\",\"createTime\":[2021,1,19,13,47,12]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (709, '2023-08-17 19:18:47', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":61,\"name\":\"宿舍管理\",\"parentId\":45,\"orderNum\":0,\"path\":\"room/index.html\",\"component\":\"views/manage/room/index\",\"menuType\":\"C\",\"permission\":\"room:list\",\"icon\":\"icon-r-list\",\"createTime\":[2021,1,22,15,25,8]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (710, '2023-08-17 19:19:00', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":77,\"name\":\"记录\",\"parentId\":45,\"orderNum\":4,\"menuType\":\"M\",\"icon\":\"icon-r-paper\",\"createTime\":[2021,3,12,14,44,19]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (711, '2023-08-17 19:19:30', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":2,\"name\":\"系统管理\",\"orderNum\":2,\"menuType\":\"M\",\"icon\":\"icon-r-setting\",\"createTime\":[2020,12,9,11,7,14]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (712, '2023-08-17 19:19:37', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":3,\"name\":\"用户管理\",\"parentId\":2,\"orderNum\":1,\"path\":\"system/user/index.html\",\"component\":\"views/system/user/index\",\"menuType\":\"C\",\"permission\":\"system:user:list\",\"icon\":\"icon-r-user1\",\"createTime\":[2020,12,10,9,46,31]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (713, '2023-08-17 19:19:48', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":4,\"name\":\"角色管理\",\"parentId\":2,\"orderNum\":2,\"path\":\"system/role/index.html\",\"component\":\"views/system/role/index\",\"menuType\":\"C\",\"permission\":\"system:role:list\",\"icon\":\"icon-r-user3\",\"createTime\":[2020,12,10,9,48,7]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (714, '2023-08-17 19:20:02', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":5,\"name\":\"菜单管理\",\"parentId\":2,\"orderNum\":3,\"path\":\"system/function/index\",\"component\":\"views/system/function/index\",\"menuType\":\"C\",\"permission\":\"system:function:list\",\"icon\":\"icon-r-list\",\"createTime\":[2020,12,10,9,50,13]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (715, '2023-08-17 19:20:17', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":38,\"name\":\"日志管理\",\"parentId\":2,\"orderNum\":4,\"path\":\"system/log/index.html\",\"component\":\"views/system/log/index\",\"menuType\":\"C\",\"permission\":\"system:log:list\",\"icon\":\"icon-r-list\",\"createTime\":[2020,12,30,13,49,37]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (716, '2023-08-17 19:20:23', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":38,\"name\":\"日志管理\",\"parentId\":2,\"orderNum\":4,\"path\":\"system/log/index.html\",\"component\":\"views/system/log/index\",\"menuType\":\"C\",\"permission\":\"system:log:list\",\"icon\":\"icon-r-paper\",\"createTime\":[2020,12,30,13,49,37]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (717, '2023-08-17 19:22:38', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":45,\"name\":\"学生宿舍管理\",\"orderNum\":0,\"menuType\":\"M\",\"icon\":\"icon-r-add\",\"createTime\":[2021,1,19,13,43,28]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (718, '2023-08-17 20:46:25', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":78,\"name\":\"维修记录\",\"parentId\":77,\"orderNum\":1,\"path\":\"repair/index.html\",\"component\":\"views/manage/repair/index\",\"menuType\":\"C\",\"permission\":\"repair:list\",\"icon\":\"icon-r-setting\",\"createTime\":[2021,4,12,15,15,45]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (719, '2023-08-17 20:46:40', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":67,\"name\":\"晚归记录\",\"parentId\":77,\"orderNum\":4,\"path\":\"back/index.html\",\"component\":\"views/manage/back/index\",\"menuType\":\"C\",\"permission\":\"back:list\",\"icon\":\"icon-r-mark1\",\"createTime\":[2021,2,17,19,22,22]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
-INSERT INTO `system_log` VALUES (720, '2023-08-17 20:46:50', 1, 'SystemFunctionController', 'saveOrUpdate', '0:0:0:0:0:0:0:1', '{\"systemFunction\":{\"id\":72,\"name\":\"请假记录\",\"parentId\":77,\"orderNum\":5,\"path\":\"leave/index.html\",\"component\":\"views/manage/leave/index\",\"menuType\":\"C\",\"permission\":\"leave:list\",\"icon\":\"icon-r-paper\",\"createTime\":[2021,3,10,11,31,41]}}', '/system/function/saveOrUpdate', '添加修改功能', '{\"statusCode\":200,\"msg\":\"操作成功\"}');
+-- --------------------------------------------------------
 
--- ----------------------------
--- Table structure for system_role
--- ----------------------------
-DROP TABLE IF EXISTS `system_role`;
-CREATE TABLE `system_role`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
+--
+-- 表的结构 `system_log`
+--
+
+CREATE TABLE IF NOT EXISTS `system_log` (
+  `id` bigint NOT NULL,
+  `operate_time` datetime DEFAULT NULL,
+  `user_id` bigint DEFAULT NULL,
+  `clas` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `method` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `ip` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `param` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `result` text CHARACTER SET utf8 COLLATE utf8_general_ci
+) ENGINE=InnoDB AUTO_INCREMENT=904 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `system_log`
+--
+
+INSERT INTO `system_log` (`id`, `operate_time`, `user_id`, `clas`, `method`, `ip`, `param`, `url`, `description`, `result`) VALUES
+(733, '2025-04-02 15:56:15', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"卫生情况查看","parentId":45,"orderNum":7,"path":"view/manage/check/index","component":"check/index.html","menuType":"C","permission":"check:list","icon":"icon-r-find"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(734, '2025-04-02 15:56:27', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":86,"name":"卫生情况查看","parentId":45,"orderNum":5,"path":"view/manage/check/index","component":"check/index.html","menuType":"C","permission":"check:list","icon":"icon-r-find","createTime":[2025,4,2,15,56,15]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(735, '2025-04-02 15:56:30', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":77,"name":"记录","parentId":45,"orderNum":6,"menuType":"M","icon":"icon-r-paper","createTime":[2021,3,12,14,44,19]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(736, '2025-04-02 15:56:43', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":84,"name":"卫生评分","parentId":45,"orderNum":4,"path":"score/index.html","component":"views/manage/score/index","menuType":"C","permission":"score:list","icon":"icon-r-edit","createTime":[2025,3,27,8,58,56]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(737, '2025-04-02 15:56:59', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(738, '2025-04-02 16:06:44', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":86,"name":"卫生情况查看","parentId":45,"orderNum":5,"path":"check/index.html","component":"view/manage/check/index","menuType":"C","permission":"check:list","icon":"icon-r-find","createTime":[2025,4,2,15,56,15]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(739, '2025-04-02 16:12:46', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":86,"name":"卫生情况查看","parentId":45,"orderNum":5,"path":"check/index.html","component":"views/manage/check/index","menuType":"C","permission":"check:list","icon":"icon-r-find","createTime":[2025,4,2,15,56,15]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(740, '2025-04-02 16:59:59', 1, 'NoticeController', 'sendToBuilding', '127.0.0.1', '{"string":"55bf9fef-b6e4-40e4-b117-f3cde9e41b27","long":6,"notice":{"msg":"nihao1"}}', '/notice/sendToBuilding/6', '发送消息给多个用户', '{"statusCode":200,"msg":"发送成功"}'),
+(741, '2025-04-02 17:00:04', 1, 'NoticeController', 'delete', '127.0.0.1', '{"long":49}', '/notice/deleteSend/49', '删除发送的消息', '{"statusCode":200,"msg":"删除成功"}'),
+(742, '2025-04-02 22:29:06', 1, 'StudentController', 'saveOrUpdate', '127.0.0.1', '{"student":{"id":2071,"name":"孙帆","roomId":225,"facultyId":26,"number":"47011289675","registrationDate":"2021-02-03","phone":"13477777777","isLeave":false,"room":{"id":225,"number":"B2015"},"faculty":{"id":26,"name":"计算机学院"}}}', '/student/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(743, '2025-04-07 13:03:12', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":85,"name":"更新","parentId":84,"orderNum":1,"menuType":"F","permission":"score:update","createTime":[2025,3,28,16,27,20]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(744, '2025-04-07 13:08:10', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":85,"name":"更新","parentId":84,"orderNum":1,"menuType":"F","permission":"saveOrupdate","createTime":[2025,3,28,16,27,20]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(745, '2025-04-07 13:08:27', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":85,"name":"提交","parentId":84,"orderNum":1,"menuType":"F","permission":"score:saveOrUpdate","createTime":[2025,3,28,16,27,20]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(746, '2025-04-08 10:56:12', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"测试用","orderNum":3,"menuType":"F"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(747, '2025-04-08 10:57:01', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":87,"name":"测试用","orderNum":3,"path":"test","component":"111111","menuType":"C","permission":"test","icon":"icon-r-no","createTime":[2025,4,8,10,56,12]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(748, '2025-04-08 10:57:11', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(749, '2025-04-08 10:58:06', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"01","parentId":87,"orderNum":1,"path":"test","component":"test","menuType":"C"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(750, '2025-04-08 10:58:23', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":87,"name":"测试用","orderNum":3,"path":"test","component":"111111","menuType":"M","permission":"test","icon":"icon-r-no","createTime":[2025,4,8,10,56,12]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(751, '2025-04-08 11:00:03', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(752, '2025-04-08 11:06:37', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88,85]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(753, '2025-04-08 11:10:39', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"测试用","parentId":87,"orderNum":2,"menuType":"M","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(754, '2025-04-08 11:11:26', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":87,"name":"测试用","orderNum":2,"menuType":"M","icon":"icon-r-love","createTime":[2025,4,8,10,56,12]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(755, '2025-04-08 11:11:31', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":2,"name":"系统管理","orderNum":3,"menuType":"M","icon":"icon-r-setting","createTime":[2020,12,9,11,7,14]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(756, '2025-04-08 11:14:43', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":87,"name":"测试用","orderNum":1,"menuType":"M","icon":"icon-r-love","createTime":[2025,4,8,10,56,12]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(757, '2025-04-08 11:14:46', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":2,"name":"系统管理","orderNum":2,"menuType":"M","icon":"icon-r-setting","createTime":[2020,12,9,11,7,14]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(758, '2025-04-08 11:16:09', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88,85,17]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(759, '2025-04-08 11:16:44', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88,85,17]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(760, '2025-04-09 15:54:30', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"测试用","parentId":87,"orderNum":2,"path":"/views/other-page/screen","component":"/views/other-page/screen/index","menuType":"C","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(761, '2025-04-09 15:54:41', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"测试用","parentId":87,"orderNum":2,"path":"views/other-page/screen","component":"views/other-page/screen/index","menuType":"C","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(762, '2025-04-09 15:55:05', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"测试用","parentId":87,"orderNum":2,"path":"views/other-page/screen","component":"views/other-page/screen/index.html","menuType":"C","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(763, '2025-04-09 15:55:27', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"测试用","parentId":87,"orderNum":2,"path":"views/other-page/screen/index.html","component":"views/other-page/screen/index","menuType":"C","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(764, '2025-04-09 15:55:33', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"测试用","parentId":87,"orderNum":2,"path":"views/other-page/screen/index.html","component":"screen/index","menuType":"C","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(765, '2025-04-09 15:55:44', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"测试用","parentId":87,"orderNum":2,"path":"screen/index","component":"views/other-page/screen/index.html","menuType":"C","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(766, '2025-04-09 15:56:02', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"测试用","parentId":87,"orderNum":2,"path":"screen/index.html","component":"views/other-page/screen/index","menuType":"C","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(767, '2025-04-10 20:42:00', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"走读申请","parentId":45,"orderNum":7,"path":"views/manage/dayApplication/index","component":"dayApplication/index.html","menuType":"C","icon":"icon-r-right"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(768, '2025-04-10 20:42:51', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"走读申请审批","parentId":45,"orderNum":8,"path":"views/manage/dayApplicationApproval/index","component":"dayApplicationApproval/index.html","menuType":"C","icon":"icon-r-yes"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(769, '2025-04-10 20:43:04', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":89,"name":"走读申请","parentId":45,"orderNum":7,"path":"dayApplication/index.html","component":"views/manage/dayApplication/index","menuType":"C","icon":"icon-r-right","createTime":[2025,4,10,20,42]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(770, '2025-04-10 20:43:11', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":90,"name":"走读申请审批","parentId":45,"orderNum":8,"path":"dayApplicationApproval/index.html","component":"views/manage/dayApplicationApproval/index","menuType":"C","icon":"icon-r-yes","createTime":[2025,4,10,20,42,51]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(771, '2025-04-10 20:43:53', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"病因追查","orderNum":9,"path":"absenceRecord/index.html","component":"views/manage/absenceRecord/index","menuType":"C","icon":"icon-r-find"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(772, '2025-04-10 20:44:12', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":91,"name":"病因追查","parentId":45,"orderNum":9,"path":"absenceRecord/index.html","component":"views/manage/absenceRecord/index","menuType":"C","icon":"icon-r-find","createTime":[2025,4,10,20,43,53]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(773, '2025-04-10 20:45:02', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"病因查询","parentId":45,"path":"selectAbsenceRecord/index.html","component":"views/manage/selectAbsenceRecord/index","menuType":"C"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(774, '2025-04-10 20:45:13', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88,85,17,92,89,90,91]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(775, '2025-04-10 20:45:19', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":92,"name":"病因查询","parentId":45,"orderNum":10,"path":"selectAbsenceRecord/index.html","component":"views/manage/selectAbsenceRecord/index","menuType":"C","createTime":[2025,4,10,20,45,2]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(776, '2025-04-11 15:01:07', 1, 'LeaveController', 'save', '127.0.0.1', '{"leave":{"reason":"测试用","studentId":2084,"target":"测试用","backDate":[2025,4,12]}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(777, '2025-04-11 15:01:21', 1, 'LeaveController', 'update', '127.0.0.1', '{"long":2}', '/leave/update/2', '', '{"statusCode":200,"msg":"更新成功"}'),
+(778, '2025-04-11 15:01:24', 1, 'LeaveController', 'delete', '127.0.0.1', '{"long":2}', '/leave/delete/2', '', '{"statusCode":200,"msg":"删除成功"}'),
+(779, '2025-04-11 16:08:43', 1, 'LeaveController', 'save', '127.0.0.1', '{"leave":{"reason":"测试","studentId":2084,"target":"测试","backDate":[2025,4,12]}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(780, '2025-04-15 10:21:14', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":87,"name":"信息总览","orderNum":1,"menuType":"M","icon":"icon-r-love","createTime":[2025,4,8,10,56,12]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(781, '2025-04-15 10:21:25', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"信息大屏","parentId":87,"orderNum":2,"path":"screen/index.html","component":"views/other-page/screen/index","menuType":"C","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(782, '2025-04-15 10:21:48', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":87,"name":"信息总览","orderNum":1,"menuType":"M","icon":"icon-r-shield","createTime":[2025,4,8,10,56,12]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(783, '2025-04-15 10:22:49', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"信息大屏","parentId":87,"orderNum":2,"path":"screen/index.html","component":"views/other-page/screen/index","menuType":"C","icon":"icon-r-paper","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(784, '2025-04-15 10:26:31', 1, 'RepairController', 'updateStatus', '127.0.0.1', '{"long":5}', '/repair/updateStatus/5', '', '{"statusCode":200,"msg":"修改成功"}'),
+(785, '2025-04-15 10:28:08', 1, 'RepairController', 'save', '127.0.0.1', '{"repair":{"roomId":1,"describe":"测试用","picture":["c2b8ef1e-c842-4878-a0f6-07ee76f833e6.png"]}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(786, '2025-04-15 10:30:36', 1, 'LeaveController', 'update', '127.0.0.1', '{"long":3}', '/leave/update/3', '', '{"statusCode":200,"msg":"更新成功"}'),
+(787, '2025-04-15 10:31:00', 1, 'LeaveController', 'update', '127.0.0.1', '{"long":3}', '/leave/update/3', '', '{"statusCode":200,"msg":"更新成功"}'),
+(788, '2025-04-15 10:31:44', 1, 'LeaveController', 'save', '127.0.0.1', '{"leave":{"reason":"测试","studentId":2084,"target":"测试","backDate":[2025,4,16]}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(789, '2025-04-15 10:31:47', 1, 'LeaveController', 'update', '127.0.0.1', '{"long":4}', '/leave/update/4', '', '{"statusCode":200,"msg":"更新成功"}'),
+(790, '2025-04-15 10:33:41', 1, 'LeaveController', 'delete', '127.0.0.1', '{"long":4}', '/leave/delete/4', '', '{"statusCode":200,"msg":"删除成功"}'),
+(791, '2025-04-15 10:33:44', 1, 'LeaveController', 'delete', '127.0.0.1', '{"long":3}', '/leave/delete/3', '', '{"statusCode":200,"msg":"删除成功"}'),
+(792, '2025-04-15 10:33:56', 1, 'LeaveController', 'save', '127.0.0.1', '{"leave":{"reason":"测试","studentId":2084,"target":"测试","backDate":[2025,4,15]}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(793, '2025-04-15 10:34:00', 1, 'LeaveController', 'update', '127.0.0.1', '{"long":5}', '/leave/update/5', '', '{"statusCode":200,"msg":"更新成功"}'),
+(794, '2025-04-15 10:34:09', 1, 'LeaveController', 'delete', '127.0.0.1', '{"long":5}', '/leave/delete/5', '', '{"statusCode":200,"msg":"删除成功"}'),
+(795, '2025-04-15 11:01:14', 1, 'LeaveController', 'update', '127.0.0.1', '{"long":1}', '/leave/update/1', '', '{"statusCode":200,"msg":"更新成功"}'),
+(796, '2025-04-15 11:06:03', 1, 'LeaveController', 'update', '127.0.0.1', '{"long":1}', '/leave/update/1', '', '{"statusCode":200,"msg":"更新成功"}'),
+(797, '2025-04-15 11:06:10', 1, 'LeaveController', 'update', '127.0.0.1', '{"long":1}', '/leave/update/1', '', '{"statusCode":200,"msg":"更新成功"}'),
+(798, '2025-04-15 11:14:17', 1, 'RepairController', 'updateStatus', '127.0.0.1', '{"long":6}', '/repair/updateStatus/6', '', '{"statusCode":200,"msg":"修改成功"}'),
+(799, '2025-04-16 14:07:17', 1, 'LeaveController', 'save', '127.0.0.1', '{"leave":{"reason":"测试用","studentId":2084,"target":"测试用","backDate":[2025,4,17]}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(800, '2025-04-16 14:22:14', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"服务","orderNum":4,"menuType":"M","icon":"icon-r-team"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(801, '2025-04-16 14:22:57', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"Ai","parentId":93,"path":"Ai/index.html","component":"views/Ai/index","menuType":"C"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(802, '2025-04-16 14:23:35', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88,85,17,92,89,90,91,93,94]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(803, '2025-04-16 14:24:49', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":94,"name":"Ai","parentId":93,"path":"AI/index.html","component":"views/AI/index","menuType":"C","createTime":[2025,4,16,14,22,57]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(804, '2025-04-16 14:40:03', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":94,"name":"Ai","parentId":93,"path":"service/AI/index.html","component":"views/service/AI/index","menuType":"C","createTime":[2025,4,16,14,22,57]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(805, '2025-04-16 14:40:39', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"网盘","parentId":93,"orderNum":2,"path":"cloud/index.html","component":"views/service/cloud/index","menuType":"C"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(806, '2025-04-16 14:40:49', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":95,"name":"网盘","parentId":93,"orderNum":2,"path":"service/cloud/index.html","component":"views/service/cloud/index","menuType":"C","createTime":[2025,4,16,14,40,39]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(807, '2025-04-16 14:41:00', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88,85,17,92,89,90,91,93,94,95]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(808, '2025-04-16 14:44:42', 1, 'LeaveController', 'update', '127.0.0.1', '{"long":6}', '/leave/update/6', '', '{"statusCode":200,"msg":"更新成功"}'),
+(809, '2025-04-17 08:48:20', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"信息大屏","parentId":87,"orderNum":2,"path":"screen-01/index.html","component":"views/other-page/screen-01/index","menuType":"C","icon":"icon-r-paper","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(810, '2025-04-17 08:52:25', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"信息大屏2","parentId":87,"orderNum":1,"path":"screen-02/index.html","component":"views/other-page/screen/screen-02/index","menuType":"C","icon":"icon-r-paper"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(811, '2025-04-17 08:52:38', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"信息大屏","parentId":87,"orderNum":0,"path":"screen-01/index.html","component":"views/other-page/screen-01/index","menuType":"C","icon":"icon-r-paper","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(812, '2025-04-17 08:53:04', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":96,"name":"信息大屏2","parentId":87,"orderNum":1,"path":"screen-02/index.html","component":"views/other-page/screen-02/index","menuType":"C","icon":"icon-r-paper","createTime":[2025,4,17,8,52,25]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(813, '2025-04-17 08:53:23', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88,85,17,92,89,90,91,93,94,95,96]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(814, '2025-04-17 09:44:22', 1, 'LeaveController', 'delete', '127.0.0.1', '{"long":6}', '/leave/delete/6', '', '{"statusCode":200,"msg":"删除成功"}'),
+(815, '2025-04-17 09:44:36', 1, 'LeaveController', 'save', '127.0.0.1', '{"leave":{"reason":"测试","studentId":2084,"target":"测试","backDate":[2025,4,20]}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(816, '2025-04-22 11:02:52', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"宿舍卫生","orderNum":2,"menuType":"M","icon":"icon-r-building"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(817, '2025-04-22 11:03:07', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":86,"name":"卫生情况查看","parentId":97,"orderNum":5,"path":"check/index.html","component":"views/manage/check/index","menuType":"C","permission":"check:list","icon":"icon-r-find","createTime":[2025,4,2,15,56,15]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(818, '2025-04-22 11:03:29', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":84,"name":"卫生评分","parentId":97,"orderNum":4,"path":"score/index.html","component":"views/manage/score/index","menuType":"C","permission":"score:list","icon":"icon-r-edit","createTime":[2025,3,27,8,58,56]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(819, '2025-04-22 11:03:43', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":97,"name":"宿舍卫生","orderNum":1,"menuType":"M","icon":"icon-r-building","createTime":[2025,4,22,11,2,52]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(820, '2025-04-22 11:03:52', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":97,"name":"宿舍卫生","orderNum":2,"menuType":"M","icon":"icon-r-building","createTime":[2025,4,22,11,2,52]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(821, '2025-04-22 11:03:58', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":97,"name":"宿舍卫生","orderNum":3,"menuType":"M","icon":"icon-r-building","createTime":[2025,4,22,11,2,52]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(822, '2025-04-22 11:04:07', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":66,"name":"发送消息","orderNum":4,"menuType":"F","permission":"home:send:msg","createTime":[2021,1,27,15,18,42]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(823, '2025-04-22 11:04:11', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":93,"name":"服务","orderNum":5,"menuType":"M","icon":"icon-r-team","createTime":[2025,4,16,14,22,14]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(824, '2025-04-22 11:05:38', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"学生信息","orderNum":5,"menuType":"M","icon":"icon-r-team"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(825, '2025-04-22 11:05:49', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":56,"name":"学生管理","parentId":98,"orderNum":1,"path":"student/index.html","component":"views/manage/student/index","menuType":"C","permission":"student:list","icon":"icon-r-user1","createTime":[2021,1,22,15,19,9]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(826, '2025-04-22 11:05:58', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":89,"name":"走读申请","parentId":98,"orderNum":7,"path":"dayApplication/index.html","component":"views/manage/dayApplication/index","menuType":"C","icon":"icon-r-right","createTime":[2025,4,10,20,42]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(827, '2025-04-22 11:06:04', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":90,"name":"走读申请审批","parentId":98,"orderNum":8,"path":"dayApplicationApproval/index.html","component":"views/manage/dayApplicationApproval/index","menuType":"C","icon":"icon-r-yes","createTime":[2025,4,10,20,42,51]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(828, '2025-04-22 11:06:32', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"病因信息","orderNum":6,"menuType":"M","icon":"icon-r-love"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(829, '2025-04-22 11:06:37', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":91,"name":"病因追查","parentId":99,"orderNum":9,"path":"absenceRecord/index.html","component":"views/manage/absenceRecord/index","menuType":"C","icon":"icon-r-find","createTime":[2025,4,10,20,43,53]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(830, '2025-04-22 11:06:41', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":92,"name":"病因查询","parentId":99,"orderNum":10,"path":"selectAbsenceRecord/index.html","component":"views/manage/selectAbsenceRecord/index","menuType":"C","createTime":[2025,4,10,20,45,2]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(831, '2025-04-22 11:07:10', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":98,"name":"学生信息","orderNum":4,"menuType":"M","icon":"icon-r-team","createTime":[2025,4,22,11,5,38]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(832, '2025-04-22 11:07:14', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":99,"name":"病因信息","orderNum":5,"menuType":"M","icon":"icon-r-love","createTime":[2025,4,22,11,6,32]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(833, '2025-04-22 11:07:17', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":93,"name":"服务","orderNum":6,"menuType":"M","icon":"icon-r-team","createTime":[2025,4,16,14,22,14]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(834, '2025-04-22 11:07:23', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":98,"name":"学生信息","orderNum":3,"menuType":"M","icon":"icon-r-team","createTime":[2025,4,22,11,5,38]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(835, '2025-04-22 11:07:26', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":99,"name":"病因信息","orderNum":4,"menuType":"M","icon":"icon-r-love","createTime":[2025,4,22,11,6,32]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(836, '2025-04-22 11:07:30', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":66,"name":"发送消息","orderNum":5,"menuType":"F","permission":"home:send:msg","createTime":[2021,1,27,15,18,42]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(837, '2025-04-22 11:07:42', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88,85,17,92,89,90,91,93,94,95,96,97,98,99]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(838, '2025-04-22 11:08:12', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":88,"name":"宿舍信息大屏","parentId":87,"orderNum":0,"path":"screen-01/index.html","component":"views/other-page/screen-01/index","menuType":"C","icon":"icon-r-paper","createTime":[2025,4,8,10,58,6]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(839, '2025-04-22 11:08:18', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":96,"name":"学生信息大屏","parentId":87,"orderNum":1,"path":"screen-02/index.html","component":"views/other-page/screen-02/index","menuType":"C","icon":"icon-r-paper","createTime":[2025,4,17,8,52,25]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(840, '2025-04-22 11:08:25', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":51,"name":"班级管理","parentId":45,"orderNum":1,"path":"faculty/index.html","component":"views/manage/faculty/index","menuType":"C","permission":"faculty:list","icon":"icon-r-mark1","createTime":[2021,1,19,15,22,22]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(841, '2025-04-22 11:08:28', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":46,"name":"宿舍楼管理","parentId":45,"orderNum":2,"path":"building/index.html","component":"views/manage/building/index","menuType":"C","permission":"manage:building:list","icon":"icon-r-home","createTime":[2021,1,19,13,47,12]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(842, '2025-04-22 11:08:34', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":77,"name":"记录","parentId":45,"orderNum":4,"menuType":"M","icon":"icon-r-paper","createTime":[2021,3,12,14,44,19]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(843, '2025-04-22 11:08:37', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":77,"name":"记录","parentId":45,"orderNum":3,"menuType":"M","icon":"icon-r-paper","createTime":[2021,3,12,14,44,19]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(844, '2025-04-22 11:08:54', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":89,"name":"走读申请","parentId":98,"orderNum":2,"path":"dayApplication/index.html","component":"views/manage/dayApplication/index","menuType":"C","icon":"icon-r-right","createTime":[2025,4,10,20,42]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(845, '2025-04-22 11:08:58', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":90,"name":"走读申请审批","parentId":98,"orderNum":3,"path":"dayApplicationApproval/index.html","component":"views/manage/dayApplicationApproval/index","menuType":"C","icon":"icon-r-yes","createTime":[2025,4,10,20,42,51]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(846, '2025-04-22 11:09:05', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":91,"name":"病因追查","parentId":99,"orderNum":1,"path":"absenceRecord/index.html","component":"views/manage/absenceRecord/index","menuType":"C","icon":"icon-r-find","createTime":[2025,4,10,20,43,53]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(847, '2025-04-22 11:09:08', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":92,"name":"病因查询","parentId":99,"orderNum":2,"path":"selectAbsenceRecord/index.html","component":"views/manage/selectAbsenceRecord/index","menuType":"C","createTime":[2025,4,10,20,45,2]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(848, '2025-04-22 11:09:14', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":94,"name":"Ai","parentId":93,"orderNum":1,"path":"service/AI/index.html","component":"views/service/AI/index","menuType":"C","createTime":[2025,4,16,14,22,57]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(849, '2025-04-22 11:15:04', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":2,"name":"系统管理","orderNum":6,"menuType":"M","icon":"icon-r-setting","createTime":[2020,12,9,11,7,14]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(850, '2025-04-22 11:15:07', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":97,"name":"宿舍卫生","orderNum":2,"menuType":"M","icon":"icon-r-building","createTime":[2025,4,22,11,2,52]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(851, '2025-04-22 11:15:18', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":93,"name":"服务","orderNum":7,"menuType":"M","icon":"icon-r-team","createTime":[2025,4,16,14,22,14]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(852, '2025-04-22 11:15:27', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":93,"name":"服务","orderNum":6,"menuType":"M","icon":"icon-r-team","createTime":[2025,4,16,14,22,14]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(853, '2025-04-22 11:15:30', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"id":2,"name":"系统管理","orderNum":7,"menuType":"M","icon":"icon-r-setting","createTime":[2020,12,9,11,7,14]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(854, '2025-04-24 14:20:16', 1, 'SystemFunctionController', 'saveOrUpdate', '127.0.0.1', '{"systemFunction":{"name":"问卷调查","parentId":93,"orderNum":3,"path":"service/questionnaire/index.html","component":"views/service/questionnaire/index","menuType":"C"}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(855, '2025-04-24 14:20:37', 1, 'SystemRoleController', 'saveOrUpdate', '127.0.0.1', '{"systemRole":{"id":1,"name":"超级管理员","functionIds":[2,3,4,5,6,7,10,11,12,13,14,15,16,18,38,44,45,46,47,48,49,50,51,52,53,54,55,57,58,59,60,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,8,78,79,80,61,81,82,56,84,86,77,87,88,85,17,92,89,90,91,93,94,95,96,97,98,99,100]}}', '/system/role/saveOrUpdate', '添加修改角色', '{"statusCode":200,"msg":"操作成功"}'),
+(856, '2025-04-27 18:08:53', 1, 'BuildingController', 'saveOrUpdate', '127.0.0.1', '{"building":{"name":"25栋","parentId":1}}', '/building/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(857, '2025-04-27 18:08:57', 1, 'BuildingController', 'delete', '127.0.0.1', '{"long":22}', '/building/delete', '删除building', '{"statusCode":200,"msg":"删除成功"}'),
+(858, '2025-04-27 18:23:37', 1, 'BackLateController', 'saveOrUpdate', '182.245.250.132', '{"backLate":{"studentId":4285,"reason":"堵车了","backDate":"2025-04-27 18:23:25"}}', '/backlate/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(859, '2025-04-27 18:24:06', 1, 'BackLateController', 'saveOrUpdate', '182.245.250.132', '{"backLate":{"studentId":4273,"reason":"朋友过生日","backDate":"2025-04-26 00:00:00"}}', '/backlate/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(860, '2025-04-27 18:24:35', 1, 'BackLateController', 'saveOrUpdate', '182.245.250.132', '{"backLate":{"studentId":4283,"reason":"临时有事","backDate":"2025-04-23 00:00:00"}}', '/backlate/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(861, '2025-04-27 18:25:06', 1, 'BackLateController', 'saveOrUpdate', '182.245.250.132', '{"backLate":{"studentId":4282,"reason":"地铁停运","backDate":"2025-04-26 00:00:00"}}', '/backlate/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(862, '2025-04-27 18:25:27', 1, 'BackLateController', 'saveOrUpdate', '182.245.250.132', '{"backLate":{"studentId":4281,"reason":"出去玩","backDate":"2025-04-16 00:00:00"}}', '/backlate/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(863, '2025-04-27 18:26:38', 1, 'LeaveController', 'save', '182.245.250.132', '{"leave":{"reason":"亲戚结婚","studentId":4280,"target":"云南省昆明市官渡区","backDate":[2025,4,30],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(864, '2025-04-27 18:27:15', 1, 'LeaveController', 'save', '182.245.250.132', '{"leave":{"reason":"亲戚生病去看望","studentId":3461,"target":"云南省昆明市五华区","backDate":[2025,4,25],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(865, '2025-04-27 18:27:45', 1, 'LeaveController', 'save', '182.245.250.132', '{"leave":{"reason":"出去玩","studentId":3580,"target":"云南省昆明市 西山区","backDate":[2025,4,29],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(866, '2025-04-27 18:28:32', 1, 'LeaveController', 'save', '182.245.250.132', '{"leave":{"reason":"出去比赛","studentId":4277,"target":"云南省昆明市高新区","backDate":[2025,4,24],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(867, '2025-04-27 18:29:11', 1, 'LeaveController', 'save', '182.245.250.132', '{"leave":{"reason":"探望亲戚","studentId":4118,"target":"浙江省金华市","backDate":[2025,5,1],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(868, '2025-04-27 18:29:36', 1, 'LeaveController', 'save', '182.245.250.132', '{"leave":{"reason":"做手术","studentId":4275,"target":"云南省昆明市五华区","backDate":[2025,5,7],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(869, '2025-04-27 18:30:37', 1, 'RepairController', 'delete', '182.245.250.132', '{"long":6}', '/repair/delete/6', '', '{"statusCode":200,"msg":"删除成功"}'),
+(870, '2025-04-27 18:30:52', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":4,"describe":"水龙头漏水"}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(871, '2025-04-27 18:31:29', 1, 'LeaveController', 'save', '182.245.250.132', '{"leave":{"reason":"走访亲友","studentId":4274,"target":"云南省昆明市五华区","backDate":[2025,3,12],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(872, '2025-04-27 18:33:31', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"id":7,"roomId":4,"describe":"水龙头漏水","picture":["c15e2f61-19ba-4a71-95e7-36168aab0360.png"],"status":false,"createDate":[2025,4,27],"room":{"id":4,"number":"A1004"}}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(873, '2025-04-27 18:33:44', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":24,"describe":"宿舍停电了"}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(874, '2025-04-27 18:33:58', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":37,"describe":"门坏了"}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(875, '2025-04-27 18:34:10', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":161,"describe":"灯不亮"}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(876, '2025-04-27 19:57:29', 1, 'RepairController', 'updateStatus', '182.245.250.132', '{"long":8}', '/repair/updateStatus/8', '', '{"statusCode":200,"msg":"修改成功"}'),
+(877, '2025-04-27 19:57:49', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":4,"describe":"水龙头坏了","picture":["c15e2f61-19ba-4a71-95e7-36168aab0360.png"]}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(878, '2025-04-27 19:59:26', 1, 'RepairController', 'updateStatus', '182.245.250.132', '{"long":11}', '/repair/updateStatus/11', '', '{"statusCode":200,"msg":"修改成功"}'),
+(879, '2025-04-27 19:59:41', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":5,"describe":"水龙头坏了","picture":["c15e2f61-19ba-4a71-95e7-36168aab0360.png"]}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(880, '2025-04-27 20:01:47', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":66,"describe":"水龙头坏了","picture":["c15e2f61-19ba-4a71-95e7-36168aab0360.png"]}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(881, '2025-04-27 20:01:56', 1, 'RepairController', 'updateStatus', '182.245.250.132', '{"long":13}', '/repair/updateStatus/13', '', '{"statusCode":200,"msg":"修改成功"}'),
+(882, '2025-04-27 20:05:36', 1, 'LeaveController', 'update', '182.245.250.132', '{"long":14}', '/leave/update/14', '', '{"statusCode":200,"msg":"更新成功"}'),
+(883, '2025-04-27 20:32:38', 1, 'NoticeController', 'sendToBuilding', '182.245.250.132', '{"string":"63347387-857b-4416-829a-ae12e7370c04","long":1,"notice":{"msg":"5月1日至5日放假调休，4月27日正常上课。"}}', '/notice/sendToBuilding/1', '发送消息给多个用户', '{"statusCode":200,"msg":"发送成功"}'),
+(884, '2025-04-27 20:37:50', 1, 'FacultyController', 'saveOrUpdate', '182.245.250.132', '{"faculty":{"id":10,"name":"软件2201","parentId":7,"orderNum":1}}', '/faculty/saveOrUpdate', '添加或更新学院', '{"statusCode":200,"msg":"操作成功"}'),
+(885, '2025-04-27 20:59:40', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":8,"describe":"水龙头坏了","picture":["c15e2f61-19ba-4a71-95e7-36168aab0360.png"]}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(886, '2025-04-27 21:00:37', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":121,"describe":"水龙头漏水","picture":["c15e2f61-19ba-4a71-95e7-36168aab0360.png"]}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(887, '2025-04-27 21:00:46', 1, 'RepairController', 'updateStatus', '182.245.250.132', '{"long":15}', '/repair/updateStatus/15', '', '{"statusCode":200,"msg":"修改成功"}'),
+(888, '2025-04-27 21:07:44', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":5,"describe":"水龙头坏了"}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(889, '2025-04-27 21:07:44', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":5,"describe":"水龙头坏了","picture":["c15e2f61-19ba-4a71-95e7-36168aab0360.png"]}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(890, '2025-04-27 21:07:54', 1, 'RepairController', 'updateStatus', '182.245.250.132', '{"long":17}', '/repair/updateStatus/17', '', '{"statusCode":200,"msg":"修改成功"}'),
+(891, '2025-04-27 21:09:44', 1, 'RepairController', 'updateStatus', '182.245.250.132', '{"long":16}', '/repair/updateStatus/16', '', '{"statusCode":200,"msg":"修改成功"}'),
+(892, '2025-04-27 21:09:58', 1, 'RepairController', 'save', '182.245.250.132', '{"repair":{"roomId":4,"describe":"水龙头坏了","picture":["c15e2f61-19ba-4a71-95e7-36168aab0360.png"]}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(893, '2025-04-27 21:10:53', 1, 'LeaveController', 'save', '182.245.250.132', '{"leave":{"reason":"走访亲友","studentId":4274,"target":"云南省昆明市五华区","backDate":[2025,4,28],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(894, '2025-04-27 21:11:01', 1, 'LeaveController', 'update', '182.245.250.132', '{"long":15}', '/leave/update/15', '', '{"statusCode":200,"msg":"更新成功"}'),
+(895, '2025-04-28 16:06:20', 1, 'LeaveController', 'save', '106.61.195.196', '{"leave":{"reason":"家里有事","studentId":4209,"target":"云南省昆明市盘龙区穿金路美树橙","backDate":[2025,3,22],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(896, '2025-04-28 18:29:37', 1, 'RepairController', 'save', '112.115.142.99', '{"repair":{"roomId":69,"describe":"水龙头坏了","picture":["c15e2f61-19ba-4a71-95e7-36168aab0360.png"]}}', '/repair/saveOrUpdate', '', '{"statusCode":200,"msg":"添加成功"}'),
+(897, '2025-04-28 18:29:51', 1, 'RepairController', 'updateStatus', '112.115.142.99', '{"long":19}', '/repair/updateStatus/19', '', '{"statusCode":200,"msg":"修改成功"}'),
+(898, '2025-04-28 18:33:39', 1, 'BackLateController', 'saveOrUpdate', '112.115.142.99', '{"backLate":{"studentId":4282,"reason":"堵车了","backDate":"2025-04-29 00:00:00"}}', '/backlate/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(899, '2025-04-28 18:34:16', 1, 'LeaveController', 'save', '112.115.142.99', '{"leave":{"reason":"出去玩","studentId":4282,"target":"云南省昆明市五华区","backDate":[2025,4,29],"count":0}}', '/leave/saveOrUpdate', '', '{"statusCode":200,"msg":"操作成功"}'),
+(900, '2025-04-28 18:34:29', 1, 'LeaveController', 'update', '112.115.142.99', '{"long":17}', '/leave/update/17', '', '{"statusCode":200,"msg":"更新成功"}'),
+(901, '2025-04-30 10:22:13', 1, 'SystemFunctionController', 'saveOrUpdate', '61.166.136.195', '{"systemFunction":{"id":94,"name":"Ai","parentId":93,"orderNum":1,"path":"service/AI/index.html","component":"views/service/AI/index","menuType":"C","icon":"icon-r-mark2","createTime":[2025,4,16,14,22,57]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(902, '2025-04-30 10:23:03', 1, 'SystemFunctionController', 'saveOrUpdate', '61.166.136.195', '{"systemFunction":{"id":94,"name":"Ai","parentId":93,"orderNum":1,"path":"service/AI/index.html","component":"views/service/AI/index","menuType":"C","icon":"icon-r-team","createTime":[2025,4,16,14,22,57]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}'),
+(903, '2025-04-30 10:23:23', 1, 'SystemFunctionController', 'saveOrUpdate', '61.166.136.195', '{"systemFunction":{"id":95,"name":"网盘","parentId":93,"orderNum":2,"path":"service/cloud/index.html","component":"views/service/cloud/index","menuType":"C","icon":"icon-r-mark1","createTime":[2025,4,16,14,40,39]}}', '/system/function/saveOrUpdate', '添加修改功能', '{"statusCode":200,"msg":"操作成功"}');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `system_role`
+--
+
+CREATE TABLE IF NOT EXISTS `system_role` (
+  `id` bigint NOT NULL,
   `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `create_time` datetime NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  `create_time` datetime DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
--- ----------------------------
--- Records of system_role
--- ----------------------------
-INSERT INTO `system_role` VALUES (1, '超级管理员', '2020-12-09 11:05:12');
-INSERT INTO `system_role` VALUES (2, '宿管', '2021-02-04 13:58:02');
-INSERT INTO `system_role` VALUES (3, '系统管理员', '2021-03-19 16:44:17');
-INSERT INTO `system_role` VALUES (4, '学生', '2023-05-05 23:33:37');
+--
+-- 转存表中的数据 `system_role`
+--
 
--- ----------------------------
--- Table structure for system_role_function
--- ----------------------------
-DROP TABLE IF EXISTS `system_role_function`;
-CREATE TABLE `system_role_function`  (
-  `role_id` bigint(0) NOT NULL,
-  `function_id` bigint(0) NOT NULL,
-  INDEX `fk_ff`(`role_id`) USING BTREE,
-  INDEX `fk_rr`(`function_id`) USING BTREE,
-  CONSTRAINT `fk_rf` FOREIGN KEY (`role_id`) REFERENCES `system_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `fk_rr` FOREIGN KEY (`function_id`) REFERENCES `system_function` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+INSERT INTO `system_role` (`id`, `name`, `create_time`) VALUES
+(1, '超级管理员', '2020-12-09 11:05:12'),
+(2, '宿管', '2021-02-04 13:58:02'),
+(3, '系统管理员', '2021-03-19 16:44:17'),
+(4, '学生', '2023-05-05 23:33:37');
 
--- ----------------------------
--- Records of system_role_function
--- ----------------------------
-INSERT INTO `system_role_function` VALUES (2, 45);
-INSERT INTO `system_role_function` VALUES (2, 61);
-INSERT INTO `system_role_function` VALUES (2, 56);
-INSERT INTO `system_role_function` VALUES (2, 51);
-INSERT INTO `system_role_function` VALUES (2, 60);
-INSERT INTO `system_role_function` VALUES (2, 54);
-INSERT INTO `system_role_function` VALUES (2, 50);
-INSERT INTO `system_role_function` VALUES (2, 59);
-INSERT INTO `system_role_function` VALUES (2, 67);
-INSERT INTO `system_role_function` VALUES (2, 69);
-INSERT INTO `system_role_function` VALUES (2, 68);
-INSERT INTO `system_role_function` VALUES (2, 70);
-INSERT INTO `system_role_function` VALUES (2, 71);
-INSERT INTO `system_role_function` VALUES (2, 72);
-INSERT INTO `system_role_function` VALUES (2, 74);
-INSERT INTO `system_role_function` VALUES (2, 73);
-INSERT INTO `system_role_function` VALUES (2, 75);
-INSERT INTO `system_role_function` VALUES (2, 76);
-INSERT INTO `system_role_function` VALUES (2, 77);
-INSERT INTO `system_role_function` VALUES (2, 78);
-INSERT INTO `system_role_function` VALUES (2, 79);
-INSERT INTO `system_role_function` VALUES (2, 80);
-INSERT INTO `system_role_function` VALUES (2, 81);
-INSERT INTO `system_role_function` VALUES (1, 2);
-INSERT INTO `system_role_function` VALUES (1, 3);
-INSERT INTO `system_role_function` VALUES (1, 4);
-INSERT INTO `system_role_function` VALUES (1, 5);
-INSERT INTO `system_role_function` VALUES (1, 6);
-INSERT INTO `system_role_function` VALUES (1, 7);
-INSERT INTO `system_role_function` VALUES (1, 10);
-INSERT INTO `system_role_function` VALUES (1, 11);
-INSERT INTO `system_role_function` VALUES (1, 12);
-INSERT INTO `system_role_function` VALUES (1, 13);
-INSERT INTO `system_role_function` VALUES (1, 14);
-INSERT INTO `system_role_function` VALUES (1, 15);
-INSERT INTO `system_role_function` VALUES (1, 16);
-INSERT INTO `system_role_function` VALUES (1, 18);
-INSERT INTO `system_role_function` VALUES (1, 38);
-INSERT INTO `system_role_function` VALUES (1, 44);
-INSERT INTO `system_role_function` VALUES (1, 45);
-INSERT INTO `system_role_function` VALUES (1, 46);
-INSERT INTO `system_role_function` VALUES (1, 47);
-INSERT INTO `system_role_function` VALUES (1, 48);
-INSERT INTO `system_role_function` VALUES (1, 49);
-INSERT INTO `system_role_function` VALUES (1, 50);
-INSERT INTO `system_role_function` VALUES (1, 51);
-INSERT INTO `system_role_function` VALUES (1, 52);
-INSERT INTO `system_role_function` VALUES (1, 53);
-INSERT INTO `system_role_function` VALUES (1, 54);
-INSERT INTO `system_role_function` VALUES (1, 55);
-INSERT INTO `system_role_function` VALUES (1, 57);
-INSERT INTO `system_role_function` VALUES (1, 58);
-INSERT INTO `system_role_function` VALUES (1, 59);
-INSERT INTO `system_role_function` VALUES (1, 60);
-INSERT INTO `system_role_function` VALUES (1, 62);
-INSERT INTO `system_role_function` VALUES (1, 63);
-INSERT INTO `system_role_function` VALUES (1, 64);
-INSERT INTO `system_role_function` VALUES (1, 65);
-INSERT INTO `system_role_function` VALUES (1, 66);
-INSERT INTO `system_role_function` VALUES (1, 67);
-INSERT INTO `system_role_function` VALUES (1, 68);
-INSERT INTO `system_role_function` VALUES (1, 69);
-INSERT INTO `system_role_function` VALUES (1, 70);
-INSERT INTO `system_role_function` VALUES (1, 71);
-INSERT INTO `system_role_function` VALUES (1, 72);
-INSERT INTO `system_role_function` VALUES (1, 73);
-INSERT INTO `system_role_function` VALUES (1, 74);
-INSERT INTO `system_role_function` VALUES (1, 75);
-INSERT INTO `system_role_function` VALUES (1, 76);
-INSERT INTO `system_role_function` VALUES (1, 77);
-INSERT INTO `system_role_function` VALUES (1, 8);
-INSERT INTO `system_role_function` VALUES (1, 78);
-INSERT INTO `system_role_function` VALUES (1, 79);
-INSERT INTO `system_role_function` VALUES (1, 80);
-INSERT INTO `system_role_function` VALUES (1, 61);
-INSERT INTO `system_role_function` VALUES (1, 81);
-INSERT INTO `system_role_function` VALUES (1, 82);
-INSERT INTO `system_role_function` VALUES (1, 56);
-INSERT INTO `system_role_function` VALUES (3, 2);
-INSERT INTO `system_role_function` VALUES (3, 66);
-INSERT INTO `system_role_function` VALUES (3, 3);
-INSERT INTO `system_role_function` VALUES (3, 4);
-INSERT INTO `system_role_function` VALUES (3, 5);
-INSERT INTO `system_role_function` VALUES (3, 38);
-INSERT INTO `system_role_function` VALUES (3, 6);
-INSERT INTO `system_role_function` VALUES (3, 7);
-INSERT INTO `system_role_function` VALUES (3, 8);
-INSERT INTO `system_role_function` VALUES (3, 14);
-INSERT INTO `system_role_function` VALUES (3, 10);
-INSERT INTO `system_role_function` VALUES (3, 12);
-INSERT INTO `system_role_function` VALUES (3, 11);
-INSERT INTO `system_role_function` VALUES (3, 13);
-INSERT INTO `system_role_function` VALUES (3, 15);
-INSERT INTO `system_role_function` VALUES (3, 16);
-INSERT INTO `system_role_function` VALUES (3, 17);
-INSERT INTO `system_role_function` VALUES (3, 18);
-INSERT INTO `system_role_function` VALUES (3, 44);
-INSERT INTO `system_role_function` VALUES (3, 45);
-INSERT INTO `system_role_function` VALUES (4, 79);
-INSERT INTO `system_role_function` VALUES (4, 45);
-INSERT INTO `system_role_function` VALUES (4, 77);
-INSERT INTO `system_role_function` VALUES (4, 78);
+-- --------------------------------------------------------
 
--- ----------------------------
--- Table structure for system_user
--- ----------------------------
-DROP TABLE IF EXISTS `system_user`;
-CREATE TABLE `system_user`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT,
-  `real_name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+--
+-- 表的结构 `system_role_function`
+--
+
+CREATE TABLE IF NOT EXISTS `system_role_function` (
+  `role_id` bigint NOT NULL,
+  `function_id` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `system_role_function`
+--
+
+INSERT INTO `system_role_function` (`role_id`, `function_id`) VALUES
+(2, 45),
+(2, 61),
+(2, 56),
+(2, 51),
+(2, 60),
+(2, 54),
+(2, 50),
+(2, 59),
+(2, 67),
+(2, 69),
+(2, 68),
+(2, 70),
+(2, 71),
+(2, 72),
+(2, 74),
+(2, 73),
+(2, 75),
+(2, 76),
+(2, 77),
+(2, 78),
+(2, 79),
+(2, 80),
+(2, 81),
+(3, 2),
+(3, 66),
+(3, 3),
+(3, 4),
+(3, 5),
+(3, 38),
+(3, 6),
+(3, 7),
+(3, 8),
+(3, 14),
+(3, 10),
+(3, 12),
+(3, 11),
+(3, 13),
+(3, 15),
+(3, 16),
+(3, 17),
+(3, 18),
+(3, 44),
+(3, 45),
+(4, 79),
+(4, 45),
+(4, 77),
+(4, 78),
+(1, 2),
+(1, 3),
+(1, 4),
+(1, 5),
+(1, 6),
+(1, 7),
+(1, 10),
+(1, 11),
+(1, 12),
+(1, 13),
+(1, 14),
+(1, 15),
+(1, 16),
+(1, 18),
+(1, 38),
+(1, 44),
+(1, 45),
+(1, 46),
+(1, 47),
+(1, 48),
+(1, 49),
+(1, 50),
+(1, 51),
+(1, 52),
+(1, 53),
+(1, 54),
+(1, 55),
+(1, 57),
+(1, 58),
+(1, 59),
+(1, 60),
+(1, 62),
+(1, 63),
+(1, 64),
+(1, 65),
+(1, 66),
+(1, 67),
+(1, 68),
+(1, 69),
+(1, 70),
+(1, 71),
+(1, 72),
+(1, 73),
+(1, 74),
+(1, 75),
+(1, 76),
+(1, 8),
+(1, 78),
+(1, 79),
+(1, 80),
+(1, 61),
+(1, 81),
+(1, 82),
+(1, 56),
+(1, 84),
+(1, 86),
+(1, 77),
+(1, 87),
+(1, 88),
+(1, 85),
+(1, 17),
+(1, 92),
+(1, 89),
+(1, 90),
+(1, 91),
+(1, 93),
+(1, 94),
+(1, 95),
+(1, 96),
+(1, 97),
+(1, 98),
+(1, 99),
+(1, 100);
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `system_user`
+--
+
+CREATE TABLE IF NOT EXISTS `system_user` (
+  `id` bigint NOT NULL,
+  `real_name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `login_name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `icon` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `cellphone` varchar(11) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `email` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `create_time` datetime NULL DEFAULT NULL,
-  `is_delete` tinyint(1) NULL DEFAULT NULL,
-  `leader_id` bigint(0) NULL DEFAULT NULL,
-  `building_id` bigint(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_leader`(`leader_id`) USING BTREE,
-  INDEX `fk_building`(`building_id`) USING BTREE,
-  CONSTRAINT `fk_building` FOREIGN KEY (`building_id`) REFERENCES `building` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `fk_leader` FOREIGN KEY (`leader_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 46 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  `icon` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `cellphone` varchar(11) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `email` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `is_delete` tinyint(1) DEFAULT NULL,
+  `leader_id` bigint DEFAULT NULL,
+  `building_id` bigint DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
--- ----------------------------
--- Records of system_user
--- ----------------------------
-INSERT INTO `system_user` VALUES (1, '超级管理员', 'superadmin', 'e10adc3949ba59abbe56e057f20f883e', '7c7ac2ee-1b7a-4ea8-a30e-9086e1cc1e72.png', '13599999999', '1246761517@qq.com', '2020-12-09 11:04:54', NULL, NULL, 1);
-INSERT INTO `system_user` VALUES (23, '系统管理员', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '691fd671-2b3a-4ead-93e3-2af25a344f24.png', '13599999999', '644664588@qq.com', '2021-01-08 10:23:37', NULL, 1, 1);
-INSERT INTO `system_user` VALUES (24, '杨秀梅', 'user', 'e10adc3949ba59abbe56e057f20f883e', '8c9b05b5-6820-4a6a-82f7-eb39ee2f5ffe.png', '13599999999', '279a797a@163.com', '2021-02-04 13:56:48', NULL, 29, 19);
-INSERT INTO `system_user` VALUES (25, '杨阳', '3a6a3de4', 'e10adc3949ba59abbe56e057f20f883e', 'bf796bfa-8c1f-4352-83d6-514ec6b72c1c.png', '13599999999', '3a6a3de4@163.com', '2021-02-04 13:56:48', NULL, 29, 19);
-INSERT INTO `system_user` VALUES (26, '曹欣', '8cc3a7e6', 'e10adc3949ba59abbe56e057f20f883e', '721e1934-39c1-4a39-a83e-46e613acda0e.png', '13599999999', '8cc3a7e6@163.com', '2021-02-04 13:56:48', NULL, 29, 18);
-INSERT INTO `system_user` VALUES (27, '蒋梅', 'f4c639a9', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'f4c639a9@163.com', '2021-02-04 13:56:48', NULL, 29, 18);
-INSERT INTO `system_user` VALUES (28, '乔洋', '8790f28c', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '8790f28c@163.com', '2021-02-04 13:56:48', NULL, 29, 18);
-INSERT INTO `system_user` VALUES (29, '刘琴', '0b748652', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '0b748652@163.com', '2021-02-04 13:56:48', NULL, 23, 5);
-INSERT INTO `system_user` VALUES (30, '余佳', 'f1f273a5', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'f1f273a5@163.com', '2021-02-04 13:56:48', NULL, 36, 17);
-INSERT INTO `system_user` VALUES (31, '罗雪', '9bf9479b', 'e10adc3949ba59abbe56e057f20f883e', 'ecdbb708-1eba-4342-8c22-88481a5824cc.png', '13599999999', '9bf9479b@163.com', '2021-02-04 13:56:48', NULL, 36, 17);
-INSERT INTO `system_user` VALUES (32, '刘雷', '1d411751', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '1d411751@163.com', '2021-02-04 13:56:48', NULL, 36, 16);
-INSERT INTO `system_user` VALUES (33, '陈静', '486bc452', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '486bc452@163.com', '2021-02-04 13:56:48', NULL, 36, 15);
-INSERT INTO `system_user` VALUES (34, '谭淑华', 'dff82c67', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'dff82c67@163.com', '2021-02-04 13:56:48', NULL, 36, 16);
-INSERT INTO `system_user` VALUES (35, '姜欢', 'b01b6d11', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'b01b6d11@163.com', '2021-02-04 13:56:48', NULL, 36, 15);
-INSERT INTO `system_user` VALUES (36, '梁建华', 'fd408852', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'fd408852@163.com', '2021-02-04 13:56:48', NULL, 23, 3);
-INSERT INTO `system_user` VALUES (37, '刘柳', 'b7720179', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'b7720179@163.com', '2021-02-04 13:56:48', NULL, 43, 14);
-INSERT INTO `system_user` VALUES (38, '薛建', '38562784', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '38562784@163.com', '2021-02-04 13:56:48', NULL, 43, 13);
-INSERT INTO `system_user` VALUES (39, '丁佳', '5efdaea9', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '5efdaea9@163.com', '2021-02-04 13:56:48', NULL, 43, 13);
-INSERT INTO `system_user` VALUES (40, '张岩', 'f9a38829', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'f9a38829@163.com', '2021-02-04 13:56:48', NULL, 43, 6);
-INSERT INTO `system_user` VALUES (41, '段辉', 'fc7191ba', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'fc7191ba@163.com', '2021-02-04 13:56:48', NULL, 43, 14);
-INSERT INTO `system_user` VALUES (42, '李文', 'cdce39ad', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'cdce39ad@163.com', '2021-02-04 13:56:48', NULL, 43, 6);
-INSERT INTO `system_user` VALUES (43, '宋欢', 'ed19eef6', 'e10adc3949ba59abbe56e057f20f883e', 'bc21e192-bc6e-4a6b-a543-d61ce4cb49b2.png', '13599999999', 'ed19eef6@163.com', '2021-02-04 13:56:48', NULL, 23, 2);
-INSERT INTO `system_user` VALUES (44, '123456', 'qwert', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', NULL, '2021-02-05 17:34:15', 1, NULL, 1);
-INSERT INTO `system_user` VALUES (45, '王五', 'test01', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '155@qq.com', '2023-05-05 23:34:58', NULL, 41, 14);
+--
+-- 转存表中的数据 `system_user`
+--
 
--- ----------------------------
--- Table structure for system_user_role
--- ----------------------------
-DROP TABLE IF EXISTS `system_user_role`;
-CREATE TABLE `system_user_role`  (
-  `user_id` bigint(0) NOT NULL,
-  `role_id` bigint(0) NOT NULL,
-  INDEX `fk_uid`(`user_id`) USING BTREE,
-  INDEX `fk_role_id`(`role_id`) USING BTREE,
-  CONSTRAINT `fk_role_id` FOREIGN KEY (`role_id`) REFERENCES `system_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `fk_uid` FOREIGN KEY (`user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+INSERT INTO `system_user` (`id`, `real_name`, `login_name`, `password`, `icon`, `cellphone`, `email`, `create_time`, `is_delete`, `leader_id`, `building_id`) VALUES
+(1, '超级管理员', 'superadmin', 'e10adc3949ba59abbe56e057f20f883e', '39f620d0-2ad8-493a-9708-a6a4120abbe9.png', '13599999999', '1246761517@qq.com', '2020-12-09 11:04:54', NULL, NULL, 1),
+(23, '系统管理员', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '691fd671-2b3a-4ead-93e3-2af25a344f24.png', '13599999999', '644664588@qq.com', '2021-01-08 10:23:37', NULL, 1, 1),
+(24, '杨秀梅', 'user', 'e10adc3949ba59abbe56e057f20f883e', '8c9b05b5-6820-4a6a-82f7-eb39ee2f5ffe.png', '13599999999', '279a797a@163.com', '2021-02-04 13:56:48', NULL, 29, 19),
+(25, '杨阳', '3a6a3de4', 'e10adc3949ba59abbe56e057f20f883e', 'bf796bfa-8c1f-4352-83d6-514ec6b72c1c.png', '13599999999', '3a6a3de4@163.com', '2021-02-04 13:56:48', NULL, 29, 19),
+(26, '曹欣', '8cc3a7e6', 'e10adc3949ba59abbe56e057f20f883e', '721e1934-39c1-4a39-a83e-46e613acda0e.png', '13599999999', '8cc3a7e6@163.com', '2021-02-04 13:56:48', NULL, 29, 18),
+(27, '蒋梅', 'f4c639a9', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'f4c639a9@163.com', '2021-02-04 13:56:48', NULL, 29, 18),
+(28, '乔洋', '8790f28c', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '8790f28c@163.com', '2021-02-04 13:56:48', NULL, 29, 18),
+(29, '刘琴', '0b748652', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '0b748652@163.com', '2021-02-04 13:56:48', NULL, 23, 5),
+(30, '余佳', 'f1f273a5', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'f1f273a5@163.com', '2021-02-04 13:56:48', NULL, 36, 17),
+(31, '罗雪', '9bf9479b', 'e10adc3949ba59abbe56e057f20f883e', 'ecdbb708-1eba-4342-8c22-88481a5824cc.png', '13599999999', '9bf9479b@163.com', '2021-02-04 13:56:48', NULL, 36, 17),
+(32, '刘雷', '1d411751', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '1d411751@163.com', '2021-02-04 13:56:48', NULL, 36, 16),
+(33, '陈静', '486bc452', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '486bc452@163.com', '2021-02-04 13:56:48', NULL, 36, 15),
+(34, '谭淑华', 'dff82c67', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'dff82c67@163.com', '2021-02-04 13:56:48', NULL, 36, 16),
+(35, '姜欢', 'b01b6d11', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'b01b6d11@163.com', '2021-02-04 13:56:48', NULL, 36, 15),
+(36, '梁建华', 'fd408852', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'fd408852@163.com', '2021-02-04 13:56:48', NULL, 23, 3),
+(37, '刘柳', 'b7720179', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'b7720179@163.com', '2021-02-04 13:56:48', NULL, 43, 14),
+(38, '薛建', '38562784', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '38562784@163.com', '2021-02-04 13:56:48', NULL, 43, 13),
+(39, '丁佳', '5efdaea9', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '5efdaea9@163.com', '2021-02-04 13:56:48', NULL, 43, 13),
+(40, '张岩', 'f9a38829', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'f9a38829@163.com', '2021-02-04 13:56:48', NULL, 43, 6),
+(41, '段辉', 'fc7191ba', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'fc7191ba@163.com', '2021-02-04 13:56:48', NULL, 43, 14),
+(42, '李文', 'cdce39ad', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', 'cdce39ad@163.com', '2021-02-04 13:56:48', NULL, 43, 6),
+(43, '宋欢', 'ed19eef6', 'e10adc3949ba59abbe56e057f20f883e', 'bc21e192-bc6e-4a6b-a543-d61ce4cb49b2.png', '13599999999', 'ed19eef6@163.com', '2021-02-04 13:56:48', NULL, 23, 2),
+(44, '123456', 'qwert', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', NULL, '2021-02-05 17:34:15', 1, NULL, 1),
+(45, '王五', 'test01', 'e10adc3949ba59abbe56e057f20f883e', NULL, '13599999999', '155@qq.com', '2023-05-05 23:34:58', NULL, 41, 14);
 
--- ----------------------------
--- Records of system_user_role
--- ----------------------------
-INSERT INTO `system_user_role` VALUES (43, 2);
-INSERT INTO `system_user_role` VALUES (42, 2);
-INSERT INTO `system_user_role` VALUES (41, 2);
-INSERT INTO `system_user_role` VALUES (40, 2);
-INSERT INTO `system_user_role` VALUES (39, 2);
-INSERT INTO `system_user_role` VALUES (38, 2);
-INSERT INTO `system_user_role` VALUES (37, 2);
-INSERT INTO `system_user_role` VALUES (36, 2);
-INSERT INTO `system_user_role` VALUES (35, 2);
-INSERT INTO `system_user_role` VALUES (34, 2);
-INSERT INTO `system_user_role` VALUES (33, 2);
-INSERT INTO `system_user_role` VALUES (32, 2);
-INSERT INTO `system_user_role` VALUES (31, 2);
-INSERT INTO `system_user_role` VALUES (30, 2);
-INSERT INTO `system_user_role` VALUES (29, 2);
-INSERT INTO `system_user_role` VALUES (28, 2);
-INSERT INTO `system_user_role` VALUES (27, 2);
-INSERT INTO `system_user_role` VALUES (26, 2);
-INSERT INTO `system_user_role` VALUES (25, 2);
-INSERT INTO `system_user_role` VALUES (23, 3);
-INSERT INTO `system_user_role` VALUES (1, 1);
-INSERT INTO `system_user_role` VALUES (24, 2);
-INSERT INTO `system_user_role` VALUES (45, 4);
+-- --------------------------------------------------------
 
-SET FOREIGN_KEY_CHECKS = 1;
+--
+-- 表的结构 `system_user_role`
+--
+
+CREATE TABLE IF NOT EXISTS `system_user_role` (
+  `user_id` bigint NOT NULL,
+  `role_id` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+--
+-- 转存表中的数据 `system_user_role`
+--
+
+INSERT INTO `system_user_role` (`user_id`, `role_id`) VALUES
+(43, 2),
+(42, 2),
+(41, 2),
+(40, 2),
+(39, 2),
+(38, 2),
+(37, 2),
+(36, 2),
+(35, 2),
+(34, 2),
+(33, 2),
+(32, 2),
+(31, 2),
+(30, 2),
+(29, 2),
+(28, 2),
+(27, 2),
+(26, 2),
+(25, 2),
+(23, 3),
+(1, 1),
+(24, 2),
+(45, 4);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `absence_record`
+--
+ALTER TABLE `absence_record`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `idx_report_date` (`report_date`) USING BTREE,
+  ADD KEY `idx_absent_date` (`absent_date`) USING BTREE,
+  ADD KEY `class_id` (`class_id`) USING BTREE;
+
+--
+-- Indexes for table `back_late`
+--
+ALTER TABLE `back_late`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_s_s` (`student_id`) USING BTREE;
+
+--
+-- Indexes for table `building`
+--
+ALTER TABLE `building`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_pid` (`parent_id`) USING BTREE;
+
+--
+-- Indexes for table `depart_application`
+--
+ALTER TABLE `depart_application`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_oui` (`apply_user_id`) USING BTREE,
+  ADD KEY `fk_si` (`student_id`) USING BTREE;
+
+--
+-- Indexes for table `depart_application_user`
+--
+ALTER TABLE `depart_application_user`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_op_uid` (`operate_user_id`) USING BTREE,
+  ADD KEY `fk_dpId` (`application_id`) USING BTREE;
+
+--
+-- Indexes for table `faculty`
+--
+ALTER TABLE `faculty`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_parent` (`parent_id`) USING BTREE;
+
+--
+-- Indexes for table `image`
+--
+ALTER TABLE `image`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `md5` (`md5`) USING BTREE,
+  ADD KEY `fk_userid` (`upload_user`) USING BTREE;
+
+--
+-- Indexes for table `leave`
+--
+ALTER TABLE `leave`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_student_id` (`student_id`) USING BTREE;
+
+--
+-- Indexes for table `leave_applications`
+--
+ALTER TABLE `leave_applications`
+  ADD PRIMARY KEY (`apply_id`) USING BTREE,
+  ADD UNIQUE KEY `idx_student_apply` (`student_no`) USING BTREE,
+  ADD KEY `idx_status` (`status`) USING BTREE,
+  ADD KEY `idx_dates` (`start_date`,`end_date`) USING BTREE;
+
+--
+-- Indexes for table `notice`
+--
+ALTER TABLE `notice`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_user_notice` (`user_id`) USING BTREE;
+
+--
+-- Indexes for table `notice_user`
+--
+ALTER TABLE `notice_user`
+  ADD KEY `fk_msg1` (`notice_id`) USING BTREE,
+  ADD KEY `fk_user1` (`user_id`) USING BTREE;
+
+--
+-- Indexes for table `repair`
+--
+ALTER TABLE `repair`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `service___fk_rid` (`room_id`) USING BTREE;
+
+--
+-- Indexes for table `repair_picture`
+--
+ALTER TABLE `repair_picture`
+  ADD KEY `fk_repair_id` (`repair_id`) USING BTREE;
+
+--
+-- Indexes for table `room`
+--
+ALTER TABLE `room`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_buding_id` (`building_id`) USING BTREE;
+
+--
+-- Indexes for table `score`
+--
+ALTER TABLE `score`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `room_id` (`room_id`) USING BTREE;
+
+--
+-- Indexes for table `score_image`
+--
+ALTER TABLE `score_image`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `score_id` (`score_id`) USING BTREE;
+
+--
+-- Indexes for table `student`
+--
+ALTER TABLE `student`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_faculty` (`faculty_id`) USING BTREE,
+  ADD KEY `fk_s_r` (`room_id`) USING BTREE;
+
+--
+-- Indexes for table `system_function`
+--
+ALTER TABLE `system_function`
+  ADD PRIMARY KEY (`id`) USING BTREE;
+
+--
+-- Indexes for table `system_log`
+--
+ALTER TABLE `system_log`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_ul` (`user_id`) USING BTREE;
+
+--
+-- Indexes for table `system_role`
+--
+ALTER TABLE `system_role`
+  ADD PRIMARY KEY (`id`) USING BTREE;
+
+--
+-- Indexes for table `system_role_function`
+--
+ALTER TABLE `system_role_function`
+  ADD KEY `fk_ff` (`role_id`) USING BTREE,
+  ADD KEY `fk_rr` (`function_id`) USING BTREE;
+
+--
+-- Indexes for table `system_user`
+--
+ALTER TABLE `system_user`
+  ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD KEY `fk_leader` (`leader_id`) USING BTREE,
+  ADD KEY `fk_building` (`building_id`) USING BTREE;
+
+--
+-- Indexes for table `system_user_role`
+--
+ALTER TABLE `system_user_role`
+  ADD KEY `fk_uid` (`user_id`) USING BTREE,
+  ADD KEY `fk_role_id` (`role_id`) USING BTREE;
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `absence_record`
+--
+ALTER TABLE `absence_record`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT '主键ID',AUTO_INCREMENT=20;
+--
+-- AUTO_INCREMENT for table `back_late`
+--
+ALTER TABLE `back_late`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
+--
+-- AUTO_INCREMENT for table `building`
+--
+ALTER TABLE `building`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=22;
+--
+-- AUTO_INCREMENT for table `depart_application`
+--
+ALTER TABLE `depart_application`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=29;
+--
+-- AUTO_INCREMENT for table `depart_application_user`
+--
+ALTER TABLE `depart_application_user`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=34;
+--
+-- AUTO_INCREMENT for table `faculty`
+--
+ALTER TABLE `faculty`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=42;
+--
+-- AUTO_INCREMENT for table `image`
+--
+ALTER TABLE `image`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=28;
+--
+-- AUTO_INCREMENT for table `leave`
+--
+ALTER TABLE `leave`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=18;
+--
+-- AUTO_INCREMENT for table `leave_applications`
+--
+ALTER TABLE `leave_applications`
+  MODIFY `apply_id` bigint NOT NULL AUTO_INCREMENT COMMENT '申请ID',AUTO_INCREMENT=39;
+--
+-- AUTO_INCREMENT for table `notice`
+--
+ALTER TABLE `notice`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=50;
+--
+-- AUTO_INCREMENT for table `repair`
+--
+ALTER TABLE `repair`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=20;
+--
+-- AUTO_INCREMENT for table `room`
+--
+ALTER TABLE `room`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=402;
+--
+-- AUTO_INCREMENT for table `score`
+--
+ALTER TABLE `score`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=17;
+--
+-- AUTO_INCREMENT for table `score_image`
+--
+ALTER TABLE `score_image`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=18;
+--
+-- AUTO_INCREMENT for table `student`
+--
+ALTER TABLE `student`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4286;
+--
+-- AUTO_INCREMENT for table `system_function`
+--
+ALTER TABLE `system_function`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=101;
+--
+-- AUTO_INCREMENT for table `system_log`
+--
+ALTER TABLE `system_log`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=904;
+--
+-- AUTO_INCREMENT for table `system_role`
+--
+ALTER TABLE `system_role`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+--
+-- AUTO_INCREMENT for table `system_user`
+--
+ALTER TABLE `system_user`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=46;
+--
+-- 限制导出的表
+--
+
+--
+-- 限制表 `absence_record`
+--
+ALTER TABLE `absence_record`
+  ADD CONSTRAINT `absence_record_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `faculty` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- 限制表 `back_late`
+--
+ALTER TABLE `back_late`
+  ADD CONSTRAINT `fk_s_s` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `building`
+--
+ALTER TABLE `building`
+  ADD CONSTRAINT `fk_pid` FOREIGN KEY (`parent_id`) REFERENCES `building` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `depart_application`
+--
+ALTER TABLE `depart_application`
+  ADD CONSTRAINT `fk_oui` FOREIGN KEY (`apply_user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `fk_si` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `depart_application_user`
+--
+ALTER TABLE `depart_application_user`
+  ADD CONSTRAINT `fk_dpId` FOREIGN KEY (`application_id`) REFERENCES `depart_application` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `fk_op_uid` FOREIGN KEY (`operate_user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `faculty`
+--
+ALTER TABLE `faculty`
+  ADD CONSTRAINT `fk_parent` FOREIGN KEY (`parent_id`) REFERENCES `faculty` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `image`
+--
+ALTER TABLE `image`
+  ADD CONSTRAINT `fk_userid` FOREIGN KEY (`upload_user`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `leave`
+--
+ALTER TABLE `leave`
+  ADD CONSTRAINT `fk_student_id` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `notice`
+--
+ALTER TABLE `notice`
+  ADD CONSTRAINT `fk_user_notice` FOREIGN KEY (`user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `notice_user`
+--
+ALTER TABLE `notice_user`
+  ADD CONSTRAINT `fk_msg1` FOREIGN KEY (`notice_id`) REFERENCES `notice` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `fk_user1` FOREIGN KEY (`user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `repair`
+--
+ALTER TABLE `repair`
+  ADD CONSTRAINT `service___fk_rid` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `repair_picture`
+--
+ALTER TABLE `repair_picture`
+  ADD CONSTRAINT `fk_repair_id` FOREIGN KEY (`repair_id`) REFERENCES `repair` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `room`
+--
+ALTER TABLE `room`
+  ADD CONSTRAINT `fk_buding_id` FOREIGN KEY (`building_id`) REFERENCES `building` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `score`
+--
+ALTER TABLE `score`
+  ADD CONSTRAINT `score_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `score_image`
+--
+ALTER TABLE `score_image`
+  ADD CONSTRAINT `score_image_ibfk_1` FOREIGN KEY (`score_id`) REFERENCES `score` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `student`
+--
+ALTER TABLE `student`
+  ADD CONSTRAINT `fk_faculty` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `fk_s_r` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `system_log`
+--
+ALTER TABLE `system_log`
+  ADD CONSTRAINT `fk_ul` FOREIGN KEY (`user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `system_role_function`
+--
+ALTER TABLE `system_role_function`
+  ADD CONSTRAINT `fk_rf` FOREIGN KEY (`role_id`) REFERENCES `system_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `fk_rr` FOREIGN KEY (`function_id`) REFERENCES `system_function` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `system_user`
+--
+ALTER TABLE `system_user`
+  ADD CONSTRAINT `fk_building` FOREIGN KEY (`building_id`) REFERENCES `building` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `fk_leader` FOREIGN KEY (`leader_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- 限制表 `system_user_role`
+--
+ALTER TABLE `system_user_role`
+  ADD CONSTRAINT `fk_role_id` FOREIGN KEY (`role_id`) REFERENCES `system_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `fk_uid` FOREIGN KEY (`user_id`) REFERENCES `system_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

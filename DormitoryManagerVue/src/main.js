@@ -14,11 +14,6 @@ import './assets/font/iconfont.css'
 import './assets/font2/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/assets/icons/iconfont.css'
-// Vue Router
-// import Vue from 'vue'
-// import VueRouter from 'vue-router'
-// Vue.use(VueRouter)
-
 Vue.config.productionTip = false
 Vue.use(permission)
 Vue.use(ElementUI)

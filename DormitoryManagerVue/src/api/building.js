@@ -34,3 +34,10 @@ export function saveOrUpdate(data) {
         data: data
     })
 }
+
+export function getAllStudentNum() {
+    return request({
+        url: '/building/getAllStudentNum',
+        method: 'get',
+    })
+}

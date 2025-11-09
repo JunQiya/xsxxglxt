@@ -1,5 +1,23 @@
 import request from '@/utils/request'
 
+export function countByRegistrationMonth() {
+    return request({
+        url: '/student/registrationMonth',
+        method: 'get'
+    })
+}
+export function countByFaculty() {
+    return request({
+        url: '/student/countByFaculty',
+        method: 'get'
+    })
+}
+export function all() {
+    return request({
+        url: '/student/all',
+        method: 'get'
+    })
+}
 export function list(data) {
     return request({
         url: '/student/list',

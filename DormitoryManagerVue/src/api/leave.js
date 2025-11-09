@@ -5,6 +5,13 @@
  */
 import request from '@/utils/request'
 
+export function selectByTime() {
+    return request({
+        url: '/leave/selectByTime',
+        method: 'get'
+    })
+}
+
 export function save(data) {
     return request({
         url: '/leave/saveOrUpdate',

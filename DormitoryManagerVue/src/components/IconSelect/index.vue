@@ -5,15 +5,12 @@
 -->
 <template>
   <div class="icon-body">
-    <!-- 输入框，用于搜索图标名称 -->
     <el-input v-model="name" style="position: relative;"
               clearable placeholder="请输入图标名称"
               @clear="filterIcons" @input.native="filterIcons">
       <i slot="suffix" class="el-icon-search el-input__icon"/>
     </el-input>
-    <!-- 图标列表 -->
     <div class="icon-list">
-      <!-- 遍历图标列表，显示图标并绑定点击事件 -->
       <div v-for="(item, index) in iconList" :key="index" @click="selectedIcon(item.font_class)" style="margin: 5px;">
         <i class="iconfont" :class="'icon-' + item.font_class" style="font-size: 30px;"></i>
         <span>{{ item.name }}</span>
@@ -25,35 +22,26 @@
 <script>
 import {glyphs} from '@/assets/font2/iconfont.json'
 
-// 导出默认的对象
 export default {
-  // 组件的名称为IconSelect
   name: 'IconSelect',
-  // 数据
   data() {
     return {
-      // 图标名称
       name: '',
-      // 图标列表
       iconList: glyphs
     }
   },
-  // 方法
   methods: {
-    // 过滤图标
     filterIcons() {
       this.iconList = glyphs
       if (this.name) {
         this.iconList = this.iconList.filter(item => item.font_class.includes(this.name))
       }
     },
-    // 选择图标
     selectedIcon(name) {
       this.$emit('selected', 'icon-' + name)
       document.body.click()
     }
   },
-  // 创建时
   created() {
 
   }

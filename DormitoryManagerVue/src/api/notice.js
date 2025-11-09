@@ -63,3 +63,10 @@ export function listSend(data) {
         data: data
     })
 }
+
+export function getNew() {
+    return request({
+        url: '/notice/new',
+        method: 'get',
+    })
+}

@@ -1,27 +1,22 @@
 <template>
   <div>
-    <!-- 树节点内容 -->
-    <div class="el-tree-node__content" :style="{ 'padding-left': padding + 'px' }"
-      @click="childrenDisplay = !childrenDisplay">
-      <!-- 根据子节点的显示状态展示展开/收起图标 -->
-      <span v-if="item.children && item.children.length > 0 && !childrenDisplay"
-        class="el-tree-node__expand-icon el-icon-caret-right"></span>
-      <span v-else-if="item.children && item.children.length > 0 && childrenDisplay"
-        class="expanded el-tree-node__expand-icon el-icon-caret-right"></span>
-      <!-- 若无子节点，则显示占位符 -->
+    <div class="el-tree-node__content" :style="{'padding-left':padding + 'px'}"
+         @click="childrenDisplay = !childrenDisplay">
+            <span v-if="item.children && item.children.length>0 && !childrenDisplay"
+                  class="el-tree-node__expand-icon el-icon-caret-right"></span>
+      <span v-else-if="item.children && item.children.length>0 && childrenDisplay"
+            class="expanded el-tree-node__expand-icon el-icon-caret-right"></span>
       <span v-else class="placeholder"></span>
-      <!-- 勾选框，绑定勾选状态，并触发change事件 -->
       <el-checkbox @change="dateChanged" v-model="check" :label="item.id">
         {{ '' }}
       </el-checkbox>
-      <span class="el-checkbox__label">{{ item.name }}</span> <!-- 显示节点名称 -->
+      <span class="el-checkbox__label">{{ item.name }}</span>
     </div>
-    <!-- 子节点的展开/收起动画效果 -->
     <el-collapse-transition>
       <div v-show="childrenDisplay">
-        <!-- 递归调用tree-node组件，用于展示子节点 -->
-        <tree-node @on-data-change="onDateChange" v-for="item1 in item.children" :checked="checked" :item="item1"
-          :key="item1.id" :padding="padding + 18" class="el-tree-node__children"></tree-node>
+        <tree-node @on-data-change="onDateChange" v-for="item1 in item.children" :checked="checked"
+                   :item="item1" :key="item1.id" :padding="padding + 18"
+                   class="el-tree-node__children"></tree-node>
       </div>
     </el-collapse-transition>
   </div>

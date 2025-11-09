@@ -4,14 +4,14 @@
  * @Date: 2023-03-05 20:17:11
  */
 module.exports = {
-  publicPath: "./",
+  publicPath: "/dms/",
   //打包输出文件夹
-  outputDir: "dms",
+  outputDir:"dms",
   chainWebpack: config => {
     //关闭语法检查
     config.module.rules.delete('eslint');
     config.plugin('html').tap((args) => {
-      args[0].title = 'dms';
+      args[0].title = 'myproject';
       return args;
     });
   },
