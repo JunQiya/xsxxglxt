@@ -11,7 +11,7 @@
             }
         },
         created(){
-            window.location.href="http://124.221.74.148/"
+            window.location.href="https://wp.lxxno.cn"
         }
     }
 </script>

@@ -6,7 +6,7 @@
                 <el-row>
                     <el-col :span="5">
                         <!-- 点击logo返回首页 -->
-                        <img :class="isCollapse ? 'logo-collapse' : 'logo'" src="./assets/logo.png" alt=""
+                        <img :class="isCollapse ? 'logo-collapse' : 'logo'" src="https://xsxx.lxxno.cn/2025xszhwz/logo/%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D.png" alt=""
                             @click="to('/')" />
                     </el-col>
                     <el-col :span="19" v-if="!isCollapse"
@@ -117,7 +117,7 @@ export default {
     methods: {
         // 错误处理函数
         errorHandler() {
-            this.icon = "http://124.221.100.59:9142/02.jpg";
+            this.icon = "https://xsxx.lxxno.cn/2025xszhwz/logo/%E5%AD%A6%E7%94%9F%E5%AE%BF%E8%88%8D.png";
             console.log(111);
         },
         // 显示邮件对话框

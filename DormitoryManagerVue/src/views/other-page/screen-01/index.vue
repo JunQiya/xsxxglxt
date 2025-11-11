@@ -1,6 +1,6 @@
 <template>
   <div class="fullscreen-container">
-    <dv-border-box-11 title="云南旅游职业学院" class="dashboard-container">
+    <dv-border-box-11 title="滇西科技师范学院" class="dashboard-container">
 
       <!-- 主体内容 -->
       <div class="main-content">
@@ -55,6 +55,7 @@
     <div class="float-button" @click="handleBack">
       <div class="button-content">
         <i class="el-icon-back">
+          返回
         </i>
       </div>
     </div>
@@ -92,9 +93,9 @@
         imgRatio: 0.5625,
         isHovering: false,
         images: [
-          'http://47.109.144.239/upload_img/bn_01.png',
-          'http://47.109.144.239/upload_img/bn_02.png',
-          'http://47.109.144.239/upload_img/bn_03.png'
+          'https://xsxx.lxxno.cn/2025xszhwz/other/1.png',
+          'https://xsxx.lxxno.cn/2025xszhwz/other/2.png',
+          'https://xsxx.lxxno.cn/2025xszhwz/other/3.png'
         ],
         // 当前显示的图片索引
         currentIndex: 0,

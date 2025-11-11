@@ -2,6 +2,9 @@
   <!-- src/view/AI/index.vue -->
 
       <div class="chat-container">
+        <div>
+          <h2 style="text-align: center; margin: 20px 0;">AI智能问答助手</h2>
+        </div>
   
         <!-- 聊天消息 -->
         <div class="chat-messages">
@@ -43,7 +46,7 @@
         inputMessage: '',
         loading: false,
         // userAvatar: require('@/assets/image/user.png'), // 这个地方在控制台报错，用CDN地址搞一个用户头像也许可以解决
-        aiAvatar: 'https://img.alicdn.com/imgextra/i2/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+        aiAvatar: 'http://xsxx.lxxno.cn/2025xszhwz/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
         sessionId: null,
         abortController: null,
         isAborted: false,

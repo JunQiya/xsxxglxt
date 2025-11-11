@@ -11,7 +11,7 @@
             }
         },
         created(){
-            window.location.href="http://120.26.227.185:8999/home"
+            window.location.href="https://www.lxxno.cn/wzjsz/index.html"
         }
     }
 </script>

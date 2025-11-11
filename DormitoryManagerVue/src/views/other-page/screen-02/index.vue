@@ -1,6 +1,6 @@
 <template>
   <div class="fullscreen-container">
-    <dv-border-box-11 title="云南旅游职业学院" class="dashboard-container">
+    <dv-border-box-11 title="滇西科技师范学院" class="dashboard-container">
 
       <!-- 主体内容 -->
       <div class="main-content">
@@ -75,6 +75,7 @@
     <div class="float-button" @click="handleBack">
       <div class="button-content">
         <i class="el-icon-back">
+          返回
         </i>
       </div>
     </div>
