@@ -35,7 +35,7 @@ mybatis:
 pagehelper:
   reasonable: true
 constant:
-  upload-path: /opt/1panel/www/sites/xsxx.lxxno.cn/index/upload
+  upload-path: /opt/1panel/www/upload
 logging:
   level:
     com.rabbiter.dm.aop: info

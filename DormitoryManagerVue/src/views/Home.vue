@@ -10,7 +10,7 @@
                             :src="icon"
                             v-if="icon !== undefined"
                         >
-                            <img src="https://xsxx.lxxno.cn/2025xszhwz/logo/virtual_attach_file.jpg" />
+                            <img src="https://file.lxxno.cn/2025xszhwz/logo/virtual_attach_file.jpg" />
                         </el-avatar>
                         <el-avatar :size="70" v-else @error="errorHandler">{{
                             name

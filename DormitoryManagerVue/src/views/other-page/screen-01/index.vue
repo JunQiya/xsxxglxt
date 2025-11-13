@@ -93,9 +93,9 @@
         imgRatio: 0.5625,
         isHovering: false,
         images: [
-          'https://xsxx.lxxno.cn/2025xszhwz/other/1.png',
-          'https://xsxx.lxxno.cn/2025xszhwz/other/2.png',
-          'https://xsxx.lxxno.cn/2025xszhwz/other/3.png'
+          'https://file.lxxno.cn/2025xszhwz/other/1.png',
+          'https://file.lxxno.cn/2025xszhwz/other/2.png',
+          'https://file.lxxno.cn/2025xszhwz/other/3.png'
         ],
         // 当前显示的图片索引
         currentIndex: 0,

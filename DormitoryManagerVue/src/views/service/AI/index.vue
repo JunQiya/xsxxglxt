@@ -46,7 +46,7 @@
         inputMessage: '',
         loading: false,
         // userAvatar: require('@/assets/image/user.png'), // 这个地方在控制台报错，用CDN地址搞一个用户头像也许可以解决
-        aiAvatar: 'http://xsxx.lxxno.cn/2025xszhwz/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
+        aiAvatar: 'http://file.lxxno.cn/2025xszhwz/O1CN01Pda9nq1YDV0mnZ31H_!!6000000003025-54-tps-120-120.apng',
         sessionId: null,
         abortController: null,
         isAborted: false,
