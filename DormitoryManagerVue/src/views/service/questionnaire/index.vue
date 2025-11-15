@@ -11,7 +11,7 @@
             }
         },
         created(){
-            window.location.href="https://www.lxxno.cn/wzjsz/index.html"
+            window.location.href="https://chat.lxxno.cn"
         }
     }
 </script>

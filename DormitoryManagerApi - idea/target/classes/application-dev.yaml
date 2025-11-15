@@ -4,7 +4,8 @@ spring:
   datasource:
     url: jdbc:mysql://47.100.239.234:3306/dormitory_manager?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-#    username: xsxx
+#    47.100.239.234
+    #    username: xsxx
 #    password: 123456
     password: xh123456
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,6 +21,7 @@ spring:
     time-zone: Asia/Shanghai
     default-property-inclusion: non_null
   redis:
+#    host: localhost
     host: 47.100.239.234
     port: 6379
     password: xh123456
@@ -35,7 +37,8 @@ mybatis:
 pagehelper:
   reasonable: true
 constant:
-  upload-path: /opt/1panel/www/upload
+  upload-path: /app/upload
+#  upload-path: G:\E\upload
 logging:
   level:
     com.rabbiter.dm.aop: info
